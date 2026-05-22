@@ -1,0 +1,23 @@
+@import "./login.css";
+
+@media (min-width: 1025px) {
+  .card {
+    padding: 34px 36px;
+  }
+
+  .card-title {
+    font-size: 24px;
+  }
+
+  .card-subtitle {
+    margin-bottom: 24px;
+  }
+
+  .form-group {
+    margin-bottom: 14px;
+  }
+
+  .btn-primary {
+    margin-top: 18px;
+  }
+}

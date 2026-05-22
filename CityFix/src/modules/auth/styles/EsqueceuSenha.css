@@ -1,0 +1,38 @@
+@import "./login.css";
+
+.card-title span {
+  color: #31bf49;
+}
+
+.error-message {
+  display: block;
+  margin-top: 8px;
+  color: #e53935;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.success-message {
+  display: block;
+  margin-top: 8px;
+  color: #31bf49;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.register-text a {
+  color: #31bf49;
+  font-weight: 600;
+  text-decoration: none;
+  transition: 0.3s;
+}
+
+.register-text a:hover {
+  color: #229a36;
+}
+
+@media (min-width: 1025px) {
+  .card {
+    max-width: 460px;
+  }
+}
