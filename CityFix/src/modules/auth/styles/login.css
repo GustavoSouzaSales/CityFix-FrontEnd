@@ -428,3 +428,7 @@ body {
 .register-text a:hover {
   color: #229a36;
 }
+
+.btn-primary {
+  text-decoration: none;
+}

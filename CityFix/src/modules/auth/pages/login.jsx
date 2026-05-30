@@ -134,9 +134,9 @@ function Login() {
 </Link>
               </div>
 
-              <button className="btn-primary" type="submit">
-                <span>→</span> Entrar
-              </button>
+             <Link to="/home" className="btn-primary">
+  <span>→</span> Entrar
+</Link>
 
               <div className="divider">ou</div>
 

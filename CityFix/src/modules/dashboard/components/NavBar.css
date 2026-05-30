@@ -1,0 +1,291 @@
+.navbar-cityfix {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  height: 76px;
+  z-index: 100;
+
+  background: rgba(8, 15, 13, 0.95);
+  backdrop-filter: blur(18px);
+
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.navbar-top {
+  width: 100%;
+}
+
+.navbar-brand,
+.navbar-login-card {
+  display: none;
+}
+
+.navbar-menu {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 100%;
+}
+
+.navbar-menu a {
+  color: #d7d7d7;
+  text-decoration: none;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+
+  font-size: 12px;
+  transition: 0.3s;
+}
+
+.navbar-menu a span {
+  font-size: 20px;
+}
+
+.navbar-menu a p {
+  font-size: 11px;
+}
+
+.navbar-menu a:hover,
+.navbar-menu a.active {
+  color: #31bf49;
+}
+
+/* TABLET */
+@media (min-width: 700px) and (max-width: 1024px) {
+  .navbar-cityfix {
+    height: 82px;
+  }
+
+  .navbar-menu {
+    max-width: 760px;
+    margin: 0 auto;
+  }
+
+  .navbar-menu a span {
+    font-size: 22px;
+  }
+
+  .navbar-menu a p {
+    font-size: 12px;
+  }
+}
+
+/* DESKTOP */
+@media (min-width: 1025px) {
+  .navbar-cityfix {
+    top: 0;
+    right: auto;
+    bottom: 0;
+
+    width: 280px;
+    height: 100vh;
+
+    padding: 28px 20px;
+
+    border-top: none;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: space-between;
+  }
+
+  .navbar-top {
+    width: 100%;
+  }
+
+  .navbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    margin-bottom: 42px;
+  }
+
+  .navbar-logo {
+    width: 58px;
+    height: 58px;
+
+    border-radius: 16px;
+    background: rgba(49, 191, 73, 0.15);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 30px;
+  }
+
+  .navbar-brand-text h1 {
+    color: #fff;
+    font-size: 32px;
+    line-height: 1;
+  }
+
+  .navbar-brand-text h1 span {
+    color: #31bf49;
+  }
+
+  .navbar-brand-text p {
+    color: #d7d7d7;
+    font-size: 12px;
+    margin-top: 8px;
+    line-height: 1.4;
+  }
+
+  .navbar-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .navbar-menu a {
+    width: 100%;
+
+    flex-direction: row;
+    justify-content: flex-start;
+
+    padding: 14px 16px;
+    border-radius: 12px;
+
+    color: #fff;
+    font-size: 15px;
+  }
+
+  .navbar-menu a span {
+    width: 26px;
+    font-size: 20px;
+  }
+
+  .navbar-menu a p {
+    font-size: 15px;
+  }
+
+  .navbar-menu a:hover {
+    background: rgba(49, 191, 73, 0.12);
+  }
+
+  .navbar-menu a.active {
+    background: linear-gradient(135deg, #2e6b35, #229a36);
+    color: #fff;
+  }
+
+  .navbar-login-card {
+    display: block;
+
+    padding: 18px;
+    border-radius: 18px;
+
+    background: rgba(49, 191, 73, 0.1);
+    border: 1px solid rgba(49, 191, 73, 0.25);
+  }
+
+  .navbar-login-card p {
+    color: #d7d7d7;
+    font-size: 13px;
+    line-height: 1.4;
+    margin-bottom: 14px;
+  }
+
+  .navbar-login-card a {
+    display: block;
+    width: 100%;
+
+    padding: 12px;
+
+    border-radius: 10px;
+    background: #2e6b35;
+
+    color: #fff;
+    text-align: center;
+    text-decoration: none;
+    font-weight: 600;
+
+    transition: 0.3s;
+  }
+
+  .navbar-login-card a:hover {
+    background: #229a36;
+    transform: scale(1.03);
+  }
+
+  .navbar-login-card {
+  background: rgba(8, 15, 13, 0.92);
+  backdrop-filter: blur(10px);
+
+  border: 1px solid rgba(255,255,255,0.08);
+
+  border-radius: 18px;
+
+  padding: 18px;
+}
+
+.navbar-login-card::before {
+  content: "";
+  display: block;
+  height: 1px;
+  background: rgba(255,255,255,0.08);
+  margin-bottom: 18px;
+}
+
+  .navbar-menu-login {
+  display: none !important;
+}
+
+.navbar-cityfix {
+  top: 0;
+  right: auto;
+  bottom: 0;
+
+  width: 280px;
+  height: 100vh;
+
+  padding: 36px 20px 28px;
+
+  border-right: 1px solid rgba(255,255,255,0.08);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  background-image:
+    linear-gradient(
+      rgba(4, 12, 9, 0.82),
+      rgba(4, 12, 9, 0.82)
+    ),
+    url("../../../assets/images/escuro.jpeg");
+
+  background-size: cover;
+  background-position: left center;
+  background-repeat: no-repeat;
+}
+}
+
+.navbar-logo {
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -10px;   /* sobe */
+  margin-left: 10px; 
+}
+
+.navbar-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.navbar-menu-login {
+  display: flex;
+}
