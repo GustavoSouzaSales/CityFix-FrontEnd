@@ -1,0 +1,147 @@
+.sobre-page {
+  min-height: 100vh;
+  background: #070d0b;
+  color: #fff;
+  font-family: "Poppins", sans-serif;
+}
+
+.sobre-main {
+  padding: 24px 18px 100px;
+}
+
+.sobre-banner,
+.sobre-card {
+  background: rgba(8, 15, 13, 0.78);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 20px;
+}
+
+.sobre-banner {
+  padding: 28px;
+  margin-bottom: 20px;
+}
+
+.sobre-banner h1 {
+  font-size: 34px;
+  margin-bottom: 10px;
+}
+
+.sobre-banner p {
+  color: #d7d7d7;
+  max-width: 700px;
+}
+
+.principal-card {
+  padding: 24px;
+  display: grid;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.cityfix-logo {
+  font-size: 52px;
+}
+
+.cityfix-logo span {
+  color: #31bf49;
+}
+
+.version {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: rgba(49,191,73,.15);
+  color: #31bf49;
+}
+
+.beneficios {
+  display: grid;
+  gap: 18px;
+}
+
+.beneficios h3 {
+  margin-bottom: 6px;
+}
+
+.cards-grid {
+  display: grid;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.sobre-card {
+  padding: 22px;
+}
+
+.sobre-card h2 {
+  margin-bottom: 14px;
+}
+
+.sobre-card p,
+.sobre-card li {
+  color: #d7d7d7;
+  line-height: 1.8;
+}
+
+.sobre-card ul {
+  padding-left: 18px;
+}
+
+.badges {
+  margin-top: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.badges span {
+  background: rgba(49,191,73,.15);
+  color: #31bf49;
+  padding: 10px 14px;
+  border-radius: 10px;
+}
+
+.destaque-card {
+  background: rgba(49,191,73,.08);
+}
+
+.sobre-footer {
+  text-align: center;
+  color: #aaa;
+  padding: 24px 0;
+}
+
+/* TABLET */
+@media (min-width:700px) and (max-width:1024px) {
+
+  .sobre-main {
+    padding: 32px 28px 110px;
+  }
+
+  .cards-grid {
+    grid-template-columns: repeat(2,1fr);
+  }
+}
+
+/* DESKTOP */
+@media (min-width:1025px) {
+
+  .sobre-main {
+    margin-left: 280px;
+    padding: 42px;
+  }
+
+  .principal-card {
+    grid-template-columns: 280px 1fr 320px;
+    align-items: center;
+  }
+
+  .cards-grid:first-of-type {
+    grid-template-columns: repeat(3,1fr);
+  }
+
+  .cards-grid:last-of-type {
+    grid-template-columns: 1.2fr 1fr;
+  }
+}
