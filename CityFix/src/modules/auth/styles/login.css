@@ -60,7 +60,7 @@ body {
 }
 
 .card-title span {
-  color: #31bf49;
+  color: #cbd4cd;
 }
 
 .card-subtitle {
@@ -268,21 +268,21 @@ body {
     display: block;
     position: fixed;
     inset: 0;
-    background-image: url("../../../assets/images/escuro.jpeg");
+    background-image: url("../../../assets/images/imgModoescuro.png");
     background-size: cover;
     background-position: center;
     z-index: 0;
   }
 
-  .page {
-    position: relative;
-    z-index: 1;
-    min-height: 100vh;
-    padding: 40px 64px 76px;
-    display: flex;
-    align-items: stretch;
-    justify-content: initial;
-  }
+    .page {
+      position: relative;
+      z-index: 1;
+      min-height: calc(100vh - 50px);
+      padding: 40px 64px 30px;
+      display: flex;
+      align-items: center;
+      justify-content: initial;
+    }
 
   .left-panel {
     flex: 1;
@@ -314,17 +314,17 @@ body {
   .brand-name {
     font-size: 52px;
     font-weight: 700;
-    color: #1a3d20;
+    color: #31bf49;
     line-height: 1;
   }
 
   .brand-name span {
-    color: #2e8b3a;
+    color: #a7f3b0;
   }
 
   .brand-tagline {
     font-size: 18px;
-    color: #31bf49;
+    color: #a7f79d;
     font-weight: 500;
     margin-left: 4px;
     line-height: 1.4;
@@ -352,7 +352,7 @@ body {
   }
 
   .right-panel {
-    width: 460px;
+    width: 620px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -366,24 +366,41 @@ body {
     -webkit-backdrop-filter: blur(18px);
     border: 1px solid rgba(255, 255, 255, 0.22);
     border-radius: 24px;
-    padding: 40px 36px;
+    padding: 18px 32px;
+    max-width: 620px;
     box-shadow: 0 8px 40px rgba(0, 0, 0, 0.28);
   }
 
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .card-subtitle {
+      margin-bottom: 18px;
+    }
+
+    .btn-primary {
+      margin-top: 14px;
+    }
+
+    .register-text {
+      margin-top: 14px;
+    }
+
   .footer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: rgba(8, 24, 16, 0.92);
-  color: #fff;
-  text-align: center;
-  padding: 16px 16px 14px;
-  font-size: 13px;
-  z-index: 10;
-  display: block;
-  overflow: hidden;
-}
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(8, 24, 16, 0.92);
+    color: #fff;
+    text-align: center;
+    padding: 8px;
+    font-size: 13px;
+    z-index: 10;
+    display: block;
+    overflow: hidden;
+  }
 
 .footer::before {
   content: "";
@@ -408,11 +425,11 @@ body {
 
 .footer p:first-child {
   font-weight: 600;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .footer p:last-child {
-  font-size: 12px;
+  font-size: 11px;
   opacity: 0.8;
   margin-top: 2px;
 }

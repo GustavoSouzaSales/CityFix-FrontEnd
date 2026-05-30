@@ -262,10 +262,10 @@
       rgba(4, 12, 9, 0.82),
       rgba(4, 12, 9, 0.82)
     ),
-    url("../../../assets/images/escuro.jpeg");
+    url("../../../assets/images/imgModoescuro.png");
 
   background-size: cover;
-  background-position: left center;
+  background-position: right center;
   background-repeat: no-repeat;
 }
 }

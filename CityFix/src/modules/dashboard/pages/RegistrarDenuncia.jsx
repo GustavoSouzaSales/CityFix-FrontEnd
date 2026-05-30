@@ -10,6 +10,7 @@ function RegistrarDenuncia() {
   const [privacidade, setPrivacidade] = useState(true);
   const [imagens, setImagens] = useState([]);
   const fileInputRef = useRef(null);
+  const [mostrarMapa, setMostrarMapa] = useState(false);
 
   const handleDescricaoChange = (e) => {
     if (e.target.value.length <= 1000) setDescricao(e.target.value);
@@ -36,6 +37,8 @@ function RegistrarDenuncia() {
     alert("Denúncia enviada com sucesso!");
     navigate("/home");
   };
+
+  
 
   return (
     <>
@@ -99,9 +102,17 @@ function RegistrarDenuncia() {
                     type="text"
                     placeholder="Digite o endereço ou selecione no mapa"
                   />
-                  <button type="button" className="rd-map-btn" title="Selecionar no mapa">
+                  <button
+                    type="button"
+                    className="rd-map-btn"
+                    title="Selecionar no mapa"
+                    onClick={() => setMostrarMapa(true)}
+                  >
                     🗺️
                   </button>
+
+                  
+
                 </div>
               </div>
             </div>
@@ -210,6 +221,34 @@ function RegistrarDenuncia() {
           </form>
         </div>
       </div>
+
+      {mostrarMapa && (
+        <div className="rd-modal-overlay" onClick={() => setMostrarMapa(false)}>
+          <div className="rd-modal" onClick={(e) => e.stopPropagation()}>
+
+            <div className="rd-modal-header">
+              <h3>Mapa da cidade</h3>
+
+              <button
+                type="button"
+                onClick={() => setMostrarMapa(false)}
+              >
+                ✖
+              </button>
+            </div>
+
+            <iframe
+              title="Mapa de Irecê"
+              src="https://maps.google.com/maps?q=Irec%C3%AA%20BA&t=&z=13&ie=UTF8&iwloc=&output=embed"
+              width="100%"
+              height="400"
+              style={{ border: 0, borderRadius: "12px" }}
+              loading="lazy"
+            />
+
+          </div>
+        </div>
+      )}
     </>
   );
 }

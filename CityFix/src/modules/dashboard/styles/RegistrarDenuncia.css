@@ -554,3 +554,75 @@
     right: 30px;
   }
 }
+
+/* Fundo escuro do modal */
+.rd-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6); /* escurece o fundo */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.rd-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+/* MODAL DARK */
+.rd-modal {
+  background: #1e1e1e; /* fundo escuro */
+  color: #fff;
+  border-radius: 14px;
+  padding: 16px;
+  width: 90%;
+  max-width: 550px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border: 1px solid #333;
+}
+
+/* HEADER */
+.rd-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.rd-modal-header h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+}
+
+/* BOTÃO FECHAR */
+.rd-modal-header button {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* MAPA */
+.rd-modal iframe {
+  width: 100%;
+  height: 380px;
+  border-radius: 12px;
+  border: none;
+}
