@@ -8,6 +8,7 @@ import Perfil from "../modules/profile/pages/perfil";
 import Sobre from "../modules/dashboard/pages/sobre";
 import RegistrarDenuncia from "../modules/dashboard/pages/RegistrarDenuncia";
 import DenunciasPublicas from "../modules/dashboard/pages/DenunciasPublicas";
+import Admin from "../modules/admin/pages/admin";
 
 
 function AppRoutes() {
@@ -25,6 +26,7 @@ function AppRoutes() {
         <Route path="/home" element={<Home />} />
         <Route path="/perfil" element={<Perfil />} />
         <Route path="/sobre" element={<Sobre />} />
+        <Route path="/admin" element={<Admin />} />
       </Routes>
     </BrowserRouter>
   );

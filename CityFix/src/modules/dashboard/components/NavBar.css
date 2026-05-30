@@ -265,9 +265,11 @@
     url("../../../assets/images/imgModoescuro.png");
 
   background-size: cover;
-  background-position: right center;
+  background-position: 100% center;
   background-repeat: no-repeat;
 }
+
+
 }
 
 .navbar-logo {
