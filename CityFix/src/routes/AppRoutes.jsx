@@ -7,6 +7,7 @@ import Home from "../modules/dashboard/pages/Home";
 import Perfil from "../modules/profile/pages/perfil";
 import Sobre from "../modules/dashboard/pages/sobre";
 import RegistrarDenuncia from "../modules/dashboard/pages/RegistrarDenuncia";
+import DenunciasPublicas from "../modules/dashboard/pages/DenunciasPublicas";
 
 
 function AppRoutes() {
@@ -18,6 +19,7 @@ function AppRoutes() {
         <Route path="/criar-conta" element={<CriarConta />} />
         <Route path="/esqueci-senha" element={<EsqueceuSenha />} />
         <Route path="/registrar-denuncia" element={<RegistrarDenuncia />} />
+        <Route path="/denuncias-publicas" element={<DenunciasPublicas />} />
 
         {/* HOME */}
         <Route path="/home" element={<Home />} />
