@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import NavBar from "..//components/NavBar";
 import "../styles/DenunciasPublicas.css";
 
-// Dados mockados baseados no mockup
 const DENUNCIAS_MOCK = [
   {
     id: "DF2451",
@@ -74,7 +73,12 @@ function StatusBadge({ status, label }) {
       : status === "andamento"
       ? "dp-status-badge dp-status-andamento"
       : "dp-status-badge dp-status-resolvida";
-  return <span className={cls}>{label}</span>;
+  return (
+    <span className={cls}>
+      <span className="dp-status-dot" />
+      {label}
+    </span>
+  );
 }
 
 function DenunciasPublicas() {
@@ -92,154 +96,182 @@ function DenunciasPublicas() {
     <>
       <NavBar />
 
-      {/* Topbar */}
+      {/* Topbar — só notificação */}
       <div className="dp-topbar">
         <button className="dp-notif-btn">
           <span>🔔</span>
           <span className="dp-notif-badge">2</span>
         </button>
-        <div className="dp-user-info">
-          <div className="dp-user-avatar">👤</div>
-          <span className="dp-user-name">João Silva</span>
-          <span style={{ color: "#888", fontSize: 12 }}>▾</span>
-        </div>
       </div>
 
       <div className="dp-page">
         <div className="dp-content">
 
-          {/* Header */}
-          <div className="dp-header">
+          {/* ── HEADER ── */}
+          <header className="dp-header">
+            <div className="dp-header-eyebrow">CityFix · Transparência</div>
             <h1>Denúncias públicas</h1>
             <p>Acompanhe os problemas da sua cidade e veja o que está sendo feito.</p>
+          </header>
+
+          {/* ── BARRA DE BUSCA + FILTROS ── */}
+          <section className="dp-toolbar">
+            <div className="dp-search-row">
+              <div className="dp-search-wrap">
+                <span className="dp-search-icon">🔍</span>
+                <input
+                  type="text"
+                  placeholder="Buscar denúncias (ex: buraco, lixo, iluminação...)"
+                  value={busca}
+                  onChange={(e) => setBusca(e.target.value)}
+                />
+              </div>
+              <button className="dp-filter-btn">
+                <span>⚙️</span> Filtros
+              </button>
+            </div>
+
+            <div className="dp-filters-row">
+              {[
+                {
+                  label: "Categoria",
+                  defaultValue: "todas",
+                  options: [
+                    { value: "todas", label: "Todas" },
+                    { value: "buraco", label: "Buraco na via" },
+                    { value: "iluminacao", label: "Iluminação" },
+                    { value: "lixo", label: "Lixo" },
+                    { value: "esgoto", label: "Esgoto" },
+                  ],
+                },
+                {
+                  label: "Situação",
+                  defaultValue: "todas",
+                  options: [
+                    { value: "todas", label: "Todas" },
+                    { value: "aberta", label: "Aberta" },
+                    { value: "andamento", label: "Em andamento" },
+                    { value: "resolvida", label: "Resolvida" },
+                  ],
+                },
+                {
+                  label: "Data",
+                  defaultValue: "recentes",
+                  options: [
+                    { value: "recentes", label: "Mais recentes" },
+                    { value: "antigas", label: "Mais antigas" },
+                  ],
+                },
+                {
+                  label: "Localização",
+                  defaultValue: "todas",
+                  options: [
+                    { value: "todas", label: "Todas as regiões" },
+                    { value: "centro", label: "Centro" },
+                    { value: "jardim", label: "Jardim América" },
+                    { value: "saojose", label: "São José" },
+                  ],
+                },
+              ].map((f) => (
+                <div className="dp-filter-select" key={f.label}>
+                  <label>{f.label}</label>
+                  <div className="dp-select-wrap">
+                    <select defaultValue={f.defaultValue}>
+                      {f.options.map((o) => (
+                        <option key={o.value} value={o.value}>{o.label}</option>
+                      ))}
+                    </select>
+                    <span className="dp-filter-arrow">▼</span>
+                  </div>
+                </div>
+              ))}
+
+              <div className="dp-filter-select dp-order-select">
+                <label>Ordenar por</label>
+                <div className="dp-select-wrap">
+                  <select defaultValue="recentes">
+                    <option value="recentes">Mais recentes</option>
+                    <option value="curtidas">Mais curtidas</option>
+                    <option value="visualizacoes">Mais vistas</option>
+                  </select>
+                  <span className="dp-filter-arrow">▼</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* ── CONTADOR DE RESULTADOS ── */}
+          <div className="dp-results-info">
+            <span>{denunciasFiltradas.length} denúncias encontradas</span>
           </div>
 
-          {/* Search + Filter button */}
-          <div className="dp-search-row">
-            <div className="dp-search-wrap">
-              <span className="dp-search-icon">🔍</span>
-              <input
-                type="text"
-                placeholder="Buscar denúncias (ex: buraco, lixo, iluminação...)"
-                value={busca}
-                onChange={(e) => setBusca(e.target.value)}
-              />
-            </div>
-            <button className="dp-filter-btn">
-              <span>⚙️</span> Filtros
-            </button>
-          </div>
-
-          {/* Filter dropdowns */}
-          <div className="dp-filters-row">
-            <div className="dp-filter-select">
-              <label>Categoria</label>
-              <select defaultValue="todas">
-                <option value="todas">Todas</option>
-                <option value="buraco">Buraco na via</option>
-                <option value="iluminacao">Iluminação</option>
-                <option value="lixo">Lixo</option>
-                <option value="esgoto">Esgoto</option>
-              </select>
-              <span className="dp-filter-arrow">▼</span>
-            </div>
-
-            <div className="dp-filter-select">
-              <label>Situação</label>
-              <select defaultValue="todas">
-                <option value="todas">Todas</option>
-                <option value="aberta">Aberta</option>
-                <option value="andamento">Em andamento</option>
-                <option value="resolvida">Resolvida</option>
-              </select>
-              <span className="dp-filter-arrow">▼</span>
-            </div>
-
-            <div className="dp-filter-select">
-              <label>Data</label>
-              <select defaultValue="recentes">
-                <option value="recentes">Mais recentes</option>
-                <option value="antigas">Mais antigas</option>
-              </select>
-              <span className="dp-filter-arrow">▼</span>
-            </div>
-
-            <div className="dp-filter-select">
-              <label>Localização</label>
-              <select defaultValue="todas">
-                <option value="todas">Todas as regiões</option>
-                <option value="centro">Centro</option>
-                <option value="jardim">Jardim América</option>
-                <option value="saojose">São José</option>
-              </select>
-              <span className="dp-filter-arrow">▼</span>
-            </div>
-
-            <div className="dp-filter-select dp-order-select">
-              <label>Ordenar por</label>
-              <select defaultValue="recentes">
-                <option value="recentes">Mais recentes</option>
-                <option value="curtidas">Mais curtidas</option>
-                <option value="visualizacoes">Mais vistas</option>
-              </select>
-              <span className="dp-filter-arrow">▼</span>
-            </div>
-          </div>
-
-          {/* Cards */}
+          {/* ── LISTA DE CARDS ── */}
           <div className="dp-list">
             {denunciasFiltradas.map((d) => (
-              <div key={d.id} className="dp-card">
-                {/* Imagem / placeholder */}
-                <div className="dp-card-img-placeholder">
-                  {d.emoji}
+              <article key={d.id} className="dp-card" onClick={() => navigate(`/denuncias/${d.id}`)}>
+
+                {/* Coluna esquerda: emoji */}
+                <div className="dp-card-thumb">
+                  <span className="dp-card-emoji">{d.emoji}</span>
+                  <span className="dp-card-id">#{d.id}</span>
                 </div>
 
-                {/* Body */}
+                {/* Coluna central: info */}
                 <div className="dp-card-body">
-                  <div>
-                    <div className="dp-card-title">{d.titulo}</div>
-                    <div className="dp-card-location">
-                      <span>📍</span>
-                      <span>{d.localizacao}</span>
-                    </div>
-                    <p className="dp-card-desc">{d.descricao}</p>
+                  <div className="dp-card-top-row">
+                    <h3 className="dp-card-title">{d.titulo}</h3>
+                    <StatusBadge status={d.status} label={d.statusLabel} />
                   </div>
-                  <div className="dp-card-meta">
-                    <span>📅 {d.data}</span>
-                    <span>• ID: #{d.id}</span>
+
+                  <div className="dp-card-location">
+                    <span>📍</span>
+                    <span>{d.localizacao}</span>
+                  </div>
+
+                  <p className="dp-card-desc">{d.descricao}</p>
+
+                  <div className="dp-card-footer">
+                    <div className="dp-card-meta">
+                      <span>📅 {d.data}</span>
+                    </div>
+                    <div className="dp-card-stats">
+                      <span title="Comentários">💬 {d.comentarios}</span>
+                      <span title="Curtidas">🤍 {d.curtidas}</span>
+                      <span title="Visualizações">👁️ {d.visualizacoes}</span>
+                    </div>
                   </div>
                 </div>
 
-                {/* Right panel */}
+                {/* Coluna direita: status + seta */}
                 <div className="dp-card-right">
-                  <div className="dp-card-right-top">
-                    <StatusBadge status={d.status} label={d.statusLabel} />
-                    <span className="dp-status-label">{d.statusMsg}</span>
+                  <div className="dp-card-status-info">
+                    <p className="dp-status-msg">{d.statusMsg}</p>
                     <div className="dp-card-region">
                       <span>📍</span>
                       <span>{d.regiao}</span>
                     </div>
                   </div>
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                    <div className="dp-card-stats">
-                      <span>💬 {d.comentarios}</span>
-                      <span>🤍 {d.curtidas}</span>
-                      <span>👁️ {d.visualizacoes}</span>
-                    </div>
-                    <button
-                      className="dp-card-arrow"
-                      onClick={() => navigate(`/denuncias/${d.id}`)}
-                    >
-                      ›
-                    </button>
-                  </div>
+                  <button
+                    className="dp-card-arrow"
+                    onClick={(e) => { e.stopPropagation(); navigate(`/denuncias/${d.id}`); }}
+                    aria-label="Ver detalhes"
+                  >
+                    ›
+                  </button>
                 </div>
-              </div>
+
+              </article>
             ))}
+
+            {denunciasFiltradas.length === 0 && (
+              <div className="dp-empty">
+                <span>🔎</span>
+                <p>Nenhuma denúncia encontrada para a busca realizada.</p>
+              </div>
+            )}
           </div>
 
-          {/* Pagination */}
+          {/* ── PAGINAÇÃO ── */}
           <div className="dp-pagination-row">
             <div className="dp-per-page">
               <span>Itens por página:</span>
@@ -250,7 +282,7 @@ function DenunciasPublicas() {
               </select>
             </div>
 
-            <span className="dp-count">1-10 de 128 denúncias</span>
+            <span className="dp-count">1–10 de 128 denúncias</span>
 
             <div className="dp-pages">
               <button className="dp-page-btn" disabled={pagina === 1} onClick={() => setPagina(p => p - 1)}>‹</button>
@@ -263,7 +295,7 @@ function DenunciasPublicas() {
                   {n}
                 </button>
               ))}
-              <button className="dp-page-btn" disabled>...</button>
+              <button className="dp-page-btn" disabled>…</button>
               <button className="dp-page-btn" onClick={() => setPagina(13)}>13</button>
               <button className="dp-page-btn" onClick={() => setPagina(p => Math.min(p + 1, 13))}>›</button>
             </div>
