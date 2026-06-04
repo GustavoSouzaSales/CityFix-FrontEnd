@@ -108,9 +108,9 @@ function EsqueceuSenha() {
                 )}
               </div>
 
-              <button className="btn-primary" type="submit">
+              <Link to="/nova-senha" className="btn-primary">
                 <span>→</span> Enviar instruções
-              </button>
+              </Link>
             </form>
 
             <p className="register-text">

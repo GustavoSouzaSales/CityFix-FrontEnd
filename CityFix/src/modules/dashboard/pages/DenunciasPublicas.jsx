@@ -85,12 +85,45 @@ function DenunciasPublicas() {
   const navigate = useNavigate();
   const [busca, setBusca] = useState("");
   const [pagina, setPagina] = useState(1);
+  const [categoria, setCategoria] = useState("todas");
+  const [situacao, setSituacao] = useState("todas");
+  const [localizacao, setLocalizacao] = useState("todas");
+  const [ordenacao, setOrdenacao] = useState("recentes");
 
-  const denunciasFiltradas = DENUNCIAS_MOCK.filter(
-    (d) =>
+  const [modalAberto, setModalAberto] = useState(false);
+  const [denunciaSelecionada, setDenunciaSelecionada] = useState(null);
+
+  function abrirModal(denuncia) {
+  setDenunciaSelecionada(denuncia);
+  setModalAberto(true);
+}
+
+function fecharModal() {
+  setModalAberto(false);
+  setDenunciaSelecionada(null);
+}
+
+  const denunciasFiltradas = DENUNCIAS_MOCK
+  .filter((d) => {
+    const matchBusca =
       d.titulo.toLowerCase().includes(busca.toLowerCase()) ||
-      d.descricao.toLowerCase().includes(busca.toLowerCase())
-  );
+      d.descricao.toLowerCase().includes(busca.toLowerCase());
+
+    const matchSituacao =
+      situacao === "todas" || d.status === situacao;
+
+    const matchLocalizacao =
+      localizacao === "todas" || d.regiao.toLowerCase() === localizacao;
+
+    return matchBusca && matchSituacao && matchLocalizacao;
+  })
+  .sort((a, b) => {
+    if (ordenacao === "curtidas") return b.curtidas - a.curtidas;
+    if (ordenacao === "visualizacoes") return b.visualizacoes - a.visualizacoes;
+
+    // fallback simples (por enquanto)
+    return 0;
+  });
 
   return (
     <>
@@ -132,72 +165,65 @@ function DenunciasPublicas() {
             </div>
 
             <div className="dp-filters-row">
-              {[
-                {
-                  label: "Categoria",
-                  defaultValue: "todas",
-                  options: [
-                    { value: "todas", label: "Todas" },
-                    { value: "buraco", label: "Buraco na via" },
-                    { value: "iluminacao", label: "Iluminação" },
-                    { value: "lixo", label: "Lixo" },
-                    { value: "esgoto", label: "Esgoto" },
-                  ],
-                },
-                {
-                  label: "Situação",
-                  defaultValue: "todas",
-                  options: [
-                    { value: "todas", label: "Todas" },
-                    { value: "aberta", label: "Aberta" },
-                    { value: "andamento", label: "Em andamento" },
-                    { value: "resolvida", label: "Resolvida" },
-                  ],
-                },
-                {
-                  label: "Data",
-                  defaultValue: "recentes",
-                  options: [
-                    { value: "recentes", label: "Mais recentes" },
-                    { value: "antigas", label: "Mais antigas" },
-                  ],
-                },
-                {
-                  label: "Localização",
-                  defaultValue: "todas",
-                  options: [
-                    { value: "todas", label: "Todas as regiões" },
-                    { value: "centro", label: "Centro" },
-                    { value: "jardim", label: "Jardim América" },
-                    { value: "saojose", label: "São José" },
-                  ],
-                },
-              ].map((f) => (
-                <div className="dp-filter-select" key={f.label}>
-                  <label>{f.label}</label>
-                  <div className="dp-select-wrap">
-                    <select defaultValue={f.defaultValue}>
-                      {f.options.map((o) => (
-                        <option key={o.value} value={o.value}>{o.label}</option>
-                      ))}
-                    </select>
-                    <span className="dp-filter-arrow">▼</span>
-                  </div>
-                </div>
-              ))}
 
-              <div className="dp-filter-select dp-order-select">
-                <label>Ordenar por</label>
-                <div className="dp-select-wrap">
-                  <select defaultValue="recentes">
-                    <option value="recentes">Mais recentes</option>
-                    <option value="curtidas">Mais curtidas</option>
-                    <option value="visualizacoes">Mais vistas</option>
-                  </select>
-                  <span className="dp-filter-arrow">▼</span>
-                </div>
+            {/* CATEGORIA */}
+            <div className="dp-filter-select">
+              <label>Categoria</label>
+              <div className="dp-select-wrap">
+                <select value={categoria} onChange={(e) => setCategoria(e.target.value)}>
+                  <option value="todas">Todas</option>
+                  <option value="buraco">Buraco na via</option>
+                  <option value="iluminacao">Iluminação</option>
+                  <option value="lixo">Lixo</option>
+                  <option value="esgoto">Esgoto</option>
+                </select>
+                <span className="dp-filter-arrow">▼</span>
               </div>
             </div>
+
+            {/* SITUAÇÃO */}
+            <div className="dp-filter-select">
+              <label>Situação</label>
+              <div className="dp-select-wrap">
+                <select value={situacao} onChange={(e) => setSituacao(e.target.value)}>
+                  <option value="todas">Todas</option>
+                  <option value="aberta">Aberta</option>
+                  <option value="andamento">Em andamento</option>
+                  <option value="resolvida">Resolvida</option>
+                </select>
+                <span className="dp-filter-arrow">▼</span>
+              </div>
+            </div>
+
+            {/* DATA */}
+            <div className="dp-filter-select">
+              <label>Data</label>
+              <div className="dp-select-wrap">
+                <select value={ordenacao} onChange={(e) => setOrdenacao(e.target.value)}>
+                  <option value="recentes">Mais recentes</option>
+                  <option value="antigas">Mais antigas</option>
+                  <option value="curtidas">Mais curtidas</option>
+                  <option value="visualizacoes">Mais vistas</option>
+                </select>
+                <span className="dp-filter-arrow">▼</span>
+              </div>
+            </div>
+
+            {/* LOCALIZAÇÃO */}
+            <div className="dp-filter-select">
+              <label>Localização</label>
+              <div className="dp-select-wrap">
+                <select value={localizacao} onChange={(e) => setLocalizacao(e.target.value)}>
+                  <option value="todas">Todas as regiões</option>
+                  <option value="centro">Centro</option>
+                  <option value="jardim américa">Jardim América</option>
+                  <option value="são josé">São José</option>
+                </select>
+                <span className="dp-filter-arrow">▼</span>
+              </div>
+            </div>
+
+          </div>
           </section>
 
           {/* ── CONTADOR DE RESULTADOS ── */}
@@ -208,7 +234,7 @@ function DenunciasPublicas() {
           {/* ── LISTA DE CARDS ── */}
           <div className="dp-list">
             {denunciasFiltradas.map((d) => (
-              <article key={d.id} className="dp-card" onClick={() => navigate(`/denuncias/${d.id}`)}>
+              <article key={d.id} className="dp-card" onClick={() => abrirModal(d)}>
 
                 {/* Coluna esquerda: emoji */}
                 <div className="dp-card-thumb">
@@ -253,7 +279,7 @@ function DenunciasPublicas() {
                   </div>
                   <button
                     className="dp-card-arrow"
-                    onClick={(e) => { e.stopPropagation(); navigate(`/denuncias/${d.id}`); }}
+                    onClick={(e) => { e.stopPropagation();abrirModal(d); }}
                     aria-label="Ver detalhes"
                   >
                     ›
@@ -270,6 +296,59 @@ function DenunciasPublicas() {
               </div>
             )}
           </div>
+
+          {modalAberto && denunciaSelecionada && (
+
+            <div className="modal-overlay" onClick={fecharModal}>
+              <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+
+                <div className="modal-header">
+                  <div>
+                    <h2>{denunciaSelecionada.titulo}</h2>
+                    <span className="modal-id">#{denunciaSelecionada.id}</span>
+                  </div>
+
+                  <button onClick={fecharModal}>✕</button>
+                </div>
+
+                <div className="modal-status">
+                  <StatusBadge
+                    status={denunciaSelecionada.status}
+                    label={denunciaSelecionada.statusLabel}
+                  />
+                </div>
+
+                <div className="modal-info-grid">
+                  <div>
+                    <h4>📍 Local</h4>
+                    <p>{denunciaSelecionada.localizacao}</p>
+                  </div>
+
+                  <div>
+                    <h4>📌 Região</h4>
+                    <p>{denunciaSelecionada.regiao}</p>
+                  </div>
+
+                  <div>
+                    <h4>📅 Data</h4>
+                    <p>{denunciaSelecionada.data}</p>
+                  </div>
+                </div>
+
+                <div className="modal-desc">
+                  <h4>Descrição</h4>
+                  <p>{denunciaSelecionada.descricao}</p>
+                </div>
+
+                <div className="modal-stats">
+                  <div>💬 {denunciaSelecionada.comentarios}</div>
+                  <div>🤍 {denunciaSelecionada.curtidas}</div>
+                  <div>👁️ {denunciaSelecionada.visualizacoes}</div>
+                </div>
+
+              </div>
+            </div>
+          )}
 
           {/* ── PAGINAÇÃO ── */}
           <div className="dp-pagination-row">

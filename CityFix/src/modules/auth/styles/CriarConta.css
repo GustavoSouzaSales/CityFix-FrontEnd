@@ -20,4 +20,65 @@
   .btn-primary {
     margin-top: 18px;
   }
+
+  .right-panel {
+  width: 620px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 32px;
+  margin-top: -40px;
+}
+}
+
+/* ══════════════════════════════════════
+   BARRA DE FORÇA DA SENHA
+══════════════════════════════════════ */
+.senha-forca-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.senha-forca-barras {
+  display: flex;
+  gap: 5px;
+  flex: 1;
+}
+
+.senha-barra {
+  flex: 1;
+  height: 4px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.1);
+  transition: background 0.3s ease;
+}
+
+/* Cores por nível */
+.senha-barra.senha-fraca  { background: #e53935; }
+.senha-barra.senha-media  { background: #f4a825; }
+.senha-barra.senha-forte  { background: #31bf49; }
+
+.senha-forca-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  min-width: 36px;
+  text-align: right;
+}
+
+.senha-forca-label.senha-fraca { color: #e53935; }
+.senha-forca-label.senha-media { color: #f4a825; }
+.senha-forca-label.senha-forte { color: #31bf49; }
+
+/* ══════════════════════════════════════
+   ERRO CONFIRMAR SENHA
+══════════════════════════════════════ */
+.confirmar-erro {
+  margin-top: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #e57373;
+  letter-spacing: 0.2px;
 }

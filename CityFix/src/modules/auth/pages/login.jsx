@@ -1,8 +1,9 @@
 import "../styles/login.css";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function Login() {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
   const [email, setEmail] = useState("");
@@ -25,6 +26,43 @@ function Login() {
       ? "valid"
       : "invalid"
     : "";
+
+    // Realiza o login do usuário na API
+async function handleSubmit(e) {
+  e.preventDefault();
+
+  if (!emailValido || !senhaValida) {
+    alert("Preencha e-mail e senha corretamente.");
+    return;
+  }
+
+  try {
+    const response = await fetch("http://localhost:8080/usuarios/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email,
+        senha,
+      }),
+    });
+
+    if (!response.ok) {
+      alert("E-mail ou senha inválidos.");
+      return;
+    }
+
+    const usuario = await response.json();
+
+    localStorage.setItem("usuario", JSON.stringify(usuario));
+
+    alert("Login realizado com sucesso!");
+    navigate("/home");
+  } catch (error) {
+    alert("Erro ao conectar com o servidor.");
+  }
+}
 
   return (
     <>
@@ -88,7 +126,7 @@ function Login() {
 
             <p className="card-subtitle">Faça login para continuar</p>
 
-            <form onSubmit={(e) => e.preventDefault()}>
+            <form onSubmit={handleSubmit}>
               <div className="form-group">
                 <label className="form-label">E-mail</label>
 
@@ -130,13 +168,13 @@ function Login() {
                 </div>
 
                 <Link to="/esqueci-senha" className="forgot-link">
-  Esqueceu sua senha?
-</Link>
+                Esqueceu sua senha?
+              </Link>
               </div>
 
-             <Link to="/home" className="btn-primary">
-  <span>→</span> Entrar
-</Link>
+              <button className="btn-primary" type="submit">
+                <span>→</span> Entrar
+              </button>
 
               <div className="divider">ou</div>
 

@@ -46,6 +46,11 @@
   display: none;
 }
 
+/* Card logado — sempre visível em qualquer breakpoint */
+.navbar-login-card.logged-in {
+  display: flex;
+}
+
 /* ── Menu mobile ── */
 .navbar-menu {
   display: flex;
@@ -105,6 +110,76 @@
 }
 
 /* ══════════════════════════════════════
+   CARD — versão mobile/tablet (logged-in)
+   Aparece como item extra na bottom bar
+══════════════════════════════════════ */
+.navbar-login-card.logged-in {
+  /* Reset do layout de coluna do desktop */
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  backdrop-filter: none;
+  border: none;
+  box-shadow: none;
+  text-align: left;
+}
+
+/* Esconde nome, email e ícone no mobile — só mostra o botão sair */
+.navbar-login-card.logged-in .login-card-icon,
+.navbar-login-card.logged-in .user-name,
+.navbar-login-card.logged-in .user-email,
+.navbar-login-card.logged-in > p {
+  display: none;
+}
+
+/* Botão sair mobile — igual visual dos itens de nav */
+.navbar-login-card.logged-in .logout-btn {
+  color: #e57373;
+  background: transparent;
+  border: none;
+  border-radius: 10px;
+  box-shadow: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 6px 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  text-transform: none;
+  transition: color var(--nav-transition), background var(--nav-transition);
+  -webkit-tap-highlight-color: transparent;
+  width: auto;
+}
+
+.navbar-login-card.logged-in .logout-btn::before {
+  content: '🚪';
+  font-size: 20px;
+  line-height: 1;
+  display: block;
+}
+
+.navbar-login-card.logged-in .logout-btn:hover {
+  color: #ef9a9a;
+  background: rgba(200, 50, 50, 0.12);
+  transform: none;
+  border-color: transparent;
+}
+
+/* Esconder o link de login do menu quando logado */
+.navbar-login-card.logged-in ~ .navbar-menu .navbar-menu-login,
+.navbar-login-card.logged-in + * .navbar-menu-login {
+  display: none;
+}
+
+/* ══════════════════════════════════════
    TABLET (700–1024px)
 ══════════════════════════════════════ */
 @media (min-width: 700px) and (max-width: 1024px) {
@@ -120,6 +195,14 @@
 
   .navbar-menu a .nav-icon { font-size: 22px; }
   .navbar-menu a p         { font-size: 11px; }
+
+  .navbar-login-card.logged-in .logout-btn {
+    font-size: 11px;
+  }
+
+  .navbar-login-card.logged-in .logout-btn::before {
+    font-size: 22px;
+  }
 }
 
 /* ══════════════════════════════════════
@@ -146,7 +229,6 @@
     align-items: stretch;
     justify-content: space-between;
 
-    /* Imagem de fundo com overlay escuro */
     background-image:
       linear-gradient(rgba(4, 11, 8, 0.86), rgba(4, 11, 8, 0.86)),
       url("../../../assets/images/imgModoescuro.png");
@@ -154,7 +236,6 @@
     background-position: right center;
     background-repeat: no-repeat;
 
-    /* Sombra lateral sutil */
     box-shadow: 4px 0 24px rgba(0, 0, 0, 0.4);
   }
 
@@ -310,38 +391,64 @@
     display: none !important;
   }
 
-  /* ── Card de login ── */
-  .navbar-login-card {
+  /* ══════════════════════════════════════
+     CARD LOGIN/USUÁRIO — desktop
+  ══════════════════════════════════════ */
+
+  .navbar-login-card,
+  .navbar-login-card.logged-in {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 10px;
 
     padding: 20px 16px;
-    border-radius: 16px;
+    border-radius: 18px;
 
-    background: rgba(6, 14, 10, 0.85);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: linear-gradient(
+      160deg,
+      rgba(8, 20, 13, 0.95) 0%,
+      rgba(4, 12, 8, 0.98) 100%
+    );
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(49, 191, 73, 0.12);
+    box-shadow:
+      0 0 0 1px rgba(0, 0, 0, 0.4),
+      0 8px 32px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
 
     text-align: center;
   }
 
-  /* Ícone no topo do card */
+  /* Restaurar elementos escondidos no mobile */
+  .navbar-login-card.logged-in .login-card-icon,
+  .navbar-login-card.logged-in .user-name,
+  .navbar-login-card.logged-in .user-email {
+    display: flex;
+  }
+
+  .navbar-login-card.logged-in .user-name,
+  .navbar-login-card.logged-in .user-email {
+    display: block;
+  }
+
+  /* ── Ícone no topo ── */
   .login-card-icon {
-    width: 38px;
-    height: 38px;
-    background: var(--nav-green-dim);
-    border: 1px solid rgba(49, 191, 73, 0.2);
-    border-radius: 10px;
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, rgba(49,191,73,0.15), rgba(30,145,48,0.08));
+    border: 1px solid rgba(49, 191, 73, 0.22);
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 18px;
     margin-bottom: 2px;
+    box-shadow: 0 2px 8px rgba(49,191,73,0.1);
   }
 
-  .navbar-login-card p {
+  /* ── Texto mudo (não logado) ── */
+  .navbar-login-card > p {
     font-family: 'DM Sans', sans-serif;
     font-size: 12px;
     font-weight: 300;
@@ -349,13 +456,44 @@
     line-height: 1.55;
   }
 
+  /* ── Nome do usuário (logado) ── */
+  .user-name {
+    font-family: 'Sora', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: #e8f0ec;
+    letter-spacing: -0.2px;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  /* ── E-mail do usuário (logado) ── */
+  .user-email {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 300;
+    color: var(--nav-text-muted);
+    letter-spacing: 0.1px;
+    margin: -4px 0 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+
+  /* ── Botão: Fazer login (verde vibrante) ── */
   .login-card-btn {
     display: block;
     width: 100%;
     padding: 11px;
-    border-radius: 10px;
+    border-radius: 11px;
+    border: none;
+    cursor: pointer;
 
-    background: linear-gradient(135deg, #2a6632 0%, #1e9130 100%);
+    background: linear-gradient(135deg, #23a33a 0%, #17821e 100%);
     color: #fff;
     text-align: center;
     text-decoration: none;
@@ -363,15 +501,86 @@
     font-family: 'Sora', sans-serif;
     font-size: 13px;
     font-weight: 700;
-    letter-spacing: 0.3px;
+    letter-spacing: 0.4px;
 
-    box-shadow: 0 4px 14px rgba(30, 145, 48, 0.3);
-    transition: opacity var(--nav-transition), transform var(--nav-transition), box-shadow var(--nav-transition);
+    box-shadow:
+      0 4px 14px rgba(30, 145, 48, 0.45),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+
+    transition:
+      opacity 0.18s ease,
+      transform 0.18s ease,
+      box-shadow 0.18s ease;
   }
 
   .login-card-btn:hover {
-    opacity: 0.92;
+    opacity: 0.93;
     transform: translateY(-1px);
-    box-shadow: 0 6px 18px rgba(30, 145, 48, 0.4);
+    box-shadow:
+      0 7px 20px rgba(30, 145, 48, 0.55),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  .login-card-btn:active {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  /* ── Botão: Sair (vermelho estético) — desktop ── */
+  .navbar-login-card.logged-in .logout-btn {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    border-radius: 11px;
+    border: 1px solid rgba(200, 50, 50, 0.3);
+    cursor: pointer;
+
+    background: linear-gradient(
+      135deg,
+      rgba(160, 30, 30, 0.22) 0%,
+      rgba(120, 20, 20, 0.18) 100%
+    );
+    color: #e57373;
+    text-align: center;
+
+    font-family: 'Sora', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+
+    box-shadow:
+      0 2px 10px rgba(180, 30, 30, 0.18),
+      inset 0 1px 0 rgba(255, 100, 100, 0.06);
+
+    transition:
+      background 0.18s ease,
+      border-color 0.18s ease,
+      color 0.18s ease,
+      transform 0.18s ease,
+      box-shadow 0.18s ease;
+  }
+
+  /* Remover o pseudo-elemento ::before do mobile no desktop */
+  .navbar-login-card.logged-in .logout-btn::before {
+    display: none;
+  }
+
+  .navbar-login-card.logged-in .logout-btn:hover {
+    background: linear-gradient(
+      135deg,
+      rgba(190, 40, 40, 0.38) 0%,
+      rgba(150, 25, 25, 0.30) 100%
+    );
+    border-color: rgba(220, 80, 80, 0.5);
+    color: #ef9a9a;
+    transform: translateY(-1px);
+    box-shadow:
+      0 5px 16px rgba(180, 30, 30, 0.3),
+      inset 0 1px 0 rgba(255, 100, 100, 0.08);
+  }
+
+  .navbar-login-card.logged-in .logout-btn:active {
+    transform: translateY(0);
   }
 }

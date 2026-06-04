@@ -259,30 +259,42 @@ function RegistrarDenuncia() {
         </div>
       </div>
 
-      {/* ── MODAL MAPA ── */}
       {mostrarMapa && (
-        <div className="rd-modal-overlay" onClick={() => setMostrarMapa(false)}>
-          <div className="rd-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="rd-modal-header">
-              <div className="rd-modal-title">
-                <span>🗺️</span>
-                <h3>Mapa da cidade</h3>
-              </div>
-              <button type="button" className="rd-modal-close" onClick={() => setMostrarMapa(false)}>✕</button>
-            </div>
-            <iframe
-              title="Mapa de Irecê"
-              src="https://maps.google.com/maps?q=Irec%C3%AA%20BA&t=&z=13&ie=UTF8&iwloc=&output=embed"
-              width="100%"
-              height="400"
-              style={{ border: 0, borderRadius: "12px" }}
-              loading="lazy"
-            />
-          </div>
+  <div
+    className="rd-modal-overlay"
+    onClick={() => setMostrarMapa(false)}
+  >
+    <div
+      className="rd-modal"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div className="rd-modal-header">
+        <div className="rd-modal-title">
+          <span>🗺️</span>
+          <h3>Mapa da cidade</h3>
         </div>
-      )}
-    </>
-  );
+
+        <button
+          type="button"
+          className="rd-modal-close"
+          onClick={() => setMostrarMapa(false)}
+        >
+          ✕
+        </button>
+      </div>
+
+      <iframe
+        title="Mapa de Irecê"
+        src="https://maps.google.com/maps?q=Irec%C3%AA%20BA&t=&z=13&ie=UTF8&iwloc=&output=embed"
+        width="100%"
+        height="400"
+        style={{ border: 0, borderRadius: "12px" }}
+      />
+    </div>
+  </div>
+)}
+</>
+);
 }
 
 export default RegistrarDenuncia;

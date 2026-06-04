@@ -5,6 +5,7 @@ import logoCityFix from "../../../assets/images/favicon.png";
 function NavBar() {
   const location = useLocation();
   const isActive = (path) => location.pathname === path;
+  const usuario = JSON.parse(localStorage.getItem("usuario"));
 
   const navItems = [
     { to: "/home",               emoji: "🏠", label: "Início"    },
@@ -44,22 +45,58 @@ function NavBar() {
             </Link>
           ))}
 
-          {/* Login visível só no mobile */}
-          <Link
-            to="/login"
-            className={`navbar-menu-login ${isActive("/login") ? "active" : ""}`}
-          >
-            <span className="nav-icon">👤</span>
-            <p>Login</p>
-          </Link>
+          {/* Login visível só no mobile E só quando não logado */}
+          {!usuario && (
+            <Link
+              to="/login"
+              className={`navbar-menu-login ${isActive("/login") ? "active" : ""}`}
+            >
+              <span className="nav-icon">👤</span>
+              <p>Login</p>
+            </Link>
+          )}
         </nav>
       </div>
 
-      {/* ── RODAPÉ: card de login — só desktop ── */}
-      <div className="navbar-login-card">
-        <div className="login-card-icon">🔑</div>
-        <p>Entre para acompanhar suas denúncias.</p>
-        <Link to="/login" className="login-card-btn">Fazer login</Link>
+      {/* ── RODAPÉ: card de login — só desktop / botão sair no mobile ── */}
+      <div className={`navbar-login-card ${usuario ? "logged-in" : ""}`}>
+
+        {usuario ? (
+          <>
+            <div className="login-card-icon">👤</div>
+
+            <h3 className="user-name">
+              {usuario.nome}
+            </h3>
+
+            <p className="user-email">
+              {usuario.email}
+            </p>
+
+            <button
+              className="logout-btn"
+              onClick={() => {
+                localStorage.removeItem("usuario");
+                window.location.href = "/login";
+              }}
+            >
+              Sair
+            </button>
+          </>
+        ) : (
+          <>
+            <div className="login-card-icon">🔑</div>
+
+            <p>
+              Entre para acompanhar suas denúncias.
+            </p>
+
+            <Link to="/login" className="login-card-btn">
+              Fazer login
+            </Link>
+          </>
+        )}
+
       </div>
 
     </aside>

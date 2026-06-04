@@ -1,0 +1,248 @@
+import "../styles/NovaSenha.css";
+
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
+// CSS extra injetado no <head>
+const extraCSS = `
+  .senha-forca-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .senha-forca-barras {
+    display: flex;
+    gap: 5px;
+    flex: 1;
+  }
+  .senha-barra {
+    flex: 1;
+    height: 4px;
+    border-radius: 99px;
+    background: rgba(255, 255, 255, 0.1);
+    transition: background 0.3s ease;
+  }
+  .senha-barra.senha-fraca { background: #e53935; }
+  .senha-barra.senha-media { background: #f4a825; }
+  .senha-barra.senha-forte { background: #31bf49; }
+  .senha-forca-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    min-width: 36px;
+    text-align: right;
+  }
+  .senha-forca-label.senha-fraca { color: #e53935; }
+  .senha-forca-label.senha-media { color: #f4a825; }
+  .senha-forca-label.senha-forte { color: #31bf49; }
+  .confirmar-erro {
+    margin-top: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    color: #e57373;
+    letter-spacing: 0.2px;
+  }
+`;
+
+// Injeta o CSS uma única vez
+if (!document.getElementById("nova-senha-extra-css")) {
+  const style = document.createElement("style");
+  style.id = "nova-senha-extra-css";
+  style.textContent = extraCSS;
+  document.head.appendChild(style);
+}
+
+function avaliarSenha(senha) {
+  if (senha.length === 0) return { nivel: 0, label: "", cor: "" };
+
+  let pontos = 0;
+  if (senha.length >= 8)           pontos++;
+  if (senha.length >= 12)          pontos++;
+  if (/[A-Z]/.test(senha))         pontos++;
+  if (/[0-9]/.test(senha))         pontos++;
+  if (/[^A-Za-z0-9]/.test(senha))  pontos++;
+
+  if (pontos <= 2) return { nivel: 1, label: "Fraca", cor: "senha-fraca" };
+  if (pontos <= 3) return { nivel: 2, label: "Média", cor: "senha-media" };
+  return             { nivel: 3, label: "Forte", cor: "senha-forte" };
+}
+
+function NovaSenha() {
+  const navigate = useNavigate();
+  const [novaSenha, setNovaSenha] = useState("");
+  const [confirmarSenha, setConfirmarSenha] = useState("");
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const [senhaTouched, setSenhaTouched] = useState(false);
+  const [confirmarTouched, setConfirmarTouched] = useState(false);
+
+  const senhaValida     = novaSenha.length >= 8;
+  const confirmarValida = confirmarSenha === novaSenha && confirmarSenha.length >= 8;
+  const formularioValido = senhaValida && confirmarValida;
+
+  const forcaSenha = avaliarSenha(novaSenha);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!senhaValida || !confirmarValida) return;
+    alert("Senha atualizada com sucesso!");
+    navigate("/login");
+  };
+
+  const senhaClass    = senhaTouched    ? (senhaValida    ? "valid" : "invalid") : "";
+  const confirmarClass = confirmarTouched ? (confirmarValida ? "valid" : "invalid") : "";
+
+  return (
+    <>
+      <div className="bg"></div>
+
+      <div className="page page-nova-senha">
+        <div className="left-panel">
+          <div className="brand">
+            <div className="logo-wrap">
+              <svg className="logo-icon" viewBox="0 0 64 64" fill="none">
+                <circle cx="32" cy="26" r="18" fill="#2e8b3a" opacity="0.15" />
+                <path
+                  d="M32 8C22.06 8 14 16.06 14 26C14 38.5 32 56 32 56C32 56 50 38.5 50 26C50 16.06 41.94 8 32 8Z"
+                  fill="#2e6b35"
+                />
+                <rect x="24" y="18" width="5"  height="12" rx="1" fill="white" opacity="0.9" />
+                <rect x="31" y="14" width="5"  height="16" rx="1" fill="white" opacity="0.9" />
+                <rect x="38" y="20" width="4"  height="10" rx="1" fill="white" opacity="0.9" />
+                <path d="M20 34 Q26 28 32 34 Q26 40 20 34Z" fill="#6fcf7a" opacity="0.85" />
+              </svg>
+
+              <span className="brand-name">
+                City<span>Fix</span>
+              </span>
+            </div>
+
+            <p className="brand-tagline">
+              Segurança para sua conta
+              <br />
+              em poucos passos.
+            </p>
+          </div>
+
+          <div className="features">
+            <div className="feature-item">
+              <span className="feature-icon">🔒</span>
+              Crie uma senha segura
+            </div>
+            <div className="feature-item">
+              <span className="feature-icon">🛡️</span>
+              Proteja seus dados
+            </div>
+            <div className="feature-item">
+              <span className="feature-icon">✅</span>
+              Recupere o acesso à sua conta
+            </div>
+          </div>
+        </div>
+
+        <div className="right-panel">
+          <div className="card nova-senha-card">
+            <h1 className="card-title">
+              Definir nova <span>senha</span>
+            </h1>
+
+            <p className="card-subtitle">
+              Escolha uma nova senha para sua conta.
+            </p>
+
+            <form onSubmit={handleSubmit}>
+
+              {/* ── Nova senha ── */}
+              <div className="form-group">
+                <label className="form-label">Nova senha</label>
+
+                <div className={`input-wrap ${senhaClass}`}>
+                  <span className="input-icon">🔒</span>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Mínimo de 8 caracteres"
+                    value={novaSenha}
+                    onChange={(e) => setNovaSenha(e.target.value)}
+                    onBlur={() => setSenhaTouched(true)}
+                  />
+                  <button
+                    type="button"
+                    className="eye-btn"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? "🙈" : "👁️"}
+                  </button>
+                </div>
+
+                {/* Barra de força */}
+                {novaSenha.length > 0 && (
+                  <div className="senha-forca-wrap">
+                    <div className="senha-forca-barras">
+                      <div className={`senha-barra ${forcaSenha.nivel >= 1 ? forcaSenha.cor : ""}`} />
+                      <div className={`senha-barra ${forcaSenha.nivel >= 2 ? forcaSenha.cor : ""}`} />
+                      <div className={`senha-barra ${forcaSenha.nivel >= 3 ? forcaSenha.cor : ""}`} />
+                    </div>
+                    <span className={`senha-forca-label ${forcaSenha.cor}`}>
+                      {forcaSenha.label}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* ── Confirmar senha ── */}
+              <div className="form-group">
+                <label className="form-label">Confirmar senha</label>
+
+                <div className={`input-wrap ${confirmarClass}`}>
+                  <span className="input-icon">🔐</span>
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder="Confirme sua senha"
+                    value={confirmarSenha}
+                    onChange={(e) => setConfirmarSenha(e.target.value)}
+                    onBlur={() => setConfirmarTouched(true)}
+                  />
+                  <button
+                    type="button"
+                    className="eye-btn"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  >
+                    {showConfirmPassword ? "🙈" : "👁️"}
+                  </button>
+                </div>
+
+                {/* Mensagem de erro */}
+                {confirmarTouched && confirmarSenha.length > 0 && !confirmarValida && (
+                  <p className="confirmar-erro">✕ As senhas não coincidem</p>
+                )}
+              </div>
+
+              <button
+                className="btn-primary"
+                type="submit"
+                disabled={!formularioValido}
+              >
+                Atualizar senha
+              </button>
+            </form>
+
+            <p className="register-text">
+              <Link to="/login">Voltar para o login</Link>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <footer className="footer">
+        <p>CityFix – Sistema de Denúncias Urbanas</p>
+        <p>© 2026 Todos os direitos reservados.</p>
+      </footer>
+    </>
+  );
+}
+
+export default NovaSenha;

@@ -1,5 +1,5 @@
 import "../styles/perfil.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import NavBar from "../../dashboard/components/NavBar";
 
@@ -27,21 +27,44 @@ const minhasDenuncias = [
   },
 ];
 
+function mascararTelefone(valor) {
+  const digits = valor.replace(/\D/g, "").slice(0, 11);
+  if (digits.length <= 2) return digits.length ? `(${digits}` : "";
+  if (digits.length <= 6) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+  if (digits.length <= 10) return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+}
+
 function Perfil() {
   const [modalAberto, setModalAberto] = useState(false);
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [modalDenunciasAberto, setModalDenunciasAberto] = useState(false);
   const [abaDenuncia, setAbaDenuncia] = useState("Todas");
   const navigate = useNavigate();
+  const [senhaAtual, setSenhaAtual] = useState("");
+  const [novaSenha, setNovaSenha] = useState("");
+  const [confirmarSenha, setConfirmarSenha] = useState("");
+
+  const [verSenhaAtual, setVerSenhaAtual] = useState(false);
+  const [verNovaSenha, setVerNovaSenha] = useState(false);
+  const [verConfirmarSenha, setVerConfirmarSenha] = useState(false);
 
   const [usuario, setUsuario] = useState({
-    nome: "João Silva",
-    email: "joao@email.com",
-    telefone: "(74) 99999-9999",
-    cidade: "Irecê - BA",
+    nome: "",
+    email: "",
+    telefone: "",
+    cidade: "",
   });
 
   const [formUsuario, setFormUsuario] = useState(usuario);
+
+  useEffect(() => {
+    const usuarioLogado = JSON.parse(localStorage.getItem("usuario"));
+    if (usuarioLogado) {
+      setUsuario(usuarioLogado);
+      setFormUsuario(usuarioLogado);
+    }
+  }, []);
 
   function abrirModal() {
     setFormUsuario(usuario);
@@ -51,12 +74,41 @@ function Perfil() {
   function fecharModal() {
     setModalAberto(false);
     setMostrarSenha(false);
+    setVerSenhaAtual(false);
+    setVerNovaSenha(false);
+    setVerConfirmarSenha(false);
   }
 
-  function salvarAlteracoes(e) {
+  async function salvarAlteracoes(e) {
     e.preventDefault();
-    setUsuario(formUsuario);
-    fecharModal();
+    try {
+      const response = await fetch(`http://localhost:8080/usuarios/${usuario.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formUsuario),
+      });
+
+      if (!response.ok) { alert("Erro ao atualizar perfil."); return; }
+
+      const usuarioAtualizado = await response.json();
+
+      if (mostrarSenha) {
+        const responseSenha = await fetch(`http://localhost:8080/usuarios/${usuario.id}/senha`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ senhaAtual, novaSenha, confirmarSenha }),
+        });
+        if (!responseSenha.ok) { alert("Erro ao alterar senha. Verifique os dados informados."); return; }
+      }
+
+      setUsuario(usuarioAtualizado);
+      setFormUsuario(usuarioAtualizado);
+      localStorage.setItem("usuario", JSON.stringify(usuarioAtualizado));
+      alert("Perfil atualizado com sucesso!");
+      fecharModal();
+    } catch (error) {
+      alert("Erro ao conectar com o servidor.");
+    }
   }
 
   const iniciais = usuario.nome
@@ -89,7 +141,6 @@ function Perfil() {
 
       <main className="perfil-main">
 
-        {/* ── HEADER ── */}
         <header className="perfil-header">
           <div className="perfil-header-eyebrow">Painel do cidadão</div>
           <h1>Meu Perfil</h1>
@@ -98,22 +149,15 @@ function Perfil() {
 
         <section className="perfil-layout">
 
-          {/* ── CARD LATERAL DO USUÁRIO ── */}
           <aside className="perfil-user-card">
-
-            {/* Avatar */}
             <div className="perfil-avatar-wrap">
               <div className="perfil-avatar">{iniciais}</div>
               <div className="perfil-avatar-ring" />
             </div>
-
             <h2 className="perfil-nome">{usuario.nome}</h2>
             <p className="perfil-email">{usuario.email}</p>
-
             <div className="perfil-badge">👤 Usuário comum</div>
-
             <div className="perfil-divider" />
-
             <div className="perfil-info">
               <div className="perfil-info-item">
                 <span className="info-icon">📍</span>
@@ -124,18 +168,14 @@ function Perfil() {
                 <span>{usuario.telefone}</span>
               </div>
             </div>
-
             <div className="perfil-divider" />
-
             <button className="btn-editar" onClick={abrirModal}>
               ✏️ Editar perfil
             </button>
           </aside>
 
-          {/* ── COLUNA DIREITA ── */}
           <section className="perfil-content">
 
-            {/* Stats */}
             <div className="perfil-stats">
               {stats.map((s) => (
                 <article key={s.label} className={`stat-card ${s.cor}`}>
@@ -146,21 +186,16 @@ function Perfil() {
               ))}
             </div>
 
-            {/* Denúncias */}
             <section className="perfil-section">
               <div className="section-title">
                 <div className="section-title-left">
                   <span className="section-icon">📋</span>
                   <h2>Minhas denúncias</h2>
                 </div>
-                <button
-                  className="btn-ver-todas"
-                  onClick={() => setModalDenunciasAberto(true)}
-                >
+                <button className="btn-ver-todas" onClick={() => setModalDenunciasAberto(true)}>
                   Ver todas →
                 </button>
               </div>
-
               <div className="denuncias-list">
                 {minhasDenuncias.map((d) => (
                   <article className="denuncia-item" key={d.titulo}>
@@ -175,7 +210,6 @@ function Perfil() {
               </div>
             </section>
 
-            {/* Configurações */}
             <section className="perfil-section">
               <div className="section-title">
                 <div className="section-title-left">
@@ -183,12 +217,8 @@ function Perfil() {
                   <h2>Configurações da conta</h2>
                 </div>
               </div>
-
               <div className="config-list">
-                <button
-                  className="config-btn"
-                  onClick={() => { abrirModal(); setMostrarSenha(true); }}
-                >
+                <button className="config-btn" onClick={() => { abrirModal(); setMostrarSenha(true); }}>
                   <span className="config-btn-icon">🔐</span>
                   <div className="config-btn-text">
                     <strong>Alterar senha</strong>
@@ -196,7 +226,6 @@ function Perfil() {
                   </div>
                   <span className="config-btn-arrow">›</span>
                 </button>
-
                 <button className="config-btn">
                   <span className="config-btn-icon">🔔</span>
                   <div className="config-btn-text">
@@ -205,11 +234,10 @@ function Perfil() {
                   </div>
                   <span className="config-btn-arrow">›</span>
                 </button>
-
                 <button
                   className="config-btn config-btn--danger"
                   onClick={() => {
-                    localStorage.removeItem("token");
+                    localStorage.removeItem("usuario");
                     sessionStorage.clear();
                     navigate("/login");
                   }}
@@ -242,23 +270,47 @@ function Perfil() {
 
             <form className="perfil-modal-form" onSubmit={salvarAlteracoes}>
               <div className="modal-grid">
-                {[
-                  { label: "Nome",              key: "nome",     type: "text"  },
-                  { label: "E-mail",            key: "email",    type: "email" },
-                  { label: "Telefone",          key: "telefone", type: "text"  },
-                  { label: "Cidade onde mora",  key: "cidade",   type: "text"  },
-                ].map(({ label, key, type }) => (
-                  <div className="modal-form-group" key={key}>
-                    <label>{label}</label>
-                    <input
-                      type={type}
-                      value={formUsuario[key]}
-                      onChange={(e) =>
-                        setFormUsuario({ ...formUsuario, [key]: e.target.value })
-                      }
-                    />
-                  </div>
-                ))}
+
+                <div className="modal-form-group">
+                  <label>Nome</label>
+                  <input
+                    type="text"
+                    value={formUsuario.nome}
+                    onChange={(e) => setFormUsuario({ ...formUsuario, nome: e.target.value })}
+                  />
+                </div>
+
+                <div className="modal-form-group">
+                  <label>E-mail</label>
+                  <input
+                    type="email"
+                    value={formUsuario.email}
+                    onChange={(e) => setFormUsuario({ ...formUsuario, email: e.target.value })}
+                  />
+                </div>
+
+                <div className="modal-form-group">
+                  <label>Telefone</label>
+                  <input
+                    type="text"
+                    value={formUsuario.telefone}
+                    placeholder="(XX) XXXXX-XXXX"
+                    maxLength={15}
+                    onChange={(e) =>
+                      setFormUsuario({ ...formUsuario, telefone: mascararTelefone(e.target.value) })
+                    }
+                  />
+                </div>
+
+                <div className="modal-form-group">
+                  <label>Cidade onde mora</label>
+                  <input
+                    type="text"
+                    value={formUsuario.cidade}
+                    onChange={(e) => setFormUsuario({ ...formUsuario, cidade: e.target.value })}
+                  />
+                </div>
+
               </div>
 
               <div className="password-area">
@@ -277,16 +329,67 @@ function Perfil() {
 
                 {mostrarSenha && (
                   <div className="modal-grid password-fields">
-                    {[
-                      { label: "Senha atual",      ph: "Digite sua senha atual"   },
-                      { label: "Nova senha",        ph: "Mínimo de 8 caracteres"  },
-                      { label: "Confirmar senha",   ph: "Confirme sua nova senha" },
-                    ].map(({ label, ph }) => (
-                      <div className="modal-form-group" key={label}>
-                        <label>{label}</label>
-                        <input type="password" placeholder={ph} />
+
+                    <div className="modal-form-group">
+                      <label>Senha atual</label>
+                      <div className="input-senha-wrap">
+                        <input
+                          type={verSenhaAtual ? "text" : "password"}
+                          placeholder="Digite sua senha atual"
+                          value={senhaAtual}
+                          onChange={(e) => setSenhaAtual(e.target.value)}
+                        />
+                        <button
+                          type="button"
+                          className="olho-btn"
+                          onClick={() => setVerSenhaAtual(!verSenhaAtual)}
+                          aria-label={verSenhaAtual ? "Ocultar senha" : "Mostrar senha"}
+                        >
+                          {verSenhaAtual ? "🙈" : "👁️"}
+                        </button>
                       </div>
-                    ))}
+                    </div>
+
+                    <div className="modal-form-group">
+                      <label>Nova senha</label>
+                      <div className="input-senha-wrap">
+                        <input
+                          type={verNovaSenha ? "text" : "password"}
+                          placeholder="Mínimo de 8 caracteres"
+                          value={novaSenha}
+                          onChange={(e) => setNovaSenha(e.target.value)}
+                        />
+                        <button
+                          type="button"
+                          className="olho-btn"
+                          onClick={() => setVerNovaSenha(!verNovaSenha)}
+                          aria-label={verNovaSenha ? "Ocultar senha" : "Mostrar senha"}
+                        >
+                          {verNovaSenha ? "🙈" : "👁️"}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="modal-form-group">
+                      <label>Confirmar senha</label>
+                      <div className="input-senha-wrap">
+                        <input
+                          type={verConfirmarSenha ? "text" : "password"}
+                          placeholder="Confirme nova senha"
+                          value={confirmarSenha}
+                          onChange={(e) => setConfirmarSenha(e.target.value)}
+                        />
+                        <button
+                          type="button"
+                          className="olho-btn"
+                          onClick={() => setVerConfirmarSenha(!verConfirmarSenha)}
+                          aria-label={verConfirmarSenha ? "Ocultar senha" : "Mostrar senha"}
+                        >
+                          {verConfirmarSenha ? "🙈" : "👁️"}
+                        </button>
+                      </div>
+                    </div>
+
                   </div>
                 )}
               </div>
@@ -315,7 +418,6 @@ function Perfil() {
               </div>
               <button className="modal-close" onClick={() => setModalDenunciasAberto(false)}>✕</button>
             </div>
-
             <div className="denuncias-tabs">
               {["Todas", "Aberta", "Em andamento", "Resolvida"].map((aba) => (
                 <button
@@ -327,7 +429,6 @@ function Perfil() {
                 </button>
               ))}
             </div>
-
             <div className="denuncias-modal-list">
               {denunciasFiltradas.map((d) => (
                 <article className="denuncia-item" key={d.titulo}>
