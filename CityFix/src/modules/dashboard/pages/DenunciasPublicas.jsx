@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import NavBar from "..//components/NavBar";
 import "../styles/DenunciasPublicas.css";
@@ -7,6 +7,7 @@ const DENUNCIAS_MOCK = [
   {
     id: "DF2451",
     titulo: "Buraco na via",
+    categoria: "Buraco",
     localizacao: "Rua das Flores, 123 - Centro",
     descricao: "Buraco grande na via, oferecendo risco para motoristas e pedestres.",
     data: "10/05/2025 às 10:23",
@@ -22,6 +23,7 @@ const DENUNCIAS_MOCK = [
   {
     id: "DF2447",
     titulo: "Poste com luz apagada",
+    categoria: "Iluminação",
     localizacao: "Av. Brasil, 450 - Jardim América",
     descricao: "Poste com lâmpada queimada há mais de uma semana.",
     data: "08/05/2025 às 20:15",
@@ -37,6 +39,7 @@ const DENUNCIAS_MOCK = [
   {
     id: "DF2432",
     titulo: "Lixo acumulado",
+    categoria: "Lixo",
     localizacao: "Rua das Palmeiras, 78 - Centro",
     descricao: "Acúmulo de lixo na calçada, atraindo animais e causando mau cheiro.",
     data: "05/05/2025 às 14:42",
@@ -52,6 +55,7 @@ const DENUNCIAS_MOCK = [
   {
     id: "DF2419",
     titulo: "Vazamento de esgoto",
+    categoria: "Água/Esgoto",
     localizacao: "Rua do Sol, 56 - São José",
     descricao: "Vazamento de esgoto na via, com mau cheiro forte.",
     data: "01/05/2025 às 09:30",
@@ -73,6 +77,7 @@ function StatusBadge({ status, label }) {
       : status === "andamento"
       ? "dp-status-badge dp-status-andamento"
       : "dp-status-badge dp-status-resolvida";
+
   return (
     <span className={cls}>
       <span className="dp-status-dot" />
@@ -83,9 +88,11 @@ function StatusBadge({ status, label }) {
 
 function DenunciasPublicas() {
   const navigate = useNavigate();
+
   const [busca, setBusca] = useState("");
   const [pagina, setPagina] = useState(1);
   const [categoria, setCategoria] = useState("todas");
+  const [categorias, setCategorias] = useState([]);
   const [situacao, setSituacao] = useState("todas");
   const [localizacao, setLocalizacao] = useState("todas");
   const [ordenacao, setOrdenacao] = useState("recentes");
@@ -93,43 +100,60 @@ function DenunciasPublicas() {
   const [modalAberto, setModalAberto] = useState(false);
   const [denunciaSelecionada, setDenunciaSelecionada] = useState(null);
 
-  function abrirModal(denuncia) {
-  setDenunciaSelecionada(denuncia);
-  setModalAberto(true);
-}
+  useEffect(() => {
+    async function carregarCategorias() {
+      try {
+        const response = await fetch("http://localhost:8080/categorias");
+        const data = await response.json();
+        setCategorias(data);
+      } catch (error) {
+        console.error("Erro ao carregar categorias:", error);
+      }
+    }
 
-function fecharModal() {
-  setModalAberto(false);
-  setDenunciaSelecionada(null);
-}
+    carregarCategorias();
+  }, []);
+
+  function abrirModal(denuncia) {
+    setDenunciaSelecionada(denuncia);
+    setModalAberto(true);
+  }
+
+  function fecharModal() {
+    setModalAberto(false);
+    setDenunciaSelecionada(null);
+  }
 
   const denunciasFiltradas = DENUNCIAS_MOCK
-  .filter((d) => {
-    const matchBusca =
-      d.titulo.toLowerCase().includes(busca.toLowerCase()) ||
-      d.descricao.toLowerCase().includes(busca.toLowerCase());
+    .filter((d) => {
+      const buscaTexto = busca.toLowerCase();
 
-    const matchSituacao =
-      situacao === "todas" || d.status === situacao;
+      const matchBusca =
+        d.titulo.toLowerCase().includes(buscaTexto) ||
+        d.descricao.toLowerCase().includes(buscaTexto);
 
-    const matchLocalizacao =
-      localizacao === "todas" || d.regiao.toLowerCase() === localizacao;
+      const matchCategoria =
+        categoria === "todas" || d.categoria === categoria;
 
-    return matchBusca && matchSituacao && matchLocalizacao;
-  })
-  .sort((a, b) => {
-    if (ordenacao === "curtidas") return b.curtidas - a.curtidas;
-    if (ordenacao === "visualizacoes") return b.visualizacoes - a.visualizacoes;
+      const matchSituacao =
+        situacao === "todas" || d.status === situacao;
 
-    // fallback simples (por enquanto)
-    return 0;
-  });
+      const matchLocalizacao =
+        localizacao === "todas" || d.regiao.toLowerCase() === localizacao;
+
+      return matchBusca && matchCategoria && matchSituacao && matchLocalizacao;
+    })
+    .sort((a, b) => {
+      if (ordenacao === "curtidas") return b.curtidas - a.curtidas;
+      if (ordenacao === "visualizacoes") return b.visualizacoes - a.visualizacoes;
+
+      return 0;
+    });
 
   return (
     <>
       <NavBar />
 
-      {/* Topbar — só notificação */}
       <div className="dp-topbar">
         <button className="dp-notif-btn">
           <span>🔔</span>
@@ -139,15 +163,12 @@ function fecharModal() {
 
       <div className="dp-page">
         <div className="dp-content">
-
-          {/* ── HEADER ── */}
           <header className="dp-header">
             <div className="dp-header-eyebrow">CityFix · Transparência</div>
             <h1>Denúncias públicas</h1>
             <p>Acompanhe os problemas da sua cidade e veja o que está sendo feito.</p>
           </header>
 
-          {/* ── BARRA DE BUSCA + FILTROS ── */}
           <section className="dp-toolbar">
             <div className="dp-search-row">
               <div className="dp-search-wrap">
@@ -159,90 +180,106 @@ function fecharModal() {
                   onChange={(e) => setBusca(e.target.value)}
                 />
               </div>
+
               <button className="dp-filter-btn">
                 <span>⚙️</span> Filtros
               </button>
             </div>
 
             <div className="dp-filters-row">
+              <div className="dp-filter-select">
+                <label>Categoria</label>
 
-            {/* CATEGORIA */}
-            <div className="dp-filter-select">
-              <label>Categoria</label>
-              <div className="dp-select-wrap">
-                <select value={categoria} onChange={(e) => setCategoria(e.target.value)}>
-                  <option value="todas">Todas</option>
-                  <option value="buraco">Buraco na via</option>
-                  <option value="iluminacao">Iluminação</option>
-                  <option value="lixo">Lixo</option>
-                  <option value="esgoto">Esgoto</option>
-                </select>
-                <span className="dp-filter-arrow">▼</span>
+                <div className="dp-select-wrap">
+                  <select
+                    value={categoria}
+                    onChange={(e) => setCategoria(e.target.value)}
+                  >
+                    <option value="todas">Todas</option>
+
+                    {categorias.map((cat) => (
+                      <option key={cat.id} value={cat.nome}>
+                        {cat.nome}
+                      </option>
+                    ))}
+                  </select>
+
+                  <span className="dp-filter-arrow">▼</span>
+                </div>
+              </div>
+
+              <div className="dp-filter-select">
+                <label>Situação</label>
+
+                <div className="dp-select-wrap">
+                  <select
+                    value={situacao}
+                    onChange={(e) => setSituacao(e.target.value)}
+                  >
+                    <option value="todas">Todas</option>
+                    <option value="aberta">Aberta</option>
+                    <option value="andamento">Em andamento</option>
+                    <option value="resolvida">Resolvida</option>
+                  </select>
+
+                  <span className="dp-filter-arrow">▼</span>
+                </div>
+              </div>
+
+              <div className="dp-filter-select">
+                <label>Data</label>
+
+                <div className="dp-select-wrap">
+                  <select
+                    value={ordenacao}
+                    onChange={(e) => setOrdenacao(e.target.value)}
+                  >
+                    <option value="recentes">Mais recentes</option>
+                    <option value="antigas">Mais antigas</option>
+                    <option value="curtidas">Mais curtidas</option>
+                    <option value="visualizacoes">Mais vistas</option>
+                  </select>
+
+                  <span className="dp-filter-arrow">▼</span>
+                </div>
+              </div>
+
+              <div className="dp-filter-select">
+                <label>Localização</label>
+
+                <div className="dp-select-wrap">
+                  <select
+                    value={localizacao}
+                    onChange={(e) => setLocalizacao(e.target.value)}
+                  >
+                    <option value="todas">Todas as regiões</option>
+                    <option value="centro">Centro</option>
+                    <option value="jardim américa">Jardim América</option>
+                    <option value="são josé">São José</option>
+                  </select>
+
+                  <span className="dp-filter-arrow">▼</span>
+                </div>
               </div>
             </div>
-
-            {/* SITUAÇÃO */}
-            <div className="dp-filter-select">
-              <label>Situação</label>
-              <div className="dp-select-wrap">
-                <select value={situacao} onChange={(e) => setSituacao(e.target.value)}>
-                  <option value="todas">Todas</option>
-                  <option value="aberta">Aberta</option>
-                  <option value="andamento">Em andamento</option>
-                  <option value="resolvida">Resolvida</option>
-                </select>
-                <span className="dp-filter-arrow">▼</span>
-              </div>
-            </div>
-
-            {/* DATA */}
-            <div className="dp-filter-select">
-              <label>Data</label>
-              <div className="dp-select-wrap">
-                <select value={ordenacao} onChange={(e) => setOrdenacao(e.target.value)}>
-                  <option value="recentes">Mais recentes</option>
-                  <option value="antigas">Mais antigas</option>
-                  <option value="curtidas">Mais curtidas</option>
-                  <option value="visualizacoes">Mais vistas</option>
-                </select>
-                <span className="dp-filter-arrow">▼</span>
-              </div>
-            </div>
-
-            {/* LOCALIZAÇÃO */}
-            <div className="dp-filter-select">
-              <label>Localização</label>
-              <div className="dp-select-wrap">
-                <select value={localizacao} onChange={(e) => setLocalizacao(e.target.value)}>
-                  <option value="todas">Todas as regiões</option>
-                  <option value="centro">Centro</option>
-                  <option value="jardim américa">Jardim América</option>
-                  <option value="são josé">São José</option>
-                </select>
-                <span className="dp-filter-arrow">▼</span>
-              </div>
-            </div>
-
-          </div>
           </section>
 
-          {/* ── CONTADOR DE RESULTADOS ── */}
           <div className="dp-results-info">
             <span>{denunciasFiltradas.length} denúncias encontradas</span>
           </div>
 
-          {/* ── LISTA DE CARDS ── */}
           <div className="dp-list">
             {denunciasFiltradas.map((d) => (
-              <article key={d.id} className="dp-card" onClick={() => abrirModal(d)}>
-
-                {/* Coluna esquerda: emoji */}
+              <article
+                key={d.id}
+                className="dp-card"
+                onClick={() => abrirModal(d)}
+              >
                 <div className="dp-card-thumb">
                   <span className="dp-card-emoji">{d.emoji}</span>
                   <span className="dp-card-id">#{d.id}</span>
                 </div>
 
-                {/* Coluna central: info */}
                 <div className="dp-card-body">
                   <div className="dp-card-top-row">
                     <h3 className="dp-card-title">{d.titulo}</h3>
@@ -260,6 +297,7 @@ function fecharModal() {
                     <div className="dp-card-meta">
                       <span>📅 {d.data}</span>
                     </div>
+
                     <div className="dp-card-stats">
                       <span title="Comentários">💬 {d.comentarios}</span>
                       <span title="Curtidas">🤍 {d.curtidas}</span>
@@ -268,24 +306,27 @@ function fecharModal() {
                   </div>
                 </div>
 
-                {/* Coluna direita: status + seta */}
                 <div className="dp-card-right">
                   <div className="dp-card-status-info">
                     <p className="dp-status-msg">{d.statusMsg}</p>
+
                     <div className="dp-card-region">
                       <span>📍</span>
                       <span>{d.regiao}</span>
                     </div>
                   </div>
+
                   <button
                     className="dp-card-arrow"
-                    onClick={(e) => { e.stopPropagation();abrirModal(d); }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      abrirModal(d);
+                    }}
                     aria-label="Ver detalhes"
                   >
                     ›
                   </button>
                 </div>
-
               </article>
             ))}
 
@@ -298,10 +339,11 @@ function fecharModal() {
           </div>
 
           {modalAberto && denunciaSelecionada && (
-
             <div className="modal-overlay" onClick={fecharModal}>
-              <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-
+              <div
+                className="modal-content"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <div className="modal-header">
                   <div>
                     <h2>{denunciaSelecionada.titulo}</h2>
@@ -330,6 +372,11 @@ function fecharModal() {
                   </div>
 
                   <div>
+                    <h4>🏷️ Categoria</h4>
+                    <p>{denunciaSelecionada.categoria}</p>
+                  </div>
+
+                  <div>
                     <h4>📅 Data</h4>
                     <p>{denunciaSelecionada.data}</p>
                   </div>
@@ -345,15 +392,14 @@ function fecharModal() {
                   <div>🤍 {denunciaSelecionada.curtidas}</div>
                   <div>👁️ {denunciaSelecionada.visualizacoes}</div>
                 </div>
-
               </div>
             </div>
           )}
 
-          {/* ── PAGINAÇÃO ── */}
           <div className="dp-pagination-row">
             <div className="dp-per-page">
               <span>Itens por página:</span>
+
               <select defaultValue="10">
                 <option value="10">10</option>
                 <option value="20">20</option>
@@ -364,7 +410,14 @@ function fecharModal() {
             <span className="dp-count">1–10 de 128 denúncias</span>
 
             <div className="dp-pages">
-              <button className="dp-page-btn" disabled={pagina === 1} onClick={() => setPagina(p => p - 1)}>‹</button>
+              <button
+                className="dp-page-btn"
+                disabled={pagina === 1}
+                onClick={() => setPagina((p) => p - 1)}
+              >
+                ‹
+              </button>
+
               {[1, 2, 3].map((n) => (
                 <button
                   key={n}
@@ -374,12 +427,23 @@ function fecharModal() {
                   {n}
                 </button>
               ))}
-              <button className="dp-page-btn" disabled>…</button>
-              <button className="dp-page-btn" onClick={() => setPagina(13)}>13</button>
-              <button className="dp-page-btn" onClick={() => setPagina(p => Math.min(p + 1, 13))}>›</button>
+
+              <button className="dp-page-btn" disabled>
+                …
+              </button>
+
+              <button className="dp-page-btn" onClick={() => setPagina(13)}>
+                13
+              </button>
+
+              <button
+                className="dp-page-btn"
+                onClick={() => setPagina((p) => Math.min(p + 1, 13))}
+              >
+                ›
+              </button>
             </div>
           </div>
-
         </div>
       </div>
     </>

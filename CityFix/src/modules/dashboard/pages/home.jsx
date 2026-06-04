@@ -1,7 +1,8 @@
 import "../styles/home.css";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import NavBar from "../components/NavBar";
+
 import buraco from "../../../assets/images/buraco.jpg";
 import poste from "../../../assets/images/poste.jpg";
 import lixo from "../../../assets/images/lixo.jpg";
@@ -9,11 +10,10 @@ import calçada from "../../../assets/images/calçada.jpg";
 import esgoto from "../../../assets/images/esgoto.jpg";
 import semaforo from "../../../assets/images/semaforo.jpg";
 
-
 const denuncias = [
   {
     titulo: "Buraco na via",
-    categoria: "Buracos",
+    categoria: "Buraco",
     endereco: "Rua das Flores, 123 - Centro",
     tempo: "Hoje, 10:23",
     status: "Aberta",
@@ -79,27 +79,40 @@ const denuncias = [
   },
 ];
 
-const categorias = [
-  { label: "Todas",       icon: "▦" },
-  { label: "Buracos",     icon: "⚠" },
-  { label: "Iluminação",  icon: "⚠" },
-  { label: "Lixo",        icon: "⚠" },
-  { label: "Água/Esgoto", icon: "⚠" },
-  { label: "Calçadas",    icon: "⚠" },
-  { label: "Trânsito",    icon: "⚠" },
-  { label: "Outros",      icon: "⚠" },
-];
-
 function Home() {
   const [categoriaAtiva, setCategoriaAtiva] = useState("Todas");
+  const [categorias, setCategorias] = useState([]);
   const [busca, setBusca] = useState("");
   const [modalMapa, setModalMapa] = useState(false);
+
   const usuario = JSON.parse(localStorage.getItem("usuario"));
+
+  useEffect(() => {
+    async function carregarCategorias() {
+      try {
+        const response = await fetch("http://localhost:8080/categorias");
+        const data = await response.json();
+        setCategorias(data);
+      } catch (error) {
+        console.error("Erro ao carregar categorias:", error);
+      }
+    }
+
+    carregarCategorias();
+  }, []);
+
+  const categoriasFiltro = [
+    { id: "todas", nome: "Todas", icon: "▦" },
+    ...categorias.map((categoria) => ({
+      id: categoria.id,
+      nome: categoria.nome,
+      icon: "⚠",
+    })),
+  ];
 
   const denunciasFiltradas = denuncias.filter((item) => {
     const categoriaOk =
-      categoriaAtiva === "Todas" ||
-      item.categoria === categoriaAtiva;
+      categoriaAtiva === "Todas" || item.categoria === categoriaAtiva;
 
     const buscaOk =
       item.titulo.toLowerCase().includes(busca.toLowerCase()) ||
@@ -113,16 +126,15 @@ function Home() {
       <NavBar />
 
       <main className="home-main">
-
-        {/* ── HEADER ── */}
         <header className="home-header">
           <div className="home-header-text">
             <div className="home-eyebrow">Painel da comunidade</div>
-            <h1>
-              Olá, {usuario?.nome || "Cliente"}! 👋
-            </h1>
+
+            <h1>Olá, {usuario?.nome || "Cliente"}! 👋</h1>
+
             <p>Vamos juntos melhorar nossa cidade.</p>
           </div>
+
           <div className="home-actions">
             <div className="bell">
               🔔<small>2</small>
@@ -130,10 +142,10 @@ function Home() {
           </div>
         </header>
 
-        {/* ── BUSCA ── */}
         <section className="home-search">
           <div className="search-box">
             <span className="search-icon">🔍</span>
+
             <input
               type="text"
               placeholder="Buscar denúncias (ex: buraco, lixo, iluminação...)"
@@ -141,34 +153,30 @@ function Home() {
               onChange={(e) => setBusca(e.target.value)}
             />
           </div>
+
           <button className="filter-btn">
             <span>▽</span> Filtros
           </button>
         </section>
 
-        {/* ── CATEGORIAS ── */}
         <section className="categories">
-          {categorias.map((item, index) => (
-
+          {categoriasFiltro.map((item) => (
             <button
-              key={item.label}
-              onClick={() => setCategoriaAtiva(item.label)}
-              className={categoriaAtiva === item.label ? "active" : ""}
+              key={item.id}
+              onClick={() => setCategoriaAtiva(item.nome)}
+              className={categoriaAtiva === item.nome ? "active" : ""}
             >
-
               <span>{item.icon}</span>
-              {item.label}
+              {item.nome}
             </button>
           ))}
         </section>
 
-        {/* ── LAYOUT PRINCIPAL ── */}
         <section className="home-layout">
-
-          {/* ── GRID DE DENÚNCIAS ── */}
           <div className="reports-area">
             <div className="reports-area-header">
               <h2>Denúncias recentes</h2>
+
               <span className="reports-count">
                 {denunciasFiltradas.length} registros
               </span>
@@ -179,16 +187,22 @@ function Home() {
                 <article className="report-card" key={item.titulo}>
                   <div className="report-image">
                     <img src={item.imagem} alt={item.titulo} />
+
                     <div className="report-image-overlay" />
-                    <span className={`status ${item.tipoStatus}`}>{item.status}</span>
+
+                    <span className={`status ${item.tipoStatus}`}>
+                      {item.status}
+                    </span>
                   </div>
 
                   <div className="report-body">
                     <h3>{item.titulo}</h3>
+
                     <p className="report-address">
                       <span className="report-addr-icon">📍</span>
                       {item.endereco}
                     </p>
+
                     <p className="report-time">{item.tempo}</p>
 
                     <div className="report-divider" />
@@ -197,9 +211,11 @@ function Home() {
                       <span className="report-action">
                         <span>💬</span> {item.comentarios}
                       </span>
+
                       <span className="report-action">
                         <span>♡</span> {item.curtidas}
                       </span>
+
                       <span className="report-action report-save">🔖</span>
                     </div>
                   </div>
@@ -212,18 +228,13 @@ function Home() {
             </button>
           </div>
 
-          {/* ── SIDEBAR ── */}
           <aside className="dashboard-side">
-
-            {/* Mapa */}
             <section className="side-card">
               <div className="side-title">
                 <h3>Mapa da cidade</h3>
               </div>
-              <div
-                className="map-box"
-                onClick={() => setModalMapa(true)}
-              >
+
+              <div className="map-box" onClick={() => setModalMapa(true)}>
                 <span className="pin p1">8</span>
                 <span className="pin p2">5</span>
                 <span className="pin p3">2</span>
@@ -232,50 +243,59 @@ function Home() {
               </div>
             </section>
 
-            {/* Panorama */}
             <section className="side-card">
               <div className="side-title">
                 <h3>Panorama geral</h3>
                 <span>Este mês ⌄</span>
               </div>
+
               <div className="stats">
                 <div className="stat-row">
                   <span className="stat-icon">📷</span>
+
                   <div className="stat-info">
                     <strong>Denúncias abertas</strong>
                     <small>Aguardando atendimento</small>
                   </div>
+
                   <b className="stat-val stat-val--red">128</b>
                 </div>
+
                 <div className="stat-row">
                   <span className="stat-icon">📦</span>
+
                   <div className="stat-info">
                     <strong>Em andamento</strong>
                     <small>Sendo tratadas</small>
                   </div>
+
                   <b className="stat-val stat-val--yellow">63</b>
                 </div>
+
                 <div className="stat-row">
                   <span className="stat-icon">✅</span>
+
                   <div className="stat-info">
                     <strong>Resolvidas</strong>
                     <small>Problemas solucionados</small>
                   </div>
+
                   <b className="stat-val stat-val--green">215</b>
                 </div>
               </div>
             </section>
 
-            {/* CTA */}
             <section className="side-card call-card">
               <div className="call-icon">🌱</div>
+
               <h3>Faça a diferença!</h3>
+
               <p>Sua denúncia ajuda a construir uma cidade melhor para todos.</p>
+
               <Link to="/registrar-denuncia">
                 <button>＋ Registrar denúncia</button>
               </Link>
             </section>
-
           </aside>
         </section>
       </main>
@@ -285,15 +305,10 @@ function Home() {
           className="admin-modal-overlay"
           onClick={() => setModalMapa(false)}
         >
-          <div
-            className="admin-modal"
-            onClick={(e) => e.stopPropagation()}
-          >
+          <div className="admin-modal" onClick={(e) => e.stopPropagation()}>
             <div className="admin-modal-header">
               <div>
-                <p className="modal-eyebrow">
-                  Mapa da cidade
-                </p>
+                <p className="modal-eyebrow">Mapa da cidade</p>
 
                 <h2>Mapa da cidade</h2>
 
@@ -323,9 +338,7 @@ function Home() {
           </div>
         </div>
       )}
-
     </div>
-    
   );
 }
 

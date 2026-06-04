@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import "../styles/RegistrarDenuncia.css";
@@ -11,6 +11,23 @@ function RegistrarDenuncia() {
   const [imagens, setImagens] = useState([]);
   const fileInputRef = useRef(null);
   const [mostrarMapa, setMostrarMapa] = useState(false);
+
+  const [categorias, setCategorias] = useState([]);
+const [categoriaSelecionada, setCategoriaSelecionada] = useState("");
+
+useEffect(() => {
+  async function carregarCategorias() {
+    try {
+      const response = await fetch("http://localhost:8080/categorias");
+      const data = await response.json();
+      setCategorias(data);
+    } catch (error) {
+      console.error("Erro ao carregar categorias:", error);
+    }
+  }
+
+  carregarCategorias();
+}, []);
 
   const handleDescricaoChange = (e) => {
     if (e.target.value.length <= 1000) setDescricao(e.target.value);
@@ -100,15 +117,21 @@ function RegistrarDenuncia() {
                     </label>
                     <div className="rd-select-wrap">
                       <span className="rd-select-icon">⚠️</span>
-                      <select defaultValue="">
-                        <option value="" disabled>Selecione o tipo de problema</option>
-                        <option value="buraco">Buraco na via</option>
-                        <option value="iluminacao">Iluminação defeituosa</option>
-                        <option value="lixo">Acúmulo de lixo</option>
-                        <option value="calcada">Calçada danificada</option>
-                        <option value="vandalismo">Vandalismo</option>
-                        <option value="outros">Outros</option>
-                      </select>
+                      <select
+  value={categoriaSelecionada}
+  onChange={(e) => setCategoriaSelecionada(e.target.value)}
+  required
+>
+  <option value="" disabled>
+    Selecione o tipo de problema
+  </option>
+
+  {categorias.map((categoria) => (
+    <option key={categoria.id} value={categoria.nome}>
+      {categoria.nome}
+    </option>
+  ))}
+</select>
                       <span className="rd-select-arrow">▼</span>
                     </div>
                   </div>

@@ -6,16 +6,16 @@ function NavBar() {
   const location = useLocation();
   const isActive = (path) => location.pathname === path;
   const usuario = JSON.parse(localStorage.getItem("usuario"));
+  const isAdmin = usuario?.tipoUsuario === "ADMINISTRADOR";
 
   const navItems = [
-    { to: "/home",               emoji: "🏠", label: "Início"    },
-    { to: "/registrar-denuncia", emoji: "➕", label: "Registrar" },
-    { to: "/denuncias-publicas", emoji: "📋", label: "Públicas"  },
-    { to: "/perfil",             emoji: "👤", label: "Perfil"    },
-    { to: "/admin",              emoji: "⚙️", label: "Admin"     },
-    { to: "/sobre",              emoji: "ℹ️", label: "Sobre"     },
-  ];
-
+  { to: "/home", emoji: "🏠", label: "Início" },
+  { to: "/registrar-denuncia", emoji: "➕", label: "Registrar" },
+  { to: "/denuncias-publicas", emoji: "📋", label: "Públicas" },
+  { to: "/perfil", emoji: "👤", label: "Perfil" },
+  ...(isAdmin ? [{ to: "/admin", emoji: "⚙️", label: "Admin" }] : []),
+  { to: "/sobre", emoji: "ℹ️", label: "Sobre" },
+];
   return (
     <aside className="navbar-cityfix">
 

@@ -156,7 +156,17 @@ function Perfil() {
             </div>
             <h2 className="perfil-nome">{usuario.nome}</h2>
             <p className="perfil-email">{usuario.email}</p>
-            <div className="perfil-badge">👤 Usuário comum</div>
+            <div
+  className={
+    usuario.tipoUsuario === "ADMINISTRADOR"
+      ? "perfil-badge perfil-badge-admin"
+      : "perfil-badge"
+  }
+>
+  👤 {usuario.tipoUsuario === "ADMINISTRADOR"
+    ? "Administrador"
+    : "Usuário comum"}
+</div>
             <div className="perfil-divider" />
             <div className="perfil-info">
               <div className="perfil-info-item">
