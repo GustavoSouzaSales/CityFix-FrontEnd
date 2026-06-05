@@ -3,30 +3,6 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import NavBar from "../../dashboard/components/NavBar";
 
-const minhasDenuncias = [
-  {
-    titulo: "Buraco na via",
-    local: "Rua das Flores, Centro",
-    data: "Hoje, 10:23",
-    status: "Aberta",
-    tipo: "aberta",
-  },
-  {
-    titulo: "Poste com luz apagada",
-    local: "Av. Brasil, Jardim América",
-    data: "Ontem, 20:15",
-    status: "Em andamento",
-    tipo: "andamento",
-  },
-  {
-    titulo: "Lixo acumulado",
-    local: "Rua das Palmeiras, Centro",
-    data: "2 dias atrás",
-    status: "Resolvida",
-    tipo: "resolvida",
-  },
-];
-
 function mascararTelefone(valor) {
   const digits = valor.replace(/\D/g, "").slice(0, 11);
   if (digits.length <= 2) return digits.length ? `(${digits}` : "";
@@ -35,12 +11,29 @@ function mascararTelefone(valor) {
   return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
 }
 
+function formatarStatus(status) {
+  if (status === "ABERTA") return "Aberta";
+  if (status === "EM_ANDAMENTO") return "Em andamento";
+  if (status === "RESOLVIDA") return "Resolvida";
+  return status;
+}
+
+function classeStatus(status) {
+  if (status === "ABERTA") return "aberta";
+  if (status === "EM_ANDAMENTO") return "andamento";
+  if (status === "RESOLVIDA") return "resolvida";
+  return "";
+}
+
 function Perfil() {
   const [modalAberto, setModalAberto] = useState(false);
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [modalDenunciasAberto, setModalDenunciasAberto] = useState(false);
+  const [minhasDenuncias, setMinhasDenuncias] = useState([]);
   const [abaDenuncia, setAbaDenuncia] = useState("Todas");
+
   const navigate = useNavigate();
+
   const [senhaAtual, setSenhaAtual] = useState("");
   const [novaSenha, setNovaSenha] = useState("");
   const [confirmarSenha, setConfirmarSenha] = useState("");
@@ -59,11 +52,27 @@ function Perfil() {
   const [formUsuario, setFormUsuario] = useState(usuario);
 
   useEffect(() => {
-    const usuarioLogado = JSON.parse(localStorage.getItem("usuario"));
-    if (usuarioLogado) {
+    async function carregarDados() {
+      const usuarioLogado = JSON.parse(localStorage.getItem("usuario"));
+
+      if (!usuarioLogado) return;
+
       setUsuario(usuarioLogado);
       setFormUsuario(usuarioLogado);
+
+      try {
+        const response = await fetch(
+          `http://localhost:8080/denuncias/usuario/${usuarioLogado.id}`
+        );
+
+        const denuncias = await response.json();
+        setMinhasDenuncias(denuncias);
+      } catch (error) {
+        console.error("Erro ao carregar denúncias:", error);
+      }
     }
+
+    carregarDados();
   }, []);
 
   function abrirModal() {
@@ -81,6 +90,7 @@ function Perfil() {
 
   async function salvarAlteracoes(e) {
     e.preventDefault();
+
     try {
       const response = await fetch(`http://localhost:8080/usuarios/${usuario.id}`, {
         method: "PUT",
@@ -88,7 +98,10 @@ function Perfil() {
         body: JSON.stringify(formUsuario),
       });
 
-      if (!response.ok) { alert("Erro ao atualizar perfil."); return; }
+      if (!response.ok) {
+        alert("Erro ao atualizar perfil.");
+        return;
+      }
 
       const usuarioAtualizado = await response.json();
 
@@ -98,12 +111,17 @@ function Perfil() {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ senhaAtual, novaSenha, confirmarSenha }),
         });
-        if (!responseSenha.ok) { alert("Erro ao alterar senha. Verifique os dados informados."); return; }
+
+        if (!responseSenha.ok) {
+          alert("Erro ao alterar senha. Verifique os dados informados.");
+          return;
+        }
       }
 
       setUsuario(usuarioAtualizado);
       setFormUsuario(usuarioAtualizado);
       localStorage.setItem("usuario", JSON.stringify(usuarioAtualizado));
+
       alert("Perfil atualizado com sucesso!");
       fecharModal();
     } catch (error) {
@@ -121,18 +139,23 @@ function Perfil() {
   const denunciasFiltradas =
     abaDenuncia === "Todas"
       ? minhasDenuncias
-      : minhasDenuncias.filter((d) => d.status === abaDenuncia);
+      : minhasDenuncias.filter((d) => {
+          if (abaDenuncia === "Aberta") return d.status === "ABERTA";
+          if (abaDenuncia === "Em andamento") return d.status === "EM_ANDAMENTO";
+          if (abaDenuncia === "Resolvida") return d.status === "RESOLVIDA";
+          return true;
+        });
 
-  const totalDenuncias  = minhasDenuncias.length;
-  const totalAbertas    = minhasDenuncias.filter((d) => d.status === "Aberta").length;
-  const totalAndamento  = minhasDenuncias.filter((d) => d.status === "Em andamento").length;
-  const totalResolvidas = minhasDenuncias.filter((d) => d.status === "Resolvida").length;
+  const totalDenuncias = minhasDenuncias.length;
+  const totalAbertas = minhasDenuncias.filter((d) => d.status === "ABERTA").length;
+  const totalAndamento = minhasDenuncias.filter((d) => d.status === "EM_ANDAMENTO").length;
+  const totalResolvidas = minhasDenuncias.filter((d) => d.status === "RESOLVIDA").length;
 
   const stats = [
-    { emoji: "📋", valor: totalDenuncias,  label: "Denúncias feitas", cor: "stat--blue"   },
-    { emoji: "🟡", valor: totalAndamento,  label: "Em andamento",     cor: "stat--yellow" },
-    { emoji: "✅", valor: totalResolvidas, label: "Resolvidas",        cor: "stat--green"  },
-    { emoji: "🔴", valor: totalAbertas,    label: "Abertas",           cor: "stat--red"    },
+    { emoji: "📋", valor: totalDenuncias, label: "Denúncias feitas", cor: "stat--blue" },
+    { emoji: "🟡", valor: totalAndamento, label: "Em andamento", cor: "stat--yellow" },
+    { emoji: "✅", valor: totalResolvidas, label: "Resolvidas", cor: "stat--green" },
+    { emoji: "🔴", valor: totalAbertas, label: "Abertas", cor: "stat--red" },
   ];
 
   return (
@@ -140,7 +163,6 @@ function Perfil() {
       <NavBar />
 
       <main className="perfil-main">
-
         <header className="perfil-header">
           <div className="perfil-header-eyebrow">Painel do cidadão</div>
           <h1>Meu Perfil</h1>
@@ -148,44 +170,47 @@ function Perfil() {
         </header>
 
         <section className="perfil-layout">
-
           <aside className="perfil-user-card">
             <div className="perfil-avatar-wrap">
               <div className="perfil-avatar">{iniciais}</div>
               <div className="perfil-avatar-ring" />
             </div>
+
             <h2 className="perfil-nome">{usuario.nome}</h2>
             <p className="perfil-email">{usuario.email}</p>
+
             <div
-  className={
-    usuario.tipoUsuario === "ADMINISTRADOR"
-      ? "perfil-badge perfil-badge-admin"
-      : "perfil-badge"
-  }
->
-  👤 {usuario.tipoUsuario === "ADMINISTRADOR"
-    ? "Administrador"
-    : "Usuário comum"}
-</div>
+              className={
+                usuario.tipoUsuario === "ADMINISTRADOR"
+                  ? "perfil-badge perfil-badge-admin"
+                  : "perfil-badge"
+              }
+            >
+              👤 {usuario.tipoUsuario === "ADMINISTRADOR" ? "Administrador" : "Usuário comum"}
+            </div>
+
             <div className="perfil-divider" />
+
             <div className="perfil-info">
               <div className="perfil-info-item">
                 <span className="info-icon">📍</span>
-                <span>{usuario.cidade}</span>
+                <span>{usuario.cidade || "Cidade não informada"}</span>
               </div>
+
               <div className="perfil-info-item">
                 <span className="info-icon">📞</span>
-                <span>{usuario.telefone}</span>
+                <span>{usuario.telefone || "Telefone não informado"}</span>
               </div>
             </div>
+
             <div className="perfil-divider" />
+
             <button className="btn-editar" onClick={abrirModal}>
               ✏️ Editar perfil
             </button>
           </aside>
 
           <section className="perfil-content">
-
             <div className="perfil-stats">
               {stats.map((s) => (
                 <article key={s.label} className={`stat-card ${s.cor}`}>
@@ -202,21 +227,34 @@ function Perfil() {
                   <span className="section-icon">📋</span>
                   <h2>Minhas denúncias</h2>
                 </div>
+
                 <button className="btn-ver-todas" onClick={() => setModalDenunciasAberto(true)}>
                   Ver todas →
                 </button>
               </div>
+
               <div className="denuncias-list">
-                {minhasDenuncias.map((d) => (
-                  <article className="denuncia-item" key={d.titulo}>
-                    <div className="denuncia-left">
-                      <h3>{d.titulo}</h3>
-                      <p>{d.local}</p>
-                      <small>{d.data}</small>
-                    </div>
-                    <span className={`perfil-status ${d.tipo}`}>{d.status}</span>
-                  </article>
-                ))}
+                {minhasDenuncias.length > 0 ? (
+                  minhasDenuncias.map((d) => (
+                    <article className="denuncia-item" key={d.id}>
+                      <div className="denuncia-left">
+                        <h3>{d.titulo}</h3>
+                        <p>{d.localizacao}</p>
+                        <small>{new Date(d.dataCriacao).toLocaleDateString("pt-BR")}</small>
+
+                        {d.imagens?.length > 0 && (
+                          <small>📷 {d.imagens.length} imagem(ns)</small>
+                        )}
+                      </div>
+
+                      <span className={`perfil-status ${classeStatus(d.status)}`}>
+                        {formatarStatus(d.status)}
+                      </span>
+                    </article>
+                  ))
+                ) : (
+                  <p>Nenhuma denúncia registrada ainda.</p>
+                )}
               </div>
             </section>
 
@@ -227,8 +265,15 @@ function Perfil() {
                   <h2>Configurações da conta</h2>
                 </div>
               </div>
+
               <div className="config-list">
-                <button className="config-btn" onClick={() => { abrirModal(); setMostrarSenha(true); }}>
+                <button
+                  className="config-btn"
+                  onClick={() => {
+                    abrirModal();
+                    setMostrarSenha(true);
+                  }}
+                >
                   <span className="config-btn-icon">🔐</span>
                   <div className="config-btn-text">
                     <strong>Alterar senha</strong>
@@ -236,6 +281,7 @@ function Perfil() {
                   </div>
                   <span className="config-btn-arrow">›</span>
                 </button>
+
                 <button className="config-btn">
                   <span className="config-btn-icon">🔔</span>
                   <div className="config-btn-text">
@@ -244,6 +290,7 @@ function Perfil() {
                   </div>
                   <span className="config-btn-arrow">›</span>
                 </button>
+
                 <button
                   className="config-btn config-btn--danger"
                   onClick={() => {
@@ -261,12 +308,10 @@ function Perfil() {
                 </button>
               </div>
             </section>
-
           </section>
         </section>
       </main>
 
-      {/* ── MODAL EDITAR PERFIL ── */}
       {modalAberto && (
         <div className="perfil-modal-overlay" onClick={fecharModal}>
           <div className="perfil-modal" onClick={(e) => e.stopPropagation()}>
@@ -275,12 +320,14 @@ function Perfil() {
                 <h2>Editar perfil</h2>
                 <p>Atualize suas informações pessoais.</p>
               </div>
-              <button className="modal-close" onClick={fecharModal}>✕</button>
+
+              <button className="modal-close" onClick={fecharModal}>
+                ✕
+              </button>
             </div>
 
             <form className="perfil-modal-form" onSubmit={salvarAlteracoes}>
               <div className="modal-grid">
-
                 <div className="modal-form-group">
                   <label>Nome</label>
                   <input
@@ -303,11 +350,14 @@ function Perfil() {
                   <label>Telefone</label>
                   <input
                     type="text"
-                    value={formUsuario.telefone}
+                    value={formUsuario.telefone || ""}
                     placeholder="(XX) XXXXX-XXXX"
                     maxLength={15}
                     onChange={(e) =>
-                      setFormUsuario({ ...formUsuario, telefone: mascararTelefone(e.target.value) })
+                      setFormUsuario({
+                        ...formUsuario,
+                        telefone: mascararTelefone(e.target.value),
+                      })
                     }
                   />
                 </div>
@@ -316,11 +366,10 @@ function Perfil() {
                   <label>Cidade onde mora</label>
                   <input
                     type="text"
-                    value={formUsuario.cidade}
+                    value={formUsuario.cidade || ""}
                     onChange={(e) => setFormUsuario({ ...formUsuario, cidade: e.target.value })}
                   />
                 </div>
-
               </div>
 
               <div className="password-area">
@@ -332,6 +381,7 @@ function Perfil() {
                   >
                     🔐 {mostrarSenha ? "Ocultar campos de senha" : "Mudar senha"}
                   </button>
+
                   <Link to="/esqueci-senha" className="forgot-password-modal">
                     Esqueceu sua senha?
                   </Link>
@@ -339,7 +389,6 @@ function Perfil() {
 
                 {mostrarSenha && (
                   <div className="modal-grid password-fields">
-
                     <div className="modal-form-group">
                       <label>Senha atual</label>
                       <div className="input-senha-wrap">
@@ -353,7 +402,6 @@ function Perfil() {
                           type="button"
                           className="olho-btn"
                           onClick={() => setVerSenhaAtual(!verSenhaAtual)}
-                          aria-label={verSenhaAtual ? "Ocultar senha" : "Mostrar senha"}
                         >
                           {verSenhaAtual ? "🙈" : "👁️"}
                         </button>
@@ -373,7 +421,6 @@ function Perfil() {
                           type="button"
                           className="olho-btn"
                           onClick={() => setVerNovaSenha(!verNovaSenha)}
-                          aria-label={verNovaSenha ? "Ocultar senha" : "Mostrar senha"}
                         >
                           {verNovaSenha ? "🙈" : "👁️"}
                         </button>
@@ -393,13 +440,11 @@ function Perfil() {
                           type="button"
                           className="olho-btn"
                           onClick={() => setVerConfirmarSenha(!verConfirmarSenha)}
-                          aria-label={verConfirmarSenha ? "Ocultar senha" : "Mostrar senha"}
                         >
                           {verConfirmarSenha ? "🙈" : "👁️"}
                         </button>
                       </div>
                     </div>
-
                   </div>
                 )}
               </div>
@@ -408,6 +453,7 @@ function Perfil() {
                 <button type="button" className="cancel-btn" onClick={fecharModal}>
                   Cancelar
                 </button>
+
                 <button type="submit" className="save-btn">
                   Salvar alterações
                 </button>
@@ -417,7 +463,6 @@ function Perfil() {
         </div>
       )}
 
-      {/* ── MODAL VER TODAS AS DENÚNCIAS ── */}
       {modalDenunciasAberto && (
         <div className="perfil-modal-overlay" onClick={() => setModalDenunciasAberto(false)}>
           <div className="perfil-modal denuncias-modal" onClick={(e) => e.stopPropagation()}>
@@ -426,8 +471,12 @@ function Perfil() {
                 <h2>Minhas denúncias</h2>
                 <p>Acompanhe todas as denúncias registradas por você.</p>
               </div>
-              <button className="modal-close" onClick={() => setModalDenunciasAberto(false)}>✕</button>
+
+              <button className="modal-close" onClick={() => setModalDenunciasAberto(false)}>
+                ✕
+              </button>
             </div>
+
             <div className="denuncias-tabs">
               {["Todas", "Aberta", "Em andamento", "Resolvida"].map((aba) => (
                 <button
@@ -439,17 +488,38 @@ function Perfil() {
                 </button>
               ))}
             </div>
+
             <div className="denuncias-modal-list">
               {denunciasFiltradas.map((d) => (
-                <article className="denuncia-item" key={d.titulo}>
+                <article className="denuncia-item" key={d.id}>
                   <div className="denuncia-left">
                     <h3>{d.titulo}</h3>
-                    <p>{d.local}</p>
-                    <small>{d.data}</small>
+                    <p>{d.localizacao}</p>
+                    <small>{new Date(d.dataCriacao).toLocaleDateString("pt-BR")}</small>
+
+                    {d.imagens?.length > 0 && (
+                      <div className="perfil-imagens">
+                        {d.imagens.map((img) => (
+                          <img
+                            key={img.id}
+                            src={img.imagemUrl}
+                            alt={d.titulo}
+                            className="perfil-imagem"
+                          />
+                        ))}
+                      </div>
+                    )}
                   </div>
-                  <span className={`perfil-status ${d.tipo}`}>{d.status}</span>
+
+                  <span className={`perfil-status ${classeStatus(d.status)}`}>
+                    {formatarStatus(d.status)}
+                  </span>
                 </article>
               ))}
+
+              {denunciasFiltradas.length === 0 && (
+                <p>Nenhuma denúncia encontrada nessa aba.</p>
+              )}
             </div>
           </div>
         </div>

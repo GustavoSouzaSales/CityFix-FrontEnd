@@ -638,6 +638,28 @@
   cursor: not-allowed;
 }
 
+.modal-imagens {
+  margin-top: 24px;
+}
+
+.modal-imagens h4 {
+  margin-bottom: 12px;
+}
+
+.modal-imagens-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.modal-imagem {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+}
+
 /* ══════════════════════════════════════
    TABLET (700–1024px)
 ══════════════════════════════════════ */

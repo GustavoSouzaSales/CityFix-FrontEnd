@@ -898,6 +898,110 @@
 
 .save-btn:hover { opacity: 0.9; transform: translateY(-1px); }
 
+.detail-map-preview {
+  margin-top: 18px;
+  padding: 14px;
+  border-radius: 18px;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.detail-map-preview:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 35px rgba(15, 23, 42, 0.12);
+}
+
+.detail-map-info {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.detail-map-info span {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: #e0f2fe;
+  font-size: 20px;
+}
+
+.detail-map-info strong {
+  color: #0f172a;
+}
+
+.detail-map-info p {
+  margin: 2px 0 0;
+  color: #64748b;
+  font-size: 14px;
+}
+
+.map-popup {
+  min-width: 180px;
+}
+
+.map-popup strong {
+  display: block;
+  color: #0f172a;
+  margin-bottom: 6px;
+}
+
+.map-popup p {
+  margin: 0 0 6px;
+  color: #475569;
+  font-size: 13px;
+}
+
+.map-popup small {
+  color: #64748b;
+}
+
+.map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin: 14px 0;
+  font-size: 14px;
+  color: #475569;
+}
+
+.map-legend span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.legend-dot.alta {
+  background: #ef4444;
+}
+
+.legend-dot.media {
+  background: #f59e0b;
+}
+
+.legend-dot.baixa {
+  background: #3b82f6;
+}
+
+.map-empty-message {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #fff7ed;
+  color: #9a3412;
+  font-size: 14px;
+}
+
 /* ══════════════════════════════════════
    RESPONSIVO — TABLET (700–1024px)
 ══════════════════════════════════════ */

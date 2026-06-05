@@ -747,6 +747,25 @@
   display: block;
 }
 
+.rd-review-card {
+  background: var(--bg-field);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.rd-review-card strong {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--green);
+  font-family: var(--font-display);
+}
+
+.rd-review-card p {
+  color: var(--text);
+  line-height: 1.6;
+}
+
 /* ══════════════════════════════════════
    TABLET (700–1024px)
 ══════════════════════════════════════ */

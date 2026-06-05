@@ -1,61 +1,8 @@
 import "../styles/admin.css";
 import { useEffect, useState } from "react";
+import { MapContainer, TileLayer, CircleMarker, Popup } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
 import NavBar from "../../dashboard/components/NavBar";
-
-const denunciasIniciais = [
-  {
-    titulo: "Buraco na via",
-    categoria: "Buraco",
-    status: "Aberta",
-    prioridade: "Alta",
-    local: "Rua das Flores, 123 - Centro",
-    autor: "João Silva",
-  },
-  {
-    titulo: "Poste com luz apagada",
-    categoria: "Iluminação",
-    status: "Em andamento",
-    prioridade: "Média",
-    local: "Av. Brasil, 450 - Jardim América",
-    autor: "Maria Santos",
-  },
-  {
-    titulo: "Lixo acumulado",
-    categoria: "Lixo",
-    status: "Resolvida",
-    prioridade: "Média",
-    local: "Rua das Palmeiras, 78 - Centro",
-    autor: "Carlos Lima",
-  },
-];
-
-const usuariosIniciais = [
-  {
-    nome: "João Silva",
-    email: "joao@email.com",
-    tipo: "Usuário",
-    telefone: "(74) 99999-9999",
-    cidade: "Irecê - BA",
-    denuncias: 5,
-  },
-  {
-    nome: "Maria Santos",
-    email: "maria@email.com",
-    tipo: "Usuário",
-    telefone: "(74) 98888-8888",
-    cidade: "Irecê - BA",
-    denuncias: 2,
-  },
-  {
-    nome: "Admin CityFix",
-    email: "admin@cityfix.com",
-    tipo: "Administrador",
-    telefone: "(74) 97777-7777",
-    cidade: "Irecê - BA",
-    denuncias: 0,
-  },
-];
-
 
 const statusConfig = {
   Aberta: { cor: "status--aberta", dot: "#31bf49" },
@@ -71,16 +18,16 @@ const prioridadeConfig = {
 
 function Admin() {
   const [modalAberto, setModalAberto] = useState(null);
-
   const [buscaDenuncia, setBuscaDenuncia] = useState("");
   const [statusFiltro, setStatusFiltro] = useState("Todos");
   const [categoriaFiltro, setCategoriaFiltro] = useState("Todas");
   const [denunciaSelecionada, setDenunciaSelecionada] = useState(null);
   const [modalDetalhes, setModalDetalhes] = useState(false);
   const [modalAtualizar, setModalAtualizar] = useState(false);
-  const [denuncias, setDenuncias] = useState(denunciasIniciais);
+  const [modalMapaDenuncia, setModalMapaDenuncia] = useState(false);
+  const [denuncias, setDenuncias] = useState([]);
 
-  const [usuarios, setUsuarios] = useState(usuariosIniciais);
+  const [usuarios, setUsuarios] = useState([]);
   const [buscaUsuario, setBuscaUsuario] = useState("");
   const [tipoUsuarioFiltro, setTipoUsuarioFiltro] = useState("Todos");
   const [modalNovoUsuario, setModalNovoUsuario] = useState(false);
@@ -89,136 +36,257 @@ function Admin() {
 
   const [categorias, setCategorias] = useState([]);
   const [buscaCategoria, setBuscaCategoria] = useState("");
-  const [novaCategoria, setNovaCategoria] = useState({
-    nome: "",
-    descricao: "",
-  });
+  const [novaCategoria, setNovaCategoria] = useState({ nome: "", descricao: "" });
 
   const [novoUsuario, setNovoUsuario] = useState({
     nome: "",
     email: "",
     telefone: "",
     cidade: "",
-    tipo: "Usuário",
+    senha: "",
+    tipo: "USUARIO",
   });
 
   const API_CATEGORIAS = "http://localhost:8080/categorias";
+  const API_DENUNCIAS = "http://localhost:8080/denuncias";
+  const API_USUARIOS = "http://localhost:8080/usuarios";
 
-async function carregarCategorias() {
-  try {
-    const response = await fetch(API_CATEGORIAS);
-    const data = await response.json();
-    setCategorias(data);
-  } catch (error) {
-    console.error("Erro ao carregar categorias:", error);
+  async function carregarDados() {
+    try {
+      const [resCategorias, resDenuncias, resUsuarios] = await Promise.all([
+        fetch(API_CATEGORIAS),
+        fetch(API_DENUNCIAS),
+        fetch(API_USUARIOS),
+      ]);
+
+      const categoriasData = await resCategorias.json();
+      const denunciasData = await resDenuncias.json();
+      const usuariosData = await resUsuarios.json();
+
+      setCategorias(categoriasData);
+      setDenuncias(denunciasData);
+
+      const usuariosComDenuncias = usuariosData.map((usuario) => ({
+        ...usuario,
+        denuncias: denunciasData.filter((d) => d.usuario?.id === usuario.id).length,
+      }));
+
+      setUsuarios(usuariosComDenuncias);
+    } catch (error) {
+      console.error("Erro ao carregar dados do admin:", error);
+    }
   }
-}
 
-useEffect(() => {
-  carregarCategorias();
-}, []);
+  useEffect(() => {
+    carregarDados();
+  }, []);
+
+  function formatarStatus(status) {
+    if (status === "ABERTA") return "Aberta";
+    if (status === "EM_ANDAMENTO") return "Em andamento";
+    if (status === "RESOLVIDA") return "Resolvida";
+    return status || "Aberta";
+  }
+
+  function formatarPrioridade(prioridade) {
+    if (prioridade === "ALTA") return "Alta";
+    if (prioridade === "MEDIA") return "Média";
+    if (prioridade === "BAIXA") return "Baixa";
+    return prioridade || "Média";
+  }
+
+  function formatarTipoUsuario(usuarioOuTipo) {
+    const tipo =
+      typeof usuarioOuTipo === "object"
+        ? usuarioOuTipo.tipo ||
+          usuarioOuTipo.role ||
+          usuarioOuTipo.perfil ||
+          usuarioOuTipo.tipoUsuario
+        : usuarioOuTipo;
+
+    const tipoNormalizado = String(tipo || "").toUpperCase();
+
+    if (
+      tipoNormalizado === "ADMIN" ||
+      tipoNormalizado === "ADMINISTRADOR" ||
+      tipoNormalizado === "ROLE_ADMIN"
+    ) {
+      return "Administrador";
+    }
+
+    return "Usuário";
+  }
+
+  function tipoParaBackend(tipo) {
+    if (tipo === "Administrador") return "ADMIN";
+    if (tipo === "Usuário") return "USUARIO";
+    return tipo;
+  }
+
+  function getMapaDenunciaUrl(denuncia) {
+    const latitude = denuncia?.latitude;
+    const longitude = denuncia?.longitude;
+
+    if (latitude && longitude) {
+      return `https://maps.google.com/maps?q=${latitude},${longitude}&z=17&output=embed`;
+    }
+
+    return `https://maps.google.com/maps?q=${encodeURIComponent(
+      denuncia?.localizacao || "Irecê BA"
+    )}&z=17&output=embed`;
+  }
 
   const denunciasFiltradas = denuncias.filter((denuncia) => {
     const busca = buscaDenuncia.toLowerCase();
+    const statusFormatado = formatarStatus(denuncia.status);
+    const categoriaNome = denuncia.categoria?.nome || "";
+    const autorNome = denuncia.usuario?.nome || "Usuário não informado";
 
-    const correspondeBusca =
-      denuncia.titulo.toLowerCase().includes(busca) ||
-      denuncia.local.toLowerCase().includes(busca) ||
-      denuncia.autor.toLowerCase().includes(busca);
-
-    const correspondeStatus =
-      statusFiltro === "Todos" || denuncia.status === statusFiltro;
-
-    const correspondeCategoria =
-      categoriaFiltro === "Todas" || denuncia.categoria === categoriaFiltro;
-
-    return correspondeBusca && correspondeStatus && correspondeCategoria;
+    return (
+      (denuncia.titulo?.toLowerCase().includes(busca) ||
+        denuncia.localizacao?.toLowerCase().includes(busca) ||
+        autorNome.toLowerCase().includes(busca)) &&
+      (statusFiltro === "Todos" || statusFormatado === statusFiltro) &&
+      (categoriaFiltro === "Todas" || categoriaNome === categoriaFiltro)
+    );
   });
 
   const usuariosFiltrados = usuarios.filter((usuario) => {
     const busca = buscaUsuario.toLowerCase();
+    const tipoFormatado = formatarTipoUsuario(usuario);
 
-    const correspondeBusca =
-      usuario.nome.toLowerCase().includes(busca) ||
-      usuario.email.toLowerCase().includes(busca) ||
-      usuario.cidade.toLowerCase().includes(busca);
-
-    const correspondeTipo =
-      tipoUsuarioFiltro === "Todos" || usuario.tipo === tipoUsuarioFiltro;
-
-    return correspondeBusca && correspondeTipo;
+    return (
+      (usuario.nome?.toLowerCase().includes(busca) ||
+        usuario.email?.toLowerCase().includes(busca) ||
+        (usuario.cidade || "").toLowerCase().includes(busca) ||
+        (usuario.telefone || "").toLowerCase().includes(busca)) &&
+      (tipoUsuarioFiltro === "Todos" || tipoFormatado === tipoUsuarioFiltro)
+    );
   });
 
   const categoriasFiltradas = categorias.filter((categoria) => {
     const busca = buscaCategoria.toLowerCase();
 
     return (
-      categoria.nome.toLowerCase().includes(busca) ||
+      categoria.nome?.toLowerCase().includes(busca) ||
       (categoria.descricao || "").toLowerCase().includes(busca)
     );
   });
 
-  function salvarNovoUsuario(e) {
+  async function salvarNovoUsuario(e) {
     e.preventDefault();
 
-    setUsuarios([...usuarios, { ...novoUsuario, denuncias: 0 }]);
+    try {
+      const response = await fetch(API_USUARIOS, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nome: novoUsuario.nome,
+          email: novoUsuario.email,
+          telefone: novoUsuario.telefone,
+          cidade: novoUsuario.cidade,
+          senha: novoUsuario.senha,
+          tipo: tipoParaBackend(novoUsuario.tipo),
+        }),
+      });
 
-    setNovoUsuario({
-      nome: "",
-      email: "",
-      telefone: "",
-      cidade: "",
-      tipo: "Usuário",
-    });
+      if (!response.ok) {
+        alert("Erro ao cadastrar usuário.");
+        return;
+      }
 
-    setModalNovoUsuario(false);
+      setNovoUsuario({
+        nome: "",
+        email: "",
+        telefone: "",
+        cidade: "",
+        senha: "",
+        tipo: "USUARIO",
+      });
+
+      setModalNovoUsuario(false);
+      carregarDados();
+    } catch (error) {
+      console.error("Erro ao salvar usuário:", error);
+      alert("Erro ao conectar com o servidor.");
+    }
   }
 
   async function salvarNovaCategoria(e) {
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
-    const response = await fetch(API_CATEGORIAS, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(novaCategoria),
-    });
+    try {
+      const response = await fetch(API_CATEGORIAS, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(novaCategoria),
+      });
 
-    if (!response.ok) {
-      alert("Erro ao cadastrar categoria.");
-      return;
+      if (!response.ok) {
+        alert("Erro ao cadastrar categoria.");
+        return;
+      }
+
+      setNovaCategoria({ nome: "", descricao: "" });
+      carregarDados();
+    } catch (error) {
+      console.error("Erro ao salvar categoria:", error);
     }
-
-    setNovaCategoria({
-      nome: "",
-      descricao: "",
-    });
-
-    carregarCategorias();
-  } catch (error) {
-    console.error("Erro ao salvar categoria:", error);
   }
-}
+
+  async function removerCategoria(id) {
+    try {
+      await fetch(`${API_CATEGORIAS}/${id}`, { method: "DELETE" });
+      carregarDados();
+    } catch (error) {
+      console.error("Erro ao remover categoria:", error);
+    }
+  }
+
+  async function salvarAtualizacaoDenuncia() {
+    try {
+      const response = await fetch(
+        `${API_DENUNCIAS}/${denunciaSelecionada.id}/status?status=${denunciaSelecionada.status}&prioridade=${denunciaSelecionada.prioridade}`,
+        { method: "PUT" }
+      );
+
+      if (!response.ok) {
+        alert("Erro ao atualizar denúncia.");
+        return;
+      }
+
+      const denunciaAtualizada = await response.json();
+
+      setDenuncias(
+        denuncias.map((d) =>
+          d.id === denunciaAtualizada.id ? denunciaAtualizada : d
+        )
+      );
+
+      setModalAtualizar(false);
+    } catch (error) {
+      console.error("Erro ao atualizar denúncia:", error);
+      alert("Erro ao conectar com o servidor.");
+    }
+  }
 
   const statsData = [
     {
       emoji: "📋",
       label: "Denúncias abertas",
-      valor: denuncias.filter((d) => d.status === "Aberta").length,
+      valor: denuncias.filter((d) => d.status === "ABERTA").length,
       cor: "stat--green",
     },
     {
       emoji: "⏳",
       label: "Em andamento",
-      valor: denuncias.filter((d) => d.status === "Em andamento").length,
+      valor: denuncias.filter((d) => d.status === "EM_ANDAMENTO").length,
       cor: "stat--yellow",
     },
     {
       emoji: "✅",
       label: "Resolvidas",
-      valor: denuncias.filter((d) => d.status === "Resolvida").length,
+      valor: denuncias.filter((d) => d.status === "RESOLVIDA").length,
       cor: "stat--blue",
     },
     {
@@ -259,6 +327,32 @@ useEffect(() => {
       meta: "Irecê – BA",
     },
   ];
+
+function getDenunciasComCoordenadas() {
+  return denuncias.filter((denuncia) => {
+    const lat = Number(denuncia.latitude);
+    const lng = Number(denuncia.longitude);
+
+    return (
+      denuncia.status !== "RESOLVIDA" &&
+      denuncia.latitude !== null &&
+      denuncia.latitude !== undefined &&
+      denuncia.latitude !== "" &&
+      denuncia.longitude !== null &&
+      denuncia.longitude !== undefined &&
+      denuncia.longitude !== "" &&
+      !Number.isNaN(lat) &&
+      !Number.isNaN(lng)
+    );
+  });
+}
+
+function getCorMarcadorPrioridade(prioridade) {
+  if (prioridade === "ALTA") return "#ef4444";
+  if (prioridade === "MEDIA") return "#f59e0b";
+  if (prioridade === "BAIXA") return "#3b82f6";
+  return "#f59e0b";
+}
 
   return (
     <div className="admin-page">
@@ -317,18 +411,10 @@ useEffect(() => {
           </div>
 
           <div className="admin-actions">
-            <button onClick={() => setModalAberto("denuncias")}>
-              <span>📋</span> Ver denúncias
-            </button>
-            <button onClick={() => setModalAberto("usuarios")}>
-              <span>👥</span> Ver usuários
-            </button>
-            <button onClick={() => setModalAberto("categorias")}>
-              <span>🏷️</span> Ver categorias
-            </button>
-            <button onClick={() => setModalAberto("mapa")}>
-              <span>🗺️</span> Ver mapa
-            </button>
+            <button onClick={() => setModalAberto("denuncias")}>📋 Ver denúncias</button>
+            <button onClick={() => setModalAberto("usuarios")}>👥 Ver usuários</button>
+            <button onClick={() => setModalAberto("categorias")}>🏷️ Ver categorias</button>
+            <button onClick={() => setModalAberto("mapa")}>🗺️ Ver mapa</button>
           </div>
         </section>
       </main>
@@ -353,14 +439,10 @@ useEffect(() => {
                 </h2>
 
                 <p className="modal-sub">
-                  {modalAberto === "denuncias" &&
-                    "Acompanhe e atualize as denúncias da plataforma."}
-                  {modalAberto === "usuarios" &&
-                    "Consulte os usuários cadastrados no sistema."}
-                  {modalAberto === "categorias" &&
-                    "Cadastre, visualize e organize categorias de denúncias."}
-                  {modalAberto === "mapa" &&
-                    "Visualize a distribuição das denúncias na cidade."}
+                  {modalAberto === "denuncias" && "Acompanhe e atualize as denúncias da plataforma."}
+                  {modalAberto === "usuarios" && "Consulte os usuários cadastrados no sistema."}
+                  {modalAberto === "categorias" && "Cadastre, visualize e organize categorias de denúncias."}
+                  {modalAberto === "mapa" && "Visualize a distribuição das denúncias na cidade."}
                 </p>
               </div>
 
@@ -381,61 +463,56 @@ useEffect(() => {
                     />
                   </div>
 
-                  <select
-                    value={statusFiltro}
-                    onChange={(e) => setStatusFiltro(e.target.value)}
-                  >
+                  <select value={statusFiltro} onChange={(e) => setStatusFiltro(e.target.value)}>
                     <option>Todos</option>
                     <option>Aberta</option>
                     <option>Em andamento</option>
                     <option>Resolvida</option>
                   </select>
 
-                  <select
-                    value={categoriaFiltro}
-                    onChange={(e) => setCategoriaFiltro(e.target.value)}
-                  >
+                  <select value={categoriaFiltro} onChange={(e) => setCategoriaFiltro(e.target.value)}>
                     <option>Todas</option>
                     {categorias.map((categoria) => (
-                      <option key={categoria.nome}>{categoria.nome}</option>
+                      <option key={categoria.id}>{categoria.nome}</option>
                     ))}
                   </select>
                 </div>
 
                 <div className="admin-list">
                   {denunciasFiltradas.map((denuncia) => (
-                    <article className="admin-list-item" key={denuncia.titulo}>
+                    <article className="admin-list-item" key={denuncia.id}>
                       <div className="list-item-info">
                         <div className="list-item-title-row">
                           <h3>{denuncia.titulo}</h3>
                           <span
                             className={`prioridade-badge ${
-                              prioridadeConfig[denuncia.prioridade]?.cor
+                              prioridadeConfig[formatarPrioridade(denuncia.prioridade)]?.cor
                             }`}
                           >
-                            {denuncia.prioridade}
+                            {formatarPrioridade(denuncia.prioridade)}
                           </span>
                         </div>
 
-                        <p className="list-item-local">📍 {denuncia.local}</p>
+                        <p className="list-item-local">📍 {denuncia.localizacao}</p>
                         <p className="list-item-meta">
-                          {denuncia.autor} · {denuncia.categoria}
+                          {denuncia.usuario?.nome || "Usuário não informado"} ·{" "}
+                          {denuncia.categoria?.nome || "Sem categoria"}
                         </p>
                       </div>
 
                       <div className="admin-item-actions">
                         <span
                           className={`status-badge ${
-                            statusConfig[denuncia.status]?.cor
+                            statusConfig[formatarStatus(denuncia.status)]?.cor
                           }`}
                         >
                           <span
                             className="status-dot"
                             style={{
-                              background: statusConfig[denuncia.status]?.dot,
+                              background: statusConfig[formatarStatus(denuncia.status)]?.dot,
                             }}
                           />
-                          {denuncia.status}
+                          {formatarStatus(denuncia.status)}
                         </span>
 
                         <button
@@ -477,7 +554,7 @@ useEffect(() => {
                   <div className="filter-input-wrap">
                     <span className="filter-icon">🔍</span>
                     <input
-                      placeholder="Buscar por nome, e-mail ou cidade..."
+                      placeholder="Buscar por nome, e-mail, telefone ou cidade..."
                       value={buscaUsuario}
                       onChange={(e) => setBuscaUsuario(e.target.value)}
                     />
@@ -502,11 +579,11 @@ useEffect(() => {
 
                 <div className="admin-list">
                   {usuariosFiltrados.map((usuario) => (
-                    <article className="admin-list-item" key={usuario.email}>
+                    <article className="admin-list-item" key={usuario.id || usuario.email}>
                       <div className="list-item-info">
                         <div className="usuario-avatar-row">
                           <div className="usuario-avatar">
-                            {usuario.nome
+                            {(usuario.nome || "U")
                               .split(" ")
                               .map((n) => n[0])
                               .join("")
@@ -517,7 +594,7 @@ useEffect(() => {
                           <div>
                             <h3>{usuario.nome}</h3>
                             <p className="list-item-meta">
-                              {usuario.email} · {usuario.cidade}
+                              {usuario.email} · {usuario.cidade || "Cidade não informada"}
                             </p>
                           </div>
                         </div>
@@ -526,16 +603,16 @@ useEffect(() => {
                       <div className="admin-item-actions">
                         <span
                           className={`tipo-badge ${
-                            usuario.tipo === "Administrador"
+                            formatarTipoUsuario(usuario) === "Administrador"
                               ? "tipo--admin"
                               : "tipo--user"
                           }`}
                         >
-                          {usuario.tipo}
+                          {formatarTipoUsuario(usuario)}
                         </span>
 
                         <span className="denuncias-count">
-                          {usuario.denuncias} denúncias
+                          {usuario.denuncias || 0} denúncias
                         </span>
 
                         <button
@@ -572,10 +649,7 @@ useEffect(() => {
                       placeholder="Ex: Buraco"
                       value={novaCategoria.nome}
                       onChange={(e) =>
-                        setNovaCategoria({
-                          ...novaCategoria,
-                          nome: e.target.value,
-                        })
+                        setNovaCategoria({ ...novaCategoria, nome: e.target.value })
                       }
                     />
                   </div>
@@ -588,10 +662,7 @@ useEffect(() => {
                       placeholder="Ex: Problemas em vias públicas"
                       value={novaCategoria.descricao}
                       onChange={(e) =>
-                        setNovaCategoria({
-                          ...novaCategoria,
-                          descricao: e.target.value,
-                        })
+                        setNovaCategoria({ ...novaCategoria, descricao: e.target.value })
                       }
                     />
                   </div>
@@ -619,25 +690,13 @@ useEffect(() => {
                     <article className="admin-list-item" key={categoria.id}>
                       <div className="list-item-info">
                         <h3>{categoria.nome}</h3>
-                        <p className="list-item-meta">
-                          {categoria.descricao}
-                        </p>
+                        <p className="list-item-meta">{categoria.descricao}</p>
                       </div>
 
                       <div className="admin-item-actions">
                         <button
                           className="btn-outline"
-                          onClick={async () => {
-  try {
-    await fetch(`${API_CATEGORIAS}/${categoria.id}`, {
-      method: "DELETE",
-    });
-
-    carregarCategorias();
-  } catch (error) {
-    console.error("Erro ao remover categoria:", error);
-  }
-}}
+                          onClick={() => removerCategoria(categoria.id)}
                         >
                           Remover
                         </button>
@@ -656,32 +715,80 @@ useEffect(() => {
             )}
 
             {modalAberto === "mapa" && (
-              <div className="admin-modal-content">
-                <div className="admin-map-real">
-                  <iframe
-                    title="Mapa de Irecê"
-                    src="https://maps.google.com/maps?q=Irecê%20BA&t=&z=13&ie=UTF8&iwloc=&output=embed"
-                    width="100%"
-                    height="420"
-                    style={{ border: 0 }}
-                    loading="lazy"
-                  />
+  <div className="admin-modal-content">
+    <div className="admin-map-real">
+      <MapContainer
+        center={[-11.3042, -41.8565]}
+        zoom={13}
+        style={{
+          width: "100%",
+          height: "420px",
+          borderRadius: "18px",
+        }}
+      >
+        <TileLayer
+          attribution='&copy; OpenStreetMap contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+
+        {getDenunciasComCoordenadas().map((denuncia) => {
+          const lat = Number(denuncia.latitude);
+          const lng = Number(denuncia.longitude);
+
+          return (
+            <CircleMarker
+              key={denuncia.id}
+              center={[lat, lng]}
+              radius={10}
+              pathOptions={{
+                color: getCorMarcadorPrioridade(denuncia.prioridade),
+                fillColor: getCorMarcadorPrioridade(denuncia.prioridade),
+                fillOpacity: 0.8,
+              }}
+            >
+              <Popup>
+                <div className="map-popup">
+                  <strong>{denuncia.titulo}</strong>
+                  <p>{denuncia.localizacao}</p>
+                  <small>Status: {formatarStatus(denuncia.status)}</small>
+                  <br />
+                  <small>
+                    Categoria: {denuncia.categoria?.nome || "Sem categoria"}
+                  </small>
                 </div>
+              </Popup>
+            </CircleMarker>
+          );
+        })}
+      </MapContainer>
+    </div>
 
-                <div className="map-info">
+    {getDenunciasComCoordenadas().length === 0 && (
+      <p className="map-empty-message">
+        Nenhuma denúncia com coordenadas registrada ainda.
+      </p>
+    )}
+
+    <div className="map-legend">
+      <span><b className="legend-dot alta"></b> Alta prioridade</span>
+      <span><b className="legend-dot media"></b> Média prioridade</span>
+      <span><b className="legend-dot baixa"></b> Baixa prioridade</span>
+    </div>
+
+    <div className="map-info">
                   <article>
-                    <h3>12</h3>
-                    <p>Denúncias no centro</p>
+                    <h3>{denuncias.length}</h3>
+                    <p>Denúncias registradas</p>
                   </article>
 
                   <article>
-                    <h3>8</h3>
-                    <p>Denúncias em bairros</p>
+                    <h3>{denuncias.filter((d) => d.status === "ABERTA").length}</h3>
+                    <p>Denúncias abertas</p>
                   </article>
 
                   <article>
-                    <h3>6</h3>
-                    <p>Pontos críticos</p>
+                    <h3>{denuncias.filter((d) => d.status === "RESOLVIDA").length}</h3>
+                    <p>Denúncias resolvidas</p>
                   </article>
                 </div>
               </div>
@@ -691,38 +798,50 @@ useEffect(() => {
       )}
 
       {modalDetalhes && denunciaSelecionada && (
-        <div
-          className="admin-modal-overlay"
-          onClick={() => setModalDetalhes(false)}
-        >
-          <div
-            className="admin-modal details-modal"
-            onClick={(e) => e.stopPropagation()}
-          >
+        <div className="admin-modal-overlay" onClick={() => setModalDetalhes(false)}>
+          <div className="admin-modal details-modal" onClick={(e) => e.stopPropagation()}>
             <div className="details-modal-header">
               <h2>Detalhes da denúncia</h2>
-              <button
-                className="admin-close"
-                onClick={() => setModalDetalhes(false)}
-              >
+              <button className="admin-close" onClick={() => setModalDetalhes(false)}>
                 ✕
               </button>
             </div>
 
             <div className="details-grid">
               {[
-                ["Título", denunciaSelecionada.titulo],
-                ["Autor", denunciaSelecionada.autor],
-                ["Local", denunciaSelecionada.local],
-                ["Categoria", denunciaSelecionada.categoria],
-                ["Status", denunciaSelecionada.status],
-                ["Prioridade", denunciaSelecionada.prioridade],
+                ["Autor", denunciaSelecionada.usuario?.nome || "Usuário não informado"],
+                ["Local", denunciaSelecionada.localizacao],
+                ["Categoria", denunciaSelecionada.categoria?.nome || "Sem categoria"],
+                ["Status", formatarStatus(denunciaSelecionada.status)],
+                ["Prioridade", formatarPrioridade(denunciaSelecionada.prioridade)],
               ].map(([label, val]) => (
                 <div key={label} className="detail-field">
                   <span className="detail-label">{label}</span>
                   <span className="detail-value">{val}</span>
                 </div>
               ))}
+            </div>
+
+            <div
+              className="detail-map-preview"
+              onClick={() => setModalMapaDenuncia(true)}
+            >
+              <div className="detail-map-info">
+                <span>🗺️</span>
+                <div>
+                  <strong>Mapa da localização</strong>
+                  <p>Clique para visualizar o ponto registrado.</p>
+                </div>
+              </div>
+
+              <iframe
+                title="Prévia da localização"
+                src={getMapaDenunciaUrl(denunciaSelecionada)}
+                width="100%"
+                height="180"
+                style={{ border: 0, borderRadius: "14px", pointerEvents: "none" }}
+                loading="lazy"
+              />
             </div>
 
             <button className="save-btn" onClick={() => setModalDetalhes(false)}>
@@ -732,21 +851,48 @@ useEffect(() => {
         </div>
       )}
 
-      {modalAtualizar && denunciaSelecionada && (
+      {modalMapaDenuncia && denunciaSelecionada && (
         <div
           className="admin-modal-overlay"
-          onClick={() => setModalAtualizar(false)}
+          onClick={() => setModalMapaDenuncia(false)}
         >
-          <div
-            className="admin-modal details-modal"
-            onClick={(e) => e.stopPropagation()}
-          >
+          <div className="admin-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="admin-modal-header">
+              <div>
+                <p className="modal-eyebrow">Localização da denúncia</p>
+                <h2>{denunciaSelecionada.titulo}</h2>
+                <p className="modal-sub">{denunciaSelecionada.localizacao}</p>
+              </div>
+
+              <button
+                type="button"
+                className="admin-close"
+                onClick={() => setModalMapaDenuncia(false)}
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="admin-map-real">
+              <iframe
+                title="Mapa da denúncia"
+                src={getMapaDenunciaUrl(denunciaSelecionada)}
+                width="100%"
+                height="450"
+                style={{ border: 0 }}
+                loading="lazy"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {modalAtualizar && denunciaSelecionada && (
+        <div className="admin-modal-overlay" onClick={() => setModalAtualizar(false)}>
+          <div className="admin-modal details-modal" onClick={(e) => e.stopPropagation()}>
             <div className="details-modal-header">
               <h2>Atualizar denúncia</h2>
-              <button
-                className="admin-close"
-                onClick={() => setModalAtualizar(false)}
-              >
+              <button className="admin-close" onClick={() => setModalAtualizar(false)}>
                 ✕
               </button>
             </div>
@@ -763,9 +909,9 @@ useEffect(() => {
                     })
                   }
                 >
-                  <option>Aberta</option>
-                  <option>Em andamento</option>
-                  <option>Resolvida</option>
+                  <option value="ABERTA">Aberta</option>
+                  <option value="EM_ANDAMENTO">Em andamento</option>
+                  <option value="RESOLVIDA">Resolvida</option>
                 </select>
               </div>
 
@@ -780,35 +926,19 @@ useEffect(() => {
                     })
                   }
                 >
-                  <option>Baixa</option>
-                  <option>Média</option>
-                  <option>Alta</option>
+                  <option value="BAIXA">Baixa</option>
+                  <option value="MEDIA">Média</option>
+                  <option value="ALTA">Alta</option>
                 </select>
               </div>
             </div>
 
             <div className="modal-actions">
-              <button
-                className="cancel-btn"
-                onClick={() => setModalAtualizar(false)}
-              >
+              <button className="cancel-btn" onClick={() => setModalAtualizar(false)}>
                 Cancelar
               </button>
 
-              <button
-                className="save-btn"
-                onClick={() => {
-                  setDenuncias(
-                    denuncias.map((d) =>
-                      d.titulo === denunciaSelecionada.titulo
-                        ? denunciaSelecionada
-                        : d
-                    )
-                  );
-
-                  setModalAtualizar(false);
-                }}
-              >
+              <button className="save-btn" onClick={salvarAtualizacaoDenuncia}>
                 Salvar alterações
               </button>
             </div>
@@ -817,20 +947,11 @@ useEffect(() => {
       )}
 
       {modalNovoUsuario && (
-        <div
-          className="admin-modal-overlay"
-          onClick={() => setModalNovoUsuario(false)}
-        >
-          <div
-            className="admin-modal details-modal"
-            onClick={(e) => e.stopPropagation()}
-          >
+        <div className="admin-modal-overlay" onClick={() => setModalNovoUsuario(false)}>
+          <div className="admin-modal details-modal" onClick={(e) => e.stopPropagation()}>
             <div className="details-modal-header">
               <h2>Novo usuário</h2>
-              <button
-                className="admin-close"
-                onClick={() => setModalNovoUsuario(false)}
-              >
+              <button className="admin-close" onClick={() => setModalNovoUsuario(false)}>
                 ✕
               </button>
             </div>
@@ -841,18 +962,16 @@ useEffect(() => {
                 { label: "E-mail", key: "email", type: "email" },
                 { label: "Telefone", key: "telefone", type: "text" },
                 { label: "Cidade", key: "cidade", type: "text" },
+                { label: "Senha", key: "senha", type: "password" },
               ].map(({ label, key, type }) => (
                 <div className="modal-form-group" key={key}>
                   <label>{label}</label>
                   <input
                     type={type}
-                    required={key !== "telefone"}
+                    required={key !== "telefone" && key !== "cidade"}
                     value={novoUsuario[key]}
                     onChange={(e) =>
-                      setNovoUsuario({
-                        ...novoUsuario,
-                        [key]: e.target.value,
-                      })
+                      setNovoUsuario({ ...novoUsuario, [key]: e.target.value })
                     }
                   />
                 </div>
@@ -861,11 +980,11 @@ useEffect(() => {
               <div className="modal-form-group">
                 <label>Tipo</label>
                 <select
-                  value={novoUsuario.tipo}
+                  value={formatarTipoUsuario(novoUsuario.tipo)}
                   onChange={(e) =>
                     setNovoUsuario({
                       ...novoUsuario,
-                      tipo: e.target.value,
+                      tipo: tipoParaBackend(e.target.value),
                     })
                   }
                 >
@@ -893,27 +1012,18 @@ useEffect(() => {
       )}
 
       {modalPerfilUsuario && usuarioSelecionado && (
-        <div
-          className="admin-modal-overlay"
-          onClick={() => setModalPerfilUsuario(false)}
-        >
-          <div
-            className="admin-modal details-modal"
-            onClick={(e) => e.stopPropagation()}
-          >
+        <div className="admin-modal-overlay" onClick={() => setModalPerfilUsuario(false)}>
+          <div className="admin-modal details-modal" onClick={(e) => e.stopPropagation()}>
             <div className="details-modal-header">
               <h2>Perfil do usuário</h2>
-              <button
-                className="admin-close"
-                onClick={() => setModalPerfilUsuario(false)}
-              >
+              <button className="admin-close" onClick={() => setModalPerfilUsuario(false)}>
                 ✕
               </button>
             </div>
 
             <div className="perfil-usuario-topo">
               <div className="usuario-avatar large">
-                {usuarioSelecionado.nome
+                {(usuarioSelecionado.nome || "U")
                   .split(" ")
                   .map((n) => n[0])
                   .join("")
@@ -925,12 +1035,12 @@ useEffect(() => {
                 <h3>{usuarioSelecionado.nome}</h3>
                 <span
                   className={`tipo-badge ${
-                    usuarioSelecionado.tipo === "Administrador"
+                    formatarTipoUsuario(usuarioSelecionado) === "Administrador"
                       ? "tipo--admin"
                       : "tipo--user"
                   }`}
                 >
-                  {usuarioSelecionado.tipo}
+                  {formatarTipoUsuario(usuarioSelecionado)}
                 </span>
               </div>
             </div>
@@ -938,9 +1048,9 @@ useEffect(() => {
             <div className="details-grid">
               {[
                 ["E-mail", usuarioSelecionado.email],
-                ["Telefone", usuarioSelecionado.telefone],
-                ["Cidade", usuarioSelecionado.cidade],
-                ["Denúncias", usuarioSelecionado.denuncias],
+                ["Telefone", usuarioSelecionado.telefone || "Não informado"],
+                ["Cidade", usuarioSelecionado.cidade || "Não informada"],
+                ["Denúncias", usuarioSelecionado.denuncias || 0],
               ].map(([label, val]) => (
                 <div key={label} className="detail-field">
                   <span className="detail-label">{label}</span>
@@ -949,10 +1059,7 @@ useEffect(() => {
               ))}
             </div>
 
-            <button
-              className="save-btn"
-              onClick={() => setModalPerfilUsuario(false)}
-            >
+            <button className="save-btn" onClick={() => setModalPerfilUsuario(false)}>
               Fechar
             </button>
           </div>
