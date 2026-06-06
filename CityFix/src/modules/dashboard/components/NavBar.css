@@ -1,55 +1,44 @@
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
 
-/* ══════════════════════════════════════
-   VARIÁVEIS
-══════════════════════════════════════ */
 :root {
-  --nav-bg:          rgba(6, 12, 10, 0.97);
-  --nav-border:      rgba(255, 255, 255, 0.07);
-  --nav-green:       #31bf49;
-  --nav-green-dim:   rgba(49, 191, 73, 0.13);
-  --nav-green-glow:  rgba(49, 191, 73, 0.07);
-  --nav-green-active:linear-gradient(135deg, #2a6632 0%, #1e9130 100%);
-  --nav-text:        #e8f0ec;
-  --nav-text-muted:  #7a9484;
-  --nav-radius:      13px;
-  --nav-transition:  0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --nav-bg:           rgba(6, 12, 10, 0.97);
+  --nav-border:       rgba(255, 255, 255, 0.07);
+  --nav-green:        #31bf49;
+  --nav-green-dim:    rgba(49, 191, 73, 0.13);
+  --nav-green-glow:   rgba(49, 191, 73, 0.07);
+  --nav-green-active: linear-gradient(135deg, #2a6632 0%, #1e9130 100%);
+  --nav-text:         #e8f0ec;
+  --nav-text-muted:   #7a9484;
+  --nav-radius:       13px;
+  --nav-transition:   0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --nav-yellow:       #f4d06f;
+  --nav-yellow-dim:   rgba(244, 208, 111, 0.1);
+  --nav-yellow-border:rgba(244, 208, 111, 0.28);
+  --nav-yellow-glow:  rgba(244, 208, 111, 0.18);
 }
 
-/* ══════════════════════════════════════
-   BASE — MOBILE (bottom bar)
-══════════════════════════════════════ */
+/* ══ BASE MOBILE ══ */
 .navbar-cityfix {
   position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  left: 0; right: 0; bottom: 0;
   height: 72px;
   z-index: 100;
-
   background: var(--nav-bg);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border-top: 1px solid var(--nav-border);
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   font-family: 'DM Sans', sans-serif;
 }
 
-/* Esconder no mobile */
 .navbar-brand,
 .navbar-divider,
-.navbar-login-card {
-  display: none;
-}
+.navbar-login-card,
+.navbar-incomplete-banner { display: none; }
 
-/* Card logado — sempre visível em qualquer breakpoint */
-.navbar-login-card.logged-in {
-  display: flex;
-}
+.navbar-login-card.logged-in { display: flex; }
 
 /* ── Menu mobile ── */
 .navbar-menu {
@@ -71,114 +60,26 @@
   border-radius: 10px;
   transition: color var(--nav-transition), background var(--nav-transition);
   -webkit-tap-highlight-color: transparent;
+  position: relative;
 }
 
-.navbar-menu a .nav-icon {
-  font-size: 20px;
-  line-height: 1;
-}
+.navbar-menu a .nav-icon { font-size: 20px; line-height: 1; }
+.navbar-menu a p         { font-size: 10px; font-weight: 500; letter-spacing: 0.2px; }
+.navbar-menu a:hover     { color: var(--nav-green); background: var(--nav-green-dim); }
+.navbar-menu a.active    { color: var(--nav-green); }
 
-.navbar-menu a p {
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.2px;
-}
-
-.navbar-menu a:hover {
-  color: var(--nav-green);
-  background: var(--nav-green-dim);
-}
-
-.navbar-menu a.active {
-  color: var(--nav-green);
-}
-
-/* Indicador ativo mobile — ponto verde */
 .navbar-menu a.active p::after {
   content: '';
   display: block;
-  width: 4px;
-  height: 4px;
+  width: 4px; height: 4px;
   background: var(--nav-green);
   border-radius: 50%;
   margin: 3px auto 0;
 }
 
-/* Login mobile — visível normalmente */
-.navbar-menu-login {
-  display: flex;
-}
+.navbar-menu-login { display: flex; }
 
-/* ══════════════════════════════════════
-   CARD — versão mobile/tablet (logged-in)
-   Aparece como item extra na bottom bar
-══════════════════════════════════════ */
-.navbar-login-card.logged-in {
-  /* Reset do layout de coluna do desktop */
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  gap: 0;
-  padding: 0;
-  border-radius: 0;
-  background: transparent;
-  backdrop-filter: none;
-  border: none;
-  box-shadow: none;
-  text-align: left;
-}
-
-/* Esconde nome, email e ícone no mobile — só mostra o botão sair */
-.navbar-login-card.logged-in .login-card-icon,
-.navbar-login-card.logged-in .user-name,
-.navbar-login-card.logged-in .user-email,
-.navbar-login-card.logged-in > p {
-  display: none;
-}
-
-/* Botão sair mobile — igual visual dos itens de nav */
-.navbar-login-card.logged-in .logout-btn {
-  color: #e57373;
-  background: transparent;
-  border: none;
-  border-radius: 10px;
-  box-shadow: none;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-  padding: 6px 10px;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.2px;
-  text-transform: none;
-  transition: color var(--nav-transition), background var(--nav-transition);
-  -webkit-tap-highlight-color: transparent;
-  width: auto;
-}
-
-.navbar-login-card.logged-in .logout-btn::before {
-  content: '🚪';
-  font-size: 20px;
-  line-height: 1;
-  display: block;
-}
-
-.navbar-login-card.logged-in .logout-btn:hover {
-  color: #ef9a9a;
-  background: rgba(200, 50, 50, 0.12);
-  transform: none;
-  border-color: transparent;
-}
-
-/* Esconder o link de login do menu quando logado */
-.navbar-login-card.logged-in ~ .navbar-menu .navbar-menu-login,
-.navbar-login-card.logged-in + * .navbar-menu-login {
-  display: none;
-}
-
+/* ── Dot de notificação ── */
 .navbar-label {
   display: flex;
   align-items: center;
@@ -186,416 +87,375 @@
 }
 
 .navbar-notification-dot {
-  width: 10px;
-  height: 10px;
+  width: 8px; height: 8px;
   border-radius: 50%;
   background: #facc15;
-  box-shadow: 0 0 8px rgba(250, 204, 21, 0.7);
+  box-shadow: 0 0 8px rgba(250,204,21,0.75);
   flex-shrink: 0;
+  animation: dot-breathe 2.2s ease-in-out infinite;
 }
 
-/* ══════════════════════════════════════
-   TABLET (700–1024px)
-══════════════════════════════════════ */
+/* ── Dot amarelo no item Perfil (mobile) ── */
+.navbar-incomplete-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--nav-yellow);
+  box-shadow: 0 0 7px var(--nav-yellow-glow);
+  flex-shrink: 0;
+  animation: dot-breathe 2.2s ease-in-out infinite;
+}
+
+@keyframes dot-breathe {
+  0%, 100% { opacity: 1;   box-shadow: 0 0 7px  var(--nav-yellow-glow); }
+  50%       { opacity: 0.5; box-shadow: 0 0 14px rgba(244,208,111,0.08); }
+}
+
+/* ══ CARD MOBILE LOGGED-IN ══ */
+.navbar-login-card.logged-in {
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 0; padding: 0;
+  border-radius: 0; background: transparent;
+  backdrop-filter: none; border: none; box-shadow: none; text-align: left;
+}
+
+.navbar-login-card.logged-in .login-card-icon,
+.navbar-login-card.logged-in .user-name,
+.navbar-login-card.logged-in .user-email,
+.navbar-login-card.logged-in .navbar-card-incomplete,
+.navbar-login-card.logged-in > p { display: none; }
+
+.navbar-login-card.logged-in .logout-btn {
+  color: #e57373; background: transparent; border: none;
+  border-radius: 10px; box-shadow: none; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 6px 10px;
+  font-family: 'DM Sans', sans-serif; font-size: 10px; font-weight: 500;
+  letter-spacing: 0.2px; text-transform: none;
+  transition: color var(--nav-transition), background var(--nav-transition);
+  -webkit-tap-highlight-color: transparent;
+  width: auto;
+}
+
+.navbar-login-card.logged-in .logout-btn::before {
+  content: '🚪'; font-size: 20px; line-height: 1; display: block;
+}
+
+.navbar-login-card.logged-in .logout-btn:hover {
+  color: #ef9a9a; background: rgba(200,50,50,0.12);
+  transform: none; border-color: transparent;
+}
+
+/* ══ TABLET ══ */
 @media (min-width: 700px) and (max-width: 1024px) {
-  .navbar-cityfix {
-    height: 78px;
-  }
-
-  .navbar-menu {
-    max-width: 680px;
-    margin: 0 auto;
-    gap: 4px;
-  }
-
+  .navbar-cityfix { height: 78px; }
+  .navbar-menu { max-width: 680px; margin: 0 auto; gap: 4px; }
   .navbar-menu a .nav-icon { font-size: 22px; }
   .navbar-menu a p         { font-size: 11px; }
-
-  .navbar-login-card.logged-in .logout-btn {
-    font-size: 11px;
-  }
-
-  .navbar-login-card.logged-in .logout-btn::before {
-    font-size: 22px;
-  }
+  .navbar-login-card.logged-in .logout-btn { font-size: 11px; }
+  .navbar-login-card.logged-in .logout-btn::before { font-size: 22px; }
 }
 
-/* ══════════════════════════════════════
-   DESKTOP (1025px+) — sidebar lateral
-══════════════════════════════════════ */
+/* ══ DESKTOP SIDEBAR ══ */
 @media (min-width: 1025px) {
 
-  /* ── Container principal ── */
   .navbar-cityfix {
-    top: 0;
-    right: auto;
-    bottom: 0;
-    left: 0;
-
-    width: 280px;
-    height: 100vh;
-
+    top: 0; right: auto; bottom: 0; left: 0;
+    width: 280px; height: 100vh;
     padding: 32px 18px 24px;
-
     border-top: none;
     border-right: 1px solid var(--nav-border);
-
     flex-direction: column;
     align-items: stretch;
     justify-content: space-between;
-
     background-image:
-      linear-gradient(rgba(4, 11, 8, 0.86), rgba(4, 11, 8, 0.86)),
+      linear-gradient(rgba(4,11,8,0.86), rgba(4,11,8,0.86)),
       url("../../../assets/images/imgModoescuro.png");
     background-size: cover;
     background-position: right center;
     background-repeat: no-repeat;
-
-    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.4);
+    box-shadow: 4px 0 24px rgba(0,0,0,0.4);
   }
 
   .navbar-top {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    flex: 1;
+    display: flex; flex-direction: column; gap: 0; flex: 1;
   }
 
-  /* ── Brand ── */
+  /* Brand */
   .navbar-brand {
-    display: flex;
-    align-items: center;
-    gap: 13px;
-    margin-bottom: 6px;
+    display: flex; align-items: center; gap: 13px; margin-bottom: 6px;
   }
 
   .navbar-logo {
-    width: 52px;
-    height: 52px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(49, 191, 73, 0.12);
-    border: 1px solid rgba(49, 191, 73, 0.2);
-    border-radius: 14px;
-    padding: 4px;
+    width: 52px; height: 52px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(49,191,73,0.12); border: 1px solid rgba(49,191,73,0.2);
+    border-radius: 14px; padding: 4px;
   }
 
-  .navbar-logo img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
+  .navbar-logo img { width: 100%; height: 100%; object-fit: contain; }
 
   .navbar-brand-text h1 {
     font-family: 'Sora', sans-serif;
-    font-size: 26px;
-    font-weight: 800;
-    color: #fff;
-    line-height: 1;
-    letter-spacing: -0.5px;
+    font-size: 26px; font-weight: 800; color: #fff;
+    line-height: 1; letter-spacing: -0.5px;
   }
-
-  .navbar-brand-text h1 span {
-    color: var(--nav-green);
-  }
+  .navbar-brand-text h1 span { color: var(--nav-green); }
 
   .navbar-brand-text p {
     font-family: 'DM Sans', sans-serif;
-    font-size: 11px;
-    font-weight: 300;
-    color: var(--nav-text-muted);
-    margin-top: 5px;
-    line-height: 1.45;
+    font-size: 11px; font-weight: 300; color: var(--nav-text-muted);
+    margin-top: 5px; line-height: 1.45;
   }
 
-  /* ── Divisor ── */
+  /* Divisor */
   .navbar-divider {
     display: block;
     height: 1px;
     background: linear-gradient(90deg, var(--nav-green) 0%, transparent 100%);
     opacity: 0.2;
-    margin: 20px 4px 18px;
+    margin: 20px 4px 14px;
     border-radius: 1px;
   }
 
-  /* ── Menu desktop ── */
+  /* ══ BANNER PERFIL INCOMPLETO (desktop) ══ */
+  .navbar-incomplete-banner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 13px;
+    margin-bottom: 14px;
+    border-radius: 12px;
+    background: rgba(244,208,111,0.07);
+    border: 1px solid var(--nav-yellow-border);
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.22s, border-color 0.22s, box-shadow 0.22s;
+    /* Pulso suave */
+    animation: banner-pulse 3s ease-in-out infinite;
+  }
+
+  @keyframes banner-pulse {
+    0%, 100% { box-shadow: 0 0 0   rgba(244,208,111,0);    }
+    50%       { box-shadow: 0 0 14px rgba(244,208,111,0.15); }
+  }
+
+  /* Linha neon no topo */
+  .navbar-incomplete-banner::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 1.5px;
+    background: linear-gradient(90deg, transparent, var(--nav-yellow), transparent);
+    opacity: 0.7;
+  }
+
+  .navbar-incomplete-banner:hover {
+    background: rgba(244,208,111,0.12);
+    border-color: rgba(244,208,111,0.45);
+    box-shadow: 0 0 18px rgba(244,208,111,0.15);
+  }
+
+  .navbar-incomplete-icon {
+    width: 28px; height: 28px; flex-shrink: 0;
+    border-radius: 8px;
+    background: rgba(244,208,111,0.12);
+    border: 1px solid rgba(244,208,111,0.25);
+    color: var(--nav-yellow);
+    display: flex; align-items: center; justify-content: center;
+    filter: drop-shadow(0 0 5px rgba(244,208,111,0.4));
+  }
+
+  .navbar-incomplete-text {
+    flex: 1; min-width: 0;
+    display: flex; flex-direction: column; gap: 2px;
+  }
+
+  .navbar-incomplete-text strong {
+    font-family: 'Sora', sans-serif;
+    font-size: 11px; font-weight: 700;
+    color: var(--nav-yellow);
+    letter-spacing: 0.1px;
+    display: block;
+  }
+
+  .navbar-incomplete-text p {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px; font-weight: 300;
+    color: rgba(244,208,111,0.6);
+    line-height: 1.3;
+  }
+
+  .navbar-incomplete-arrow {
+    font-size: 13px;
+    color: rgba(244,208,111,0.5);
+    flex-shrink: 0;
+    transition: transform 0.2s, color 0.2s;
+  }
+
+  .navbar-incomplete-banner:hover .navbar-incomplete-arrow {
+    transform: translateX(3px);
+    color: var(--nav-yellow);
+  }
+
+  /* Menu desktop */
   .navbar-menu {
-    flex-direction: column;
-    align-items: stretch;
-    justify-content: flex-start;
-    gap: 2px;
-    padding: 0;
-    width: 100%;
+    flex-direction: column; align-items: stretch;
+    justify-content: flex-start; gap: 2px; padding: 0; width: 100%;
   }
 
   .navbar-menu a {
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 12px;
-
-    padding: 11px 14px;
-    border-radius: var(--nav-radius);
-
-    color: var(--nav-text-muted);
-    font-size: 14px;
-    font-weight: 400;
-
-    position: relative;
-    overflow: hidden;
+    flex-direction: row; justify-content: flex-start;
+    align-items: center; gap: 12px;
+    padding: 11px 14px; border-radius: var(--nav-radius);
+    color: var(--nav-text-muted); font-size: 14px; font-weight: 400;
+    position: relative; overflow: hidden;
   }
 
-  /* Efeito shimmer no hover */
   .navbar-menu a::before {
     content: '';
-    position: absolute;
-    inset: 0;
-    background: var(--nav-green-dim);
-    opacity: 0;
+    position: absolute; inset: 0;
+    background: var(--nav-green-dim); opacity: 0;
     border-radius: var(--nav-radius);
     transition: opacity var(--nav-transition);
   }
 
-  .navbar-menu a:hover {
-    color: var(--nav-text);
-    background: transparent;
-  }
-
+  .navbar-menu a:hover { color: var(--nav-text); background: transparent; }
   .navbar-menu a:hover::before { opacity: 1; }
 
-  /* Estado ativo */
   .navbar-menu a.active {
-    background: var(--nav-green-active);
-    color: #fff;
-    font-weight: 600;
-    box-shadow: 0 4px 16px rgba(30, 145, 48, 0.35);
+    background: var(--nav-green-active); color: #fff; font-weight: 600;
+    box-shadow: 0 4px 16px rgba(30,145,48,0.35);
   }
-
   .navbar-menu a.active::before { display: none; }
 
-  .navbar-menu a .nav-icon {
-    font-size: 18px;
-    width: 22px;
-    text-align: center;
-    flex-shrink: 0;
-  }
+  .navbar-menu a .nav-icon { font-size: 18px; width: 22px; text-align: center; flex-shrink: 0; }
 
   .navbar-menu a p {
     font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    font-weight: inherit;
-    letter-spacing: 0.1px;
+    font-size: 14px; font-weight: inherit; letter-spacing: 0.1px;
   }
 
-  /* Indicador de ativo — barra esquerda */
   .navbar-menu a.active::after {
     content: '';
-    position: absolute;
-    left: 0;
-    top: 20%;
-    height: 60%;
-    width: 3px;
-    background: rgba(255,255,255,0.5);
-    border-radius: 0 3px 3px 0;
+    position: absolute; left: 0; top: 20%; height: 60%; width: 3px;
+    background: rgba(255,255,255,0.5); border-radius: 0 3px 3px 0;
   }
 
-  /* Esconder login no menu desktop */
-  .navbar-menu-login {
-    display: none !important;
-  }
+  .navbar-menu-login { display: none !important; }
 
-  /* ══════════════════════════════════════
-     CARD LOGIN/USUÁRIO — desktop
-  ══════════════════════════════════════ */
-
+  /* ══ CARD DESKTOP ══ */
   .navbar-login-card,
   .navbar-login-card.logged-in {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-
-    padding: 20px 16px;
-    border-radius: 18px;
-
-    background: linear-gradient(
-      160deg,
-      rgba(8, 20, 13, 0.95) 0%,
-      rgba(4, 12, 8, 0.98) 100%
-    );
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    padding: 20px 16px; border-radius: 18px;
+    background: linear-gradient(160deg, rgba(8,20,13,0.95) 0%, rgba(4,12,8,0.98) 100%);
     backdrop-filter: blur(12px);
-    border: 1px solid rgba(49, 191, 73, 0.12);
+    border: 1px solid rgba(49,191,73,0.12);
     box-shadow:
-      0 0 0 1px rgba(0, 0, 0, 0.4),
-      0 8px 32px rgba(0, 0, 0, 0.5),
-      inset 0 1px 0 rgba(255, 255, 255, 0.04);
-
+      0 0 0 1px rgba(0,0,0,0.4),
+      0 8px 32px rgba(0,0,0,0.5),
+      inset 0 1px 0 rgba(255,255,255,0.04);
     text-align: center;
   }
 
-  /* Restaurar elementos escondidos no mobile */
   .navbar-login-card.logged-in .login-card-icon,
   .navbar-login-card.logged-in .user-name,
-  .navbar-login-card.logged-in .user-email {
-    display: flex;
-  }
-
+  .navbar-login-card.logged-in .user-email { display: flex; }
   .navbar-login-card.logged-in .user-name,
-  .navbar-login-card.logged-in .user-email {
-    display: block;
-  }
+  .navbar-login-card.logged-in .user-email { display: block; }
 
-  /* ── Ícone no topo ── */
   .login-card-icon {
-    width: 40px;
-    height: 40px;
+    width: 40px; height: 40px;
     background: linear-gradient(135deg, rgba(49,191,73,0.15), rgba(30,145,48,0.08));
-    border: 1px solid rgba(49, 191, 73, 0.22);
+    border: 1px solid rgba(49,191,73,0.22);
     border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    margin-bottom: 2px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; margin-bottom: 2px;
     box-shadow: 0 2px 8px rgba(49,191,73,0.1);
   }
 
-  /* ── Texto mudo (não logado) ── */
   .navbar-login-card > p {
     font-family: 'DM Sans', sans-serif;
-    font-size: 12px;
-    font-weight: 300;
-    color: var(--nav-text-muted);
-    line-height: 1.55;
+    font-size: 12px; font-weight: 300;
+    color: var(--nav-text-muted); line-height: 1.55;
   }
 
-  /* ── Nome do usuário (logado) ── */
   .user-name {
     font-family: 'Sora', sans-serif;
-    font-size: 14px;
-    font-weight: 700;
-    color: #e8f0ec;
-    letter-spacing: -0.2px;
-    margin: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
+    font-size: 14px; font-weight: 700; color: #e8f0ec;
+    letter-spacing: -0.2px; margin: 0;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
   }
 
-  /* ── E-mail do usuário (logado) ── */
   .user-email {
     font-family: 'DM Sans', sans-serif;
-    font-size: 11px;
-    font-weight: 300;
-    color: var(--nav-text-muted);
-    letter-spacing: 0.1px;
-    margin: -4px 0 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100%;
+    font-size: 11px; font-weight: 300; color: var(--nav-text-muted);
+    letter-spacing: 0.1px; margin: -4px 0 0;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%;
   }
 
-  /* ── Botão: Fazer login (verde vibrante) ── */
-  .login-card-btn {
-    display: block;
-    width: 100%;
-    padding: 11px;
-    border-radius: 11px;
-    border: none;
-    cursor: pointer;
-
-    background: linear-gradient(135deg, #23a33a 0%, #17821e 100%);
-    color: #fff;
-    text-align: center;
-    text-decoration: none;
-
+  /* ── Aviso compacto dentro do card ── */
+  .navbar-card-incomplete {
+    display: inline-flex !important;
+    align-items: center; gap: 6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgba(244,208,111,0.08);
+    border: 1px solid rgba(244,208,111,0.25);
+    color: var(--nav-yellow);
     font-family: 'Sora', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
+    font-size: 10px; font-weight: 700;
+    text-decoration: none; letter-spacing: 0.2px;
+    transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+    white-space: nowrap;
+  }
+
+  .navbar-card-incomplete svg { flex-shrink: 0; }
+
+  .navbar-card-incomplete:hover {
+    background: rgba(244,208,111,0.15);
+    border-color: rgba(244,208,111,0.45);
+    box-shadow: 0 0 12px rgba(244,208,111,0.2);
+  }
+
+  .login-card-btn {
+    display: block; width: 100%; padding: 11px;
+    border-radius: 11px; border: none; cursor: pointer;
+    background: linear-gradient(135deg, #23a33a 0%, #17821e 100%);
+    color: #fff; text-align: center; text-decoration: none;
+    font-family: 'Sora', sans-serif; font-size: 13px; font-weight: 700;
     letter-spacing: 0.4px;
-
-    box-shadow:
-      0 4px 14px rgba(30, 145, 48, 0.45),
-      inset 0 1px 0 rgba(255, 255, 255, 0.08);
-
-    transition:
-      opacity 0.18s ease,
-      transform 0.18s ease,
-      box-shadow 0.18s ease;
+    box-shadow: 0 4px 14px rgba(30,145,48,0.45), inset 0 1px 0 rgba(255,255,255,0.08);
+    transition: opacity 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
   }
 
   .login-card-btn:hover {
-    opacity: 0.93;
-    transform: translateY(-1px);
-    box-shadow:
-      0 7px 20px rgba(30, 145, 48, 0.55),
-      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    opacity: 0.93; transform: translateY(-1px);
+    box-shadow: 0 7px 20px rgba(30,145,48,0.55), inset 0 1px 0 rgba(255,255,255,0.08);
   }
+  .login-card-btn:active { transform: translateY(0); opacity: 1; }
 
-  .login-card-btn:active {
-    transform: translateY(0);
-    opacity: 1;
-  }
-
-  /* ── Botão: Sair (vermelho estético) — desktop ── */
   .navbar-login-card.logged-in .logout-btn {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    border-radius: 11px;
-    border: 1px solid rgba(200, 50, 50, 0.3);
-    cursor: pointer;
-
-    background: linear-gradient(
-      135deg,
-      rgba(160, 30, 30, 0.22) 0%,
-      rgba(120, 20, 20, 0.18) 100%
-    );
-    color: #e57373;
-    text-align: center;
-
-    font-family: 'Sora', sans-serif;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-
-    box-shadow:
-      0 2px 10px rgba(180, 30, 30, 0.18),
-      inset 0 1px 0 rgba(255, 100, 100, 0.06);
-
-    transition:
-      background 0.18s ease,
-      border-color 0.18s ease,
-      color 0.18s ease,
-      transform 0.18s ease,
-      box-shadow 0.18s ease;
+    display: block; width: 100%; padding: 10px;
+    border-radius: 11px; border: 1px solid rgba(200,50,50,0.3); cursor: pointer;
+    background: linear-gradient(135deg, rgba(160,30,30,0.22) 0%, rgba(120,20,20,0.18) 100%);
+    color: #e57373; text-align: center;
+    font-family: 'Sora', sans-serif; font-size: 12px; font-weight: 600;
+    letter-spacing: 0.5px; text-transform: uppercase;
+    box-shadow: 0 2px 10px rgba(180,30,30,0.18), inset 0 1px 0 rgba(255,100,100,0.06);
+    transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease,
+                transform 0.18s ease, box-shadow 0.18s ease;
   }
 
-  /* Remover o pseudo-elemento ::before do mobile no desktop */
-  .navbar-login-card.logged-in .logout-btn::before {
-    display: none;
-  }
+  .navbar-login-card.logged-in .logout-btn::before { display: none; }
 
   .navbar-login-card.logged-in .logout-btn:hover {
-    background: linear-gradient(
-      135deg,
-      rgba(190, 40, 40, 0.38) 0%,
-      rgba(150, 25, 25, 0.30) 100%
-    );
-    border-color: rgba(220, 80, 80, 0.5);
-    color: #ef9a9a;
+    background: linear-gradient(135deg, rgba(190,40,40,0.38) 0%, rgba(150,25,25,0.30) 100%);
+    border-color: rgba(220,80,80,0.5); color: #ef9a9a;
     transform: translateY(-1px);
-    box-shadow:
-      0 5px 16px rgba(180, 30, 30, 0.3),
-      inset 0 1px 0 rgba(255, 100, 100, 0.08);
+    box-shadow: 0 5px 16px rgba(180,30,30,0.3), inset 0 1px 0 rgba(255,100,100,0.08);
   }
 
-  .navbar-login-card.logged-in .logout-btn:active {
-    transform: translateY(0);
-  }
+  .navbar-login-card.logged-in .logout-btn:active { transform: translateY(0); }
 }

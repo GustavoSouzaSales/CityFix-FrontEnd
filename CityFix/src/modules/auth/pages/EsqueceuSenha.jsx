@@ -1,8 +1,9 @@
 import "../styles/EsqueceuSenha.css";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function EsqueceuSenha() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [emailTouched, setEmailTouched] = useState(false);
 
@@ -13,6 +14,13 @@ function EsqueceuSenha() {
       ? "valid"
       : "invalid"
     : "";
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    setEmailTouched(true);
+    if (!emailValido) return;
+    navigate("/nova-senha");
+  }
 
   return (
     <>
@@ -78,7 +86,7 @@ function EsqueceuSenha() {
               Informe seu e-mail para continuar
             </p>
 
-            <form onSubmit={(e) => e.preventDefault()}>
+            <form onSubmit={handleSubmit}>
               <div className="form-group">
                 <label className="form-label">E-mail</label>
 
@@ -108,9 +116,9 @@ function EsqueceuSenha() {
                 )}
               </div>
 
-              <Link to="/nova-senha" className="btn-primary">
+              <button type="submit" className="btn-primary">
                 <span>→</span> Enviar instruções
-              </Link>
+              </button>
             </form>
 
             <p className="register-text">

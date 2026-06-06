@@ -1,8 +1,66 @@
 import "../styles/login.css";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useGoogleLogin } from "@react-oauth/google";
 
+/* ══════════════════════════════════════
+   TOAST
+══════════════════════════════════════ */
+function Toast({ toasts, removeToast }) {
+  return (
+    <div className="login-toast-container">
+      {toasts.map((t) => (
+        <div key={t.id} className={`login-toast login-toast--${t.type}`}>
+          <span className="login-toast-icon">
+            {t.type === "success" ? "✓" : t.type === "error" ? "✕" : "ℹ"}
+          </span>
+          <span className="login-toast-msg">{t.message}</span>
+          <button className="login-toast-close" onClick={() => removeToast(t.id)}>✕</button>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function useToast() {
+  const [toasts, setToasts] = useState([]);
+  const addToast = useCallback((message, type = "info") => {
+    const id = Date.now();
+    setToasts((prev) => [...prev, { id, message, type }]);
+    setTimeout(() => setToasts((prev) => prev.filter((t) => t.id !== id)), 4500);
+  }, []);
+  const removeToast = useCallback((id) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
+  return { toasts, addToast, removeToast };
+}
+
+/* ══════════════════════════════════════
+   OLHO SVG
+══════════════════════════════════════ */
+function EyeIcon({ visible }) {
+  if (!visible) {
+    return (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+        <circle cx="12" cy="12" r="3"/>
+      </svg>
+    );
+  }
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+      <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+      <line x1="1" y1="1" x2="23" y2="23"/>
+    </svg>
+  );
+}
+
+/* ══════════════════════════════════════
+   LOGIN
+══════════════════════════════════════ */
 function Login() {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
@@ -13,95 +71,71 @@ function Login() {
   const [emailTouched, setEmailTouched] = useState(false);
   const [senhaTouched, setSenhaTouched] = useState(false);
 
+  const { toasts, addToast, removeToast } = useToast();
+
   const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const senhaValida = senha.length >= 8;
 
-  const emailClass = emailTouched
-    ? emailValido
-      ? "valid"
-      : "invalid"
-    : "";
+  const emailClass = emailTouched ? (emailValido ? "valid" : "invalid") : "";
+  const senhaClass = senhaTouched ? (senhaValida ? "valid" : "invalid") : "";
 
-  const senhaClass = senhaTouched
-    ? senhaValida
-      ? "valid"
-      : "invalid"
-    : "";
-
-    const loginGoogle = useGoogleLogin({
-  onSuccess: async (tokenResponse) => {
-    try {
-      const response = await fetch(
-        "https://www.googleapis.com/oauth2/v3/userinfo",
-        {
-          headers: {
-            Authorization: `Bearer ${tokenResponse.access_token}`,
-          },
-        }
-      );
-
-      const usuarioGoogle = await response.json();
-
-      localStorage.setItem(
-        "usuario",
-        JSON.stringify({
+  const loginGoogle = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      try {
+        const response = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
+          headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
+        });
+        const usuarioGoogle = await response.json();
+        localStorage.setItem("usuario", JSON.stringify({
           nome: usuarioGoogle.name,
           email: usuarioGoogle.email,
           telefone: "",
           cidade: "",
           tipoUsuario: "USUARIO",
-        })
-      );
+        }));
+        navigate("/home");
+      } catch (error) {
+        addToast("Não foi possível concluir o login com Google. Tente novamente.", "error");
+      }
+    },
+    onError: () => {
+      addToast("Falha ao conectar com o Google. Verifique sua conexão.", "error");
+    },
+  });
 
-      navigate("/home");
-    } catch (error) {
-      alert("Erro ao fazer login com Google.");
-    }
-  },
-  onError: () => {
-    alert("Erro ao conectar com o Google.");
-  },
-});
+  async function handleSubmit(e) {
+    e.preventDefault();
 
-    // Realiza o login do usuário na API
-async function handleSubmit(e) {
-  e.preventDefault();
-
-  if (!emailValido || !senhaValida) {
-    alert("Preencha e-mail e senha corretamente.");
-    return;
-  }
-
-  try {
-    const response = await fetch("http://localhost:8080/usuarios/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email,
-        senha,
-      }),
-    });
-
-    if (!response.ok) {
-      alert("E-mail ou senha inválidos.");
+    if (!emailValido || !senhaValida) {
+      addToast("Preencha e-mail e senha corretamente antes de continuar.", "error");
       return;
     }
 
-    const usuario = await response.json();
+    try {
+      const response = await fetch("http://localhost:8080/usuarios/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, senha }),
+      });
 
-    localStorage.setItem("usuario", JSON.stringify(usuario));
+      if (!response.ok) {
+        addToast("E-mail ou senha incorretos. Verifique e tente novamente.", "error");
+        return;
+      }
 
-    alert("Login realizado com sucesso!");
-    navigate("/home");
-  } catch (error) {
-    alert("Erro ao conectar com o servidor.");
+      const usuario = await response.json();
+      localStorage.setItem("usuario", JSON.stringify(usuario));
+      addToast("Login realizado com sucesso! Redirecionando...", "success");
+      setTimeout(() => navigate("/home"), 1200);
+    } catch (error) {
+      addToast("Falha na conexão com o servidor. Verifique sua internet.", "error");
+    }
   }
-}
 
   return (
     <>
+      <Toast toasts={toasts} removeToast={removeToast} />
+
       <div className="bg"></div>
 
       <div className="page">
@@ -110,62 +144,32 @@ async function handleSubmit(e) {
             <div className="logo-wrap">
               <svg className="logo-icon" viewBox="0 0 64 64" fill="none">
                 <circle cx="32" cy="26" r="18" fill="#2e8b3a" opacity="0.15" />
-                <path
-                  d="M32 8C22.06 8 14 16.06 14 26C14 38.5 32 56 32 56C32 56 50 38.5 50 26C50 16.06 41.94 8 32 8Z"
-                  fill="#2e6b35"
-                />
+                <path d="M32 8C22.06 8 14 16.06 14 26C14 38.5 32 56 32 56C32 56 50 38.5 50 26C50 16.06 41.94 8 32 8Z" fill="#2e6b35" />
                 <rect x="24" y="18" width="5" height="12" rx="1" fill="white" opacity="0.9" />
                 <rect x="31" y="14" width="5" height="16" rx="1" fill="white" opacity="0.9" />
                 <rect x="38" y="20" width="4" height="10" rx="1" fill="white" opacity="0.9" />
                 <path d="M20 34 Q26 28 32 34 Q26 40 20 34Z" fill="#6fcf7a" opacity="0.85" />
               </svg>
-
-              <span className="brand-name">
-                City<span>Fix</span>
-              </span>
+              <span className="brand-name">City<span>Fix</span></span>
             </div>
-
-            <p className="brand-tagline">
-              Sua cidade melhor começa
-              <br />
-              com a sua voz.
-            </p>
+            <p className="brand-tagline">Sua cidade melhor começa<br />com a sua voz.</p>
           </div>
 
           <div className="features">
-            <div className="feature-item">
-              <span className="feature-icon">🛡️</span>
-              Denuncie problemas urbanos
-            </div>
-
-            <div className="feature-item">
-              <span className="feature-icon">📍</span>
-              Acompanhe suas solicitações
-            </div>
-
-            <div className="feature-item">
-              <span className="feature-icon">🌿</span>
-              <span>
-                Contribua para uma cidade
-                <br />
-                melhor para todos
-              </span>
-            </div>
+            <div className="feature-item"><span className="feature-icon">🛡️</span>Denuncie problemas urbanos</div>
+            <div className="feature-item"><span className="feature-icon">📍</span>Acompanhe suas solicitações</div>
+            <div className="feature-item"><span className="feature-icon">🌿</span><span>Contribua para uma cidade<br />melhor para todos</span></div>
           </div>
         </div>
 
         <div className="right-panel">
           <div className="card">
-            <h1 className="card-title">
-              Bem-vindo ao <span>CityFix</span>
-            </h1>
-
+            <h1 className="card-title">Bem-vindo ao <span>CityFix</span></h1>
             <p className="card-subtitle">Faça login para continuar</p>
 
             <form onSubmit={handleSubmit}>
               <div className="form-group">
                 <label className="form-label">E-mail</label>
-
                 <div className={`input-wrap ${emailClass}`}>
                   <span className="input-icon">✉️</span>
                   <input
@@ -181,7 +185,6 @@ async function handleSubmit(e) {
 
               <div className="form-group">
                 <label className="form-label">Senha</label>
-
                 <div className={`input-wrap ${senhaClass}`}>
                   <span className="input-icon">🔒</span>
                   <input
@@ -192,20 +195,16 @@ async function handleSubmit(e) {
                     onChange={(e) => setSenha(e.target.value)}
                     onBlur={() => setSenhaTouched(true)}
                   />
-
                   <button
                     className="eye-btn"
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    title="Mostrar/ocultar senha"
+                    aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
                   >
-                    👁️
+                    <EyeIcon visible={showPassword} />
                   </button>
                 </div>
-
-                <Link to="/esqueci-senha" className="forgot-link">
-                Esqueceu sua senha?
-              </Link>
+                <Link to="/esqueci-senha" className="forgot-link">Esqueceu sua senha?</Link>
               </div>
 
               <button className="btn-primary" type="submit">
@@ -214,18 +213,13 @@ async function handleSubmit(e) {
 
               <div className="divider">ou</div>
 
-              <button
-  className="btn-google"
-  type="button"
-  onClick={() => loginGoogle()}
->
+              <button className="btn-google" type="button" onClick={() => loginGoogle()}>
                 <svg className="google-logo" viewBox="0 0 48 48">
                   <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
                   <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
                   <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z" />
                   <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z" />
                 </svg>
-
                 Entrar com Google
               </button>
             </form>
