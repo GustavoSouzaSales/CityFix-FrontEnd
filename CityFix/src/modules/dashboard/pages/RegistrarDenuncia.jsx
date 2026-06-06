@@ -158,11 +158,17 @@ function RegistrarDenuncia() {
 
       const formData = new FormData();
       formData.append("titulo", categoria?.nome || "Denúncia");
-      formData.append("descricao", descricao);
-      formData.append("localizacao", localizacao);
-      formData.append("categoriaId", categoriaSelecionada);
-      formData.append("usuarioId", usuarioLogado.id);
-      imagens.forEach((imagem) => formData.append("imagens", imagem));
+formData.append("descricao", descricao);
+formData.append("localizacao", localizacao);
+formData.append("categoriaId", categoriaSelecionada);
+formData.append("usuarioId", usuarioLogado.id);
+
+if (latitude && longitude) {
+  formData.append("latitude", latitude);
+  formData.append("longitude", longitude);
+}
+
+imagens.forEach((imagem) => formData.append("imagens", imagem));
 
       const response = await fetch("http://localhost:8080/denuncias", {
         method: "POST",
