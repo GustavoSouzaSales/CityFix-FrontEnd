@@ -522,10 +522,20 @@ function Perfil() {
 
       <main className="perfil-main">
         <header className="perfil-header">
-          <div className="perfil-header-eyebrow">Painel do cidadão</div>
-          <h1>Meu Perfil</h1>
-          <p>Gerencie seus dados e acompanhe suas denúncias.</p>
-        </header>
+  <div className="perfil-header-eyebrow">
+    {usuario.tipoUsuario === "ADMINISTRADOR"
+      ? "Painel do administrador"
+      : "Painel do cidadão"}
+  </div>
+
+  <h1>Meu Perfil</h1>
+
+  <p>
+    {usuario.tipoUsuario === "ADMINISTRADOR"
+      ? "Gerencie sua conta e acompanhe as denúncias do sistema."
+      : "Gerencie seus dados e acompanhe suas denúncias."}
+  </p>
+</header>
 
         <section className="perfil-layout">
           <aside className="perfil-user-card">
@@ -536,7 +546,7 @@ function Perfil() {
             <h2 className="perfil-nome">{usuario.nome}</h2>
             <p className="perfil-email">{usuario.email}</p>
             <div className={usuario.tipoUsuario === "ADMINISTRADOR" ? "perfil-badge perfil-badge-admin" : "perfil-badge"}>
-              👤 {usuario.tipoUsuario === "ADMINISTRADOR" ? "Administrador" : "Usuário comum"}
+              👤 {usuario.tipoUsuario === "ADMINISTRADOR" ? "Administrador" : "Cidadão"}
             </div>
             <div className="perfil-divider" />
             <div className="perfil-info">

@@ -39,6 +39,8 @@ function useToast() {
 /* ══ COMPONENTE ══ */
 function RegistrarDenuncia() {
   const navigate = useNavigate();
+  const usuario = JSON.parse(localStorage.getItem("usuario"));
+
   const { toasts, addToast, removeToast } = useToast();
 
   const [descricao, setDescricao] = useState("");
@@ -198,7 +200,11 @@ imagens.forEach((imagem) => formData.append("imagens", imagem));
           <header className="rd-header">
             <button className="rd-back-btn" type="button" onClick={() => navigate(-1)}>←</button>
             <div className="rd-header-text">
-              <div className="rd-header-eyebrow">CityFix · Cidadão</div>
+              <div className="rd-header-eyebrow">
+  CityFix · {usuario?.tipoUsuario === "ADMINISTRADOR"
+    ? "Administrador"
+    : "Cidadão"}
+</div>
               <h1>Registrar denúncia</h1>
               <p>Ajude a melhorar a nossa cidade informando um problema.</p>
             </div>
