@@ -95,6 +95,27 @@ function Admin() {
   const [modalAtualizar, setModalAtualizar] = useState(false);
   const [modalMapaDenuncia, setModalMapaDenuncia] = useState(false);
   const [denuncias, setDenuncias] = useState([]);
+  const [estatisticas, setEstatisticas] = useState(null);
+  const [carregandoEstatisticas, setCarregandoEstatisticas] = useState(false);
+
+  // ── Poisson ──
+const [poissonQuantidade, setPoissonQuantidade] = useState(2);
+const [poissonOperacao, setPoissonOperacao] = useState("EXATAMENTE");
+const [resultadoPoisson, setResultadoPoisson] = useState(null);
+const [carregandoPoisson, setCarregandoPoisson] = useState(false);
+
+// ── Binomial ──
+const [binomialTentativas, setBinomialTentativas] = useState(10);
+const [binomialSucessos, setBinomialSucessos] = useState(7);
+const [binomialOperacao, setBinomialOperacao] = useState("PELO_MENOS");
+const [resultadoBinomial, setResultadoBinomial] = useState(null);
+const [carregandoBinomial, setCarregandoBinomial] = useState(false);
+
+// ── Normal ──
+const [normalDias, setNormalDias] = useState(30);
+const [normalOperacao, setNormalOperacao] = useState("MAIS_DE");
+const [resultadoNormal, setResultadoNormal] = useState(null);
+const [carregandoNormal, setCarregandoNormal] = useState(false);
 
   const [totaisComentarios, setTotaisComentarios] = useState({});
   const [totaisCurtidas, setTotaisCurtidas] = useState({});
@@ -129,6 +150,7 @@ function Admin() {
   const API_USUARIOS    = "http://localhost:8080/usuarios";
   const API_COMENTARIOS = "http://localhost:8080/comentarios";
   const API_CURTIDAS    = "http://localhost:8080/curtidas";
+  const API_ESTATISTICAS = "http://localhost:8080/estatisticas";
 
   function usuarioLogado() { return JSON.parse(localStorage.getItem("usuario")); }
   function usuarioIdLogado() { const u = usuarioLogado(); return u?.id || u?.usuarioId; }
@@ -170,6 +192,130 @@ function Admin() {
       console.error("Erro ao carregar dados do admin:", error);
     }
   }
+
+  async function carregarEstatisticas() {
+  setCarregandoEstatisticas(true);
+
+  try {
+    const response = await fetch(`${API_ESTATISTICAS}/resumo`);
+
+    if (!response.ok) {
+      throw new Error("Erro ao carregar estatísticas.");
+    }
+
+    const data = await response.json();
+    setEstatisticas(data);
+  } catch (error) {
+    console.error("Erro ao carregar estatísticas:", error);
+    addToast("Não foi possível carregar o painel estatístico.", "error");
+  } finally {
+    setCarregandoEstatisticas(false);
+  }
+}
+
+async function calcularPoisson(e) {
+  e.preventDefault();
+
+  const quantidade = Number(poissonQuantidade);
+
+  if (!Number.isInteger(quantidade) || quantidade < 0) {
+    addToast("Informe uma quantidade inteira válida.", "error");
+    return;
+  }
+
+  setCarregandoPoisson(true);
+
+  try {
+    const response = await fetch(
+      `${API_ESTATISTICAS}/poisson?quantidade=${quantidade}&operacao=${poissonOperacao}`
+    );
+
+    if (!response.ok) {
+      throw new Error("Erro ao calcular Poisson.");
+    }
+
+    const data = await response.json();
+    setResultadoPoisson(data);
+  } catch (error) {
+    console.error("Erro no cálculo de Poisson:", error);
+    addToast("Não foi possível calcular a distribuição de Poisson.", "error");
+  } finally {
+    setCarregandoPoisson(false);
+  }
+}
+
+async function calcularBinomial(e) {
+  e.preventDefault();
+
+  const numeroTentativas = Number(binomialTentativas);
+  const quantidadeSucessos = Number(binomialSucessos);
+
+  if (
+    !Number.isInteger(numeroTentativas) ||
+    numeroTentativas <= 0 ||
+    !Number.isInteger(quantidadeSucessos) ||
+    quantidadeSucessos < 0 ||
+    quantidadeSucessos > numeroTentativas
+  ) {
+    addToast(
+      "Os sucessos devem estar entre 0 e o número total de denúncias.",
+      "error"
+    );
+    return;
+  }
+
+  setCarregandoBinomial(true);
+
+  try {
+    const response = await fetch(
+      `${API_ESTATISTICAS}/binomial?numeroTentativas=${numeroTentativas}&quantidadeSucessos=${quantidadeSucessos}&operacao=${binomialOperacao}`
+    );
+
+    if (!response.ok) {
+      throw new Error("Erro ao calcular Binomial.");
+    }
+
+    const data = await response.json();
+    setResultadoBinomial(data);
+  } catch (error) {
+    console.error("Erro no cálculo Binomial:", error);
+    addToast("Não foi possível calcular a distribuição Binomial.", "error");
+  } finally {
+    setCarregandoBinomial(false);
+  }
+}
+
+async function calcularNormal(e) {
+  e.preventDefault();
+
+  const valorDias = Number(normalDias);
+
+  if (Number.isNaN(valorDias) || valorDias < 0) {
+    addToast("Informe uma quantidade de dias válida.", "error");
+    return;
+  }
+
+  setCarregandoNormal(true);
+
+  try {
+    const response = await fetch(
+      `${API_ESTATISTICAS}/normal?valorDias=${valorDias}&operacao=${normalOperacao}`
+    );
+
+    if (!response.ok) {
+      throw new Error("Erro ao calcular Normal.");
+    }
+
+    const data = await response.json();
+    setResultadoNormal(data);
+  } catch (error) {
+    console.error("Erro no cálculo Normal:", error);
+    addToast("Não foi possível calcular a distribuição Normal.", "error");
+  } finally {
+    setCarregandoNormal(false);
+  }
+}
+
 
   useEffect(() => { carregarDados(); }, []);
 
@@ -394,12 +540,52 @@ function Admin() {
     { emoji:"✅", label:"Resolvidas",          valor: denuncias.filter((d)=>d.status==="RESOLVIDA").length,   cor:"stat--blue"   },
     { emoji:"👥", label:"Usuários",            valor: usuarios.length,                                        cor:"stat--purple" },
   ];
+
   const modulosData = [
-    { id:"denuncias",  icon:"📋", titulo:"Gerenciar denúncias",  descricao:"Visualize, filtre e atualize as denúncias registradas.", meta:`${denuncias.length} registros`      },
-    { id:"usuarios",   icon:"👥", titulo:"Gerenciar usuários",   descricao:"Consulte usuários cadastrados e suas atividades.",        meta:`${usuarios.length} cadastros`       },
-    { id:"categorias", icon:"🏷️", titulo:"Gerenciar categorias", descricao:"Cadastre e organize os tipos de denúncias.",             meta:`${categorias.length} categorias`    },
-    { id:"mapa",       icon:"🗺️", titulo:"Mapa da cidade",       descricao:"Acompanhe pontos de denúncias espalhados pela cidade.",  meta:"Irecê – BA"                          },
-  ];
+  {
+    id: "denuncias",
+    icon: "📋",
+    titulo: "Gerenciar denúncias",
+    descricao: "Visualize, filtre e atualize as denúncias registradas.",
+    meta: `${denuncias.length} registros`,
+  },
+  {
+    id: "usuarios",
+    icon: "👥",
+    titulo: "Gerenciar usuários",
+    descricao: "Consulte usuários cadastrados e suas atividades.",
+    meta: `${usuarios.length} cadastros`,
+  },
+  {
+    id: "categorias",
+    icon: "🏷️",
+    titulo: "Gerenciar categorias",
+    descricao: "Cadastre e organize os tipos de denúncias.",
+    meta: `${categorias.length} categorias`,
+  },
+  {
+    id: "mapa",
+    icon: "🗺️",
+    titulo: "Mapa da cidade",
+    descricao: "Acompanhe pontos de denúncias espalhados pela cidade.",
+    meta: "Irecê – BA",
+  },
+  {
+    id: "estatisticas",
+    icon: "📊",
+    titulo: "Painel estatístico",
+    descricao: "Analise médias, dispersões e padrões das denúncias.",
+    meta: "Análise de dados",
+  },
+];
+
+  function abrirModulo(id) {
+  setModalAberto(id);
+
+  if (id === "estatisticas") {
+    carregarEstatisticas();
+  }
+}
 
   return (
     <div className="admin-page">
@@ -449,7 +635,7 @@ function Admin() {
                 </div>
                 <h2>{m.titulo}</h2>
                 <p>{m.descricao}</p>
-                <button onClick={() => setModalAberto(m.id)}>
+                <button onClick={() => abrirModulo(m.id)}>
                   Abrir módulo <span className="btn-arrow">→</span>
                 </button>
               </article>
@@ -468,6 +654,9 @@ function Admin() {
             <button onClick={() => setModalAberto("usuarios")}>👥 Ver usuários</button>
             <button onClick={() => setModalAberto("categorias")}>🏷️ Ver categorias</button>
             <button onClick={() => setModalAberto("mapa")}>🗺️ Ver mapa</button>
+            <button onClick={() => abrirModulo("estatisticas")}>
+  📊 Ver estatísticas
+</button>
           </div>
         </section>
       </main>
@@ -483,18 +672,22 @@ function Admin() {
                   {modalAberto === "usuarios"   && "Gestão · Usuários"}
                   {modalAberto === "categorias" && "Gestão · Categorias"}
                   {modalAberto === "mapa"       && "Gestão · Mapa"}
+                  {modalAberto === "estatisticas" && "Análise · Estatística"}
                 </p>
                 <h2>
                   {modalAberto === "denuncias"  && "Gerenciar denúncias"}
                   {modalAberto === "usuarios"   && "Gerenciar usuários"}
                   {modalAberto === "categorias" && "Gerenciar categorias"}
                   {modalAberto === "mapa"       && "Mapa da cidade"}
+                  {modalAberto === "estatisticas" && "Painel estatístico"}
                 </h2>
                 <p className="modal-sub">
                   {modalAberto === "denuncias"  && "Acompanhe e atualize as denúncias da plataforma."}
                   {modalAberto === "usuarios"   && "Consulte os usuários cadastrados no sistema."}
                   {modalAberto === "categorias" && "Cadastre, visualize e organize categorias de denúncias."}
                   {modalAberto === "mapa"       && "Visualize a distribuição das denúncias na cidade."}
+                  {modalAberto === "estatisticas" &&
+  "Visualize indicadores calculados a partir das denúncias cadastradas."}
                 </p>
               </div>
               <button className="admin-close" onClick={() => setModalAberto(null)}>✕</button>
@@ -681,6 +874,245 @@ function Admin() {
                 )}
               </div>
             )}
+
+          {/* ── ESTATÍSTICAS ── */}
+            {modalAberto === "estatisticas" && (
+              <div className="admin-modal-content">
+
+                {carregandoEstatisticas && (
+                  <div className="estat-loading">
+                    <div className="estat-loading-spinner" />
+                    <p>Calculando estatísticas...</p>
+                  </div>
+                )}
+
+                {!carregandoEstatisticas && !estatisticas && (
+                  <div className="empty-state"><span>📊</span><p>Nenhuma estatística disponível.</p></div>
+                )}
+
+                {!carregandoEstatisticas && estatisticas && (
+                  <>
+                    {/* ── Cards de contagem ── */}
+                    <div className="estat-summary">
+                      {[
+                        { icon: "📋", label: "Total",       valor: estatisticas.totalDenuncias,         mod: "total"     },
+                        { icon: "🟢", label: "Abertas",     valor: estatisticas.denunciasAbertas,       mod: "aberta"    },
+                        { icon: "⏳", label: "Em andamento", valor: estatisticas.denunciasEmAndamento,  mod: "andamento" },
+                        { icon: "✅", label: "Resolvidas",   valor: estatisticas.denunciasResolvidas,   mod: "resolvida" },
+                      ].map(({ icon, label, valor, mod }) => (
+                        <article key={mod} className={`estat-card estat-card--${mod}`}>
+                          <span className="estat-card-icon">{icon}</span>
+                          <div>
+                            <p>{label}</p>
+                            <strong>{valor}</strong>
+                          </div>
+                        </article>
+                      ))}
+                    </div>
+
+                    {/* ── Moda ── */}
+                    <div className="estat-moda-bar">
+                      <div className="estat-moda-icon">🏷️</div>
+                      <div className="estat-moda-body">
+                        <span className="estat-eyebrow">Moda das categorias</span>
+                        <strong>{estatisticas.categoriaMaisFrequente}</strong>
+                        <span className="estat-moda-sub">Categoria mais frequente entre as denúncias cadastradas</span>
+                      </div>
+                    </div>
+
+                    {/* ── Medidas + Quartis lado a lado ── */}
+                    <div className="estat-two-col">
+
+                      {/* Medidas */}
+                      <section className="estat-section">
+                        <div className="estat-section-head">
+                          <span className="estat-eyebrow">Medidas · Tempo de resolução</span>
+                          <span className="estat-unit-badge">em dias</span>
+                        </div>
+                        <div className="estat-indicators">
+                          {[
+                            { sym: "x̄",  label: "Média",         val: estatisticas.mediaTempoResolucaoDias,      sub: "Tempo médio para resolver" },
+                            { sym: "Md", label: "Mediana",        val: estatisticas.medianaTempoResolucaoDias,    sub: "Valor central dos tempos"  },
+                            { sym: "σ²", label: "Variância",      val: estatisticas.varianciaTempoResolucaoDias,  sub: "Dispersão quadrática"       },
+                            { sym: "σ",  label: "Desvio padrão",  val: estatisticas.desvioPadraoTempoResolucaoDias, sub: "Variação em relação à média" },
+                          ].map(({ sym, label, val, sub }) => (
+                            <article key={label} className="estat-indicator">
+                              <div className="estat-indicator-sym">{sym}</div>
+                              <div>
+                                <p>{label}</p>
+                                <strong>{Number(val).toFixed(2)}</strong>
+                                <small>{sub}</small>
+                              </div>
+                            </article>
+                          ))}
+                        </div>
+                      </section>
+
+                      {/* Quartis */}
+                      <section className="estat-section">
+                        <div className="estat-section-head">
+                          <span className="estat-eyebrow">Separatrizes · Quartis</span>
+                          <span className="estat-unit-badge">em dias</span>
+                        </div>
+                        <div className="estat-quartis">
+                          {[
+                            { q: "Q1", val: estatisticas.primeiroQuartilTempoResolucaoDias,  pct: "25%" },
+                            { q: "Q2", val: estatisticas.segundoQuartilTempoResolucaoDias,   pct: "50%" },
+                            { q: "Q3", val: estatisticas.terceiroQuartilTempoResolucaoDias,  pct: "75%" },
+                          ].map(({ q, val, pct }) => (
+                            <article key={q} className="estat-quartil">
+                              <div className="estat-quartil-badge">{q}</div>
+                              <strong>{Number(val).toFixed(2)}</strong>
+                              <p>{pct} das denúncias resolvidas em até <b>{Number(val).toFixed(2)} dias</b></p>
+                            </article>
+                          ))}
+                        </div>
+                      </section>
+
+                    </div>
+
+                    {/* ── Interpretação ── */}
+                    <div className="estat-analysis">
+                      <div className="estat-analysis-icon">💡</div>
+                      <div>
+                        <h3>Interpretação dos resultados</h3>
+                        <p>O tempo médio foi de <strong>{Number(estatisticas.mediaTempoResolucaoDias).toFixed(2)} dias</strong>, com mediana de <strong>{Number(estatisticas.medianaTempoResolucaoDias).toFixed(2)} dias</strong>.</p>
+                        <p>A variância foi de <strong>{Number(estatisticas.varianciaTempoResolucaoDias).toFixed(2)}</strong> e o desvio padrão de <strong>{Number(estatisticas.desvioPadraoTempoResolucaoDias).toFixed(2)} dias</strong>. Valores elevados indicam maior diferença entre os tempos.</p>
+                        <p>O terceiro quartil foi de <strong>{Number(estatisticas.terceiroQuartilTempoResolucaoDias).toFixed(2)} dias</strong> — tempos acima representam os 25% casos mais demorados.</p>
+                      </div>
+                    </div>
+
+                    {/* ── Distribuições ── */}
+                    <div className="estat-distrib-grid">
+
+                      {/* Poisson */}
+                      <section className="estat-distrib-card">
+                        <div className="estat-distrib-head">
+                          <div className="estat-distrib-sym">λ</div>
+                          <div>
+                            <span className="estat-eyebrow">Distribuição de probabilidade</span>
+                            <h3>Poisson</h3>
+                            <p>Probabilidade de determinada quantidade de denúncias ocorrer em um dia.</p>
+                          </div>
+                        </div>
+                        <form className="estat-distrib-form" onSubmit={calcularPoisson}>
+                          <div className="modal-form-group">
+                            <label>Quantidade de denúncias</label>
+                            <input type="number" min="0" step="1" value={poissonQuantidade} onChange={e => setPoissonQuantidade(e.target.value)} />
+                          </div>
+                          <div className="modal-form-group">
+                            <label>Operação</label>
+                            <select value={poissonOperacao} onChange={e => setPoissonOperacao(e.target.value)}>
+                              <option value="EXATAMENTE">Exatamente</option>
+                              <option value="NO_MAXIMO">No máximo</option>
+                              <option value="PELO_MENOS">Pelo menos</option>
+                              <option value="MAIS_DE">Mais de</option>
+                            </select>
+                          </div>
+                          <button type="submit" className="estat-calc-btn" disabled={carregandoPoisson}>
+                            {carregandoPoisson ? "Calculando..." : "Calcular"}
+                          </button>
+                        </form>
+                        {resultadoPoisson && (
+                          <div className="estat-distrib-result">
+                            <div><span>λ (média diária)</span><strong>{Number(resultadoPoisson.lambda).toFixed(4)}</strong></div>
+                            <div><span>Probabilidade</span><strong className="estat-result-pct">{Number(resultadoPoisson.percentual).toFixed(2)}%</strong></div>
+                            <p>{resultadoPoisson.interpretacao}</p>
+                          </div>
+                        )}
+                      </section>
+
+                      {/* Binomial */}
+                      <section className="estat-distrib-card">
+                        <div className="estat-distrib-head">
+                          <div className="estat-distrib-sym">B</div>
+                          <div>
+                            <span className="estat-eyebrow">Distribuição de probabilidade</span>
+                            <h3>Binomial</h3>
+                            <p>Probabilidade de determinada quantidade de denúncias ser resolvida.</p>
+                          </div>
+                        </div>
+                        <form className="estat-distrib-form" onSubmit={calcularBinomial}>
+                          <div className="modal-form-group">
+                            <label>Total de denúncias</label>
+                            <input type="number" min="1" max="200" step="1" value={binomialTentativas} onChange={e => setBinomialTentativas(e.target.value)} />
+                          </div>
+                          <div className="modal-form-group">
+                            <label>Quantidade resolvida desejada</label>
+                            <input type="number" min="0" step="1" value={binomialSucessos} onChange={e => setBinomialSucessos(e.target.value)} />
+                          </div>
+                          <div className="modal-form-group">
+                            <label>Operação</label>
+                            <select value={binomialOperacao} onChange={e => setBinomialOperacao(e.target.value)}>
+                              <option value="EXATAMENTE">Exatamente</option>
+                              <option value="NO_MAXIMO">No máximo</option>
+                              <option value="PELO_MENOS">Pelo menos</option>
+                              <option value="MAIS_DE">Mais de</option>
+                            </select>
+                          </div>
+                          <button type="submit" className="estat-calc-btn" disabled={carregandoBinomial}>
+                            {carregandoBinomial ? "Calculando..." : "Calcular"}
+                          </button>
+                        </form>
+                        {resultadoBinomial && (
+                          <div className="estat-distrib-result">
+                            <div><span>Taxa histórica de resolução</span><strong>{(Number(resultadoBinomial.taxaResolucao) * 100).toFixed(2)}%</strong></div>
+                            <div><span>Probabilidade</span><strong className="estat-result-pct">{Number(resultadoBinomial.percentual).toFixed(2)}%</strong></div>
+                            <p>{resultadoBinomial.interpretacao}</p>
+                          </div>
+                        )}
+                      </section>
+
+                      {/* Normal */}
+                      <section className="estat-distrib-card">
+                        <div className="estat-distrib-head">
+                          <div className="estat-distrib-sym">N</div>
+                          <div>
+                            <span className="estat-eyebrow">Distribuição de probabilidade</span>
+                            <h3>Normal</h3>
+                            <p>Probabilidades usando o histórico de tempos de resolução.</p>
+                          </div>
+                        </div>
+                        <form className="estat-distrib-form" onSubmit={calcularNormal}>
+                          <div className="modal-form-group">
+                            <label>Tempo de resolução (dias)</label>
+                            <input type="number" min="0" step="0.1" value={normalDias} onChange={e => setNormalDias(e.target.value)} />
+                          </div>
+                          <div className="modal-form-group">
+                            <label>Operação</label>
+                            <select value={normalOperacao} onChange={e => setNormalOperacao(e.target.value)}>
+                              <option value="NO_MAXIMO">No máximo</option>
+                              <option value="PELO_MENOS">Pelo menos</option>
+                              <option value="MAIS_DE">Mais de</option>
+                            </select>
+                          </div>
+                          <button type="submit" className="estat-calc-btn" disabled={carregandoNormal}>
+                            {carregandoNormal ? "Calculando..." : "Calcular"}
+                          </button>
+                        </form>
+                        {resultadoNormal && (
+                          <div className="estat-distrib-result">
+                            {resultadoNormal.calculoDisponivel ? (
+                              <>
+                                <div><span>Média</span><strong>{Number(resultadoNormal.mediaDias).toFixed(2)} dias</strong></div>
+                                <div><span>Desvio padrão</span><strong>{Number(resultadoNormal.desvioPadraoDias).toFixed(2)}</strong></div>
+                                <div><span>Z-score</span><strong>{Number(resultadoNormal.zscore ?? resultadoNormal.zScore).toFixed(4)}</strong></div>
+                                <div><span>Probabilidade</span><strong className="estat-result-pct">{Number(resultadoNormal.percentual).toFixed(2)}%</strong></div>
+                                <p>{resultadoNormal.interpretacao}</p>
+                              </>
+                            ) : (
+                              <p>{resultadoNormal.interpretacao}</p>
+                            )}
+                          </div>
+                        )}
+                      </section>
+
+                    </div>
+                  </>
+                )}
+              </div>
+            )}
+            
           </div>
         </div>
       )}
@@ -915,6 +1347,8 @@ function Admin() {
           </div>
         </div>
       )}
+
+      
 
       {/* ══ MODAL ATUALIZAR ══ */}
       {modalAtualizar && denunciaSelecionada && (
