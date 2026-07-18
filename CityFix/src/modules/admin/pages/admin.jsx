@@ -3,6 +3,20 @@ import { useEffect, useState, useCallback } from "react";
 import L from "leaflet";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Legend,
+  Line,
+  LineChart,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import NavBar from "../../dashboard/components/NavBar";
 
 /* ══ TOAST ══ */
@@ -61,6 +75,24 @@ const prioridadeConfig = {
   Média: { cor: "prio--media" },
   Baixa: { cor: "prio--baixa" },
 };
+
+const CORES_GRAFICOS = {
+  aberta: "#31bf49",
+  andamento: "#f4d06f",
+  resolvida: "#60a5fa",
+  alta: "#ff6b6b",
+  media: "#f4d06f",
+  baixa: "#60a5fa",
+  barras: "#31bf49",
+  linha: "#a78bfa",
+};
+
+function formatarDataGrafico(valor) {
+  if (!valor) return "Sem data";
+  const data = new Date(valor);
+  if (Number.isNaN(data.getTime())) return "Sem data";
+  return data.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
+}
 
 /* ══ CONFIRM MODAL ══ */
 function ConfirmModal({ aberto, onConfirmar, onCancelar, titulo = "Apagar comentário", mensagem = "Esta ação não pode ser desfeita. Deseja apagar este comentário?" }) {
@@ -579,6 +611,46 @@ async function calcularNormal(e) {
   },
 ];
 
+  const dadosGraficoStatus = [
+    { nome: "Abertas", valor: denuncias.filter((d) => d.status === "ABERTA").length, fill: CORES_GRAFICOS.aberta },
+    { nome: "Em andamento", valor: denuncias.filter((d) => d.status === "EM_ANDAMENTO").length, fill: CORES_GRAFICOS.andamento },
+    { nome: "Resolvidas", valor: denuncias.filter((d) => d.status === "RESOLVIDA").length, fill: CORES_GRAFICOS.resolvida },
+  ].filter((item) => item.valor > 0);
+
+  const dadosGraficoPrioridade = [
+    { nome: "Alta", valor: denuncias.filter((d) => d.prioridade === "ALTA").length, fill: CORES_GRAFICOS.alta },
+    { nome: "Média", valor: denuncias.filter((d) => d.prioridade === "MEDIA").length, fill: CORES_GRAFICOS.media },
+    { nome: "Baixa", valor: denuncias.filter((d) => d.prioridade === "BAIXA").length, fill: CORES_GRAFICOS.baixa },
+  ].filter((item) => item.valor > 0);
+
+  const dadosGraficoCategorias = Object.values(
+    denuncias.reduce((acumulador, denuncia) => {
+      const nome = denuncia.categoria?.nome || "Sem categoria";
+      acumulador[nome] = acumulador[nome] || { nome, quantidade: 0 };
+      acumulador[nome].quantidade += 1;
+      return acumulador;
+    }, {})
+  ).sort((a, b) => b.quantidade - a.quantidade);
+
+  const dadosGraficoEvolucao = Object.values(
+    denuncias.reduce((acumulador, denuncia) => {
+      const dataOriginal = denuncia.dataCriacao || denuncia.dataCadastro || denuncia.criadoEm;
+      if (!dataOriginal) return acumulador;
+      const data = new Date(dataOriginal);
+      if (Number.isNaN(data.getTime())) return acumulador;
+      const chave = data.toISOString().slice(0, 10);
+      acumulador[chave] = acumulador[chave] || {
+        chave,
+        data: formatarDataGrafico(dataOriginal),
+        quantidade: 0,
+      };
+      acumulador[chave].quantidade += 1;
+      return acumulador;
+    }, {})
+  )
+    .sort((a, b) => a.chave.localeCompare(b.chave))
+    .slice(-14);
+
   function abrirModulo(id) {
   setModalAberto(id);
 
@@ -970,6 +1042,137 @@ async function calcularNormal(e) {
                       </section>
 
                     </div>
+
+                    {/* ── Gráficos estatísticos ── */}
+                    <section className="estat-charts-section">
+                      <div className="estat-charts-title">
+                        <div>
+                          <span className="estat-eyebrow">Visualização dos dados</span>
+                          <h3>Gráficos estatísticos</h3>
+                        </div>
+                        <p>Os gráficos representam as denúncias atualmente cadastradas no CityFix.</p>
+                      </div>
+
+                      <div className="estat-charts-grid">
+                        <article className="estat-chart-card">
+                          <div className="estat-chart-head">
+                            <div>
+                              <h4>Denúncias por status</h4>
+                              <p>Distribuição percentual entre os estados de atendimento.</p>
+                            </div>
+                            <span className="estat-chart-type">Pizza</span>
+                          </div>
+                          <div className="estat-chart-body">
+                            {dadosGraficoStatus.length > 0 ? (
+                              <ResponsiveContainer width="100%" height="100%">
+                                <PieChart>
+                                  <Pie
+                                    data={dadosGraficoStatus}
+                                    dataKey="valor"
+                                    nameKey="nome"
+                                    cx="50%"
+                                    cy="46%"
+                                    innerRadius={48}
+                                    outerRadius={82}
+                                    paddingAngle={3}
+                                    label={({ nome, percent }) => `${nome}: ${(percent * 100).toFixed(0)}%`}
+                                    labelLine={false}
+                                  />
+                                  <Tooltip formatter={(valor) => [`${valor} denúncia(s)`, "Quantidade"]} />
+                                  <Legend verticalAlign="bottom" height={28} />
+                                </PieChart>
+                              </ResponsiveContainer>
+                            ) : (
+                              <p className="estat-chart-empty">Sem dados para montar o gráfico.</p>
+                            )}
+                          </div>
+                        </article>
+
+                        <article className="estat-chart-card">
+                          <div className="estat-chart-head">
+                            <div>
+                              <h4>Denúncias por prioridade</h4>
+                              <p>Proporção de ocorrências de prioridade alta, média e baixa.</p>
+                            </div>
+                            <span className="estat-chart-type">Pizza</span>
+                          </div>
+                          <div className="estat-chart-body">
+                            {dadosGraficoPrioridade.length > 0 ? (
+                              <ResponsiveContainer width="100%" height="100%">
+                                <PieChart>
+                                  <Pie
+                                    data={dadosGraficoPrioridade}
+                                    dataKey="valor"
+                                    nameKey="nome"
+                                    cx="50%"
+                                    cy="46%"
+                                    innerRadius={48}
+                                    outerRadius={82}
+                                    paddingAngle={3}
+                                    label={({ nome, percent }) => `${nome}: ${(percent * 100).toFixed(0)}%`}
+                                    labelLine={false}
+                                  />
+                                  <Tooltip formatter={(valor) => [`${valor} denúncia(s)`, "Quantidade"]} />
+                                  <Legend verticalAlign="bottom" height={28} />
+                                </PieChart>
+                              </ResponsiveContainer>
+                            ) : (
+                              <p className="estat-chart-empty">Sem dados para montar o gráfico.</p>
+                            )}
+                          </div>
+                        </article>
+
+                        <article className="estat-chart-card estat-chart-card--wide">
+                          <div className="estat-chart-head">
+                            <div>
+                              <h4>Denúncias por categoria</h4>
+                              <p>Comparação da quantidade registrada em cada categoria.</p>
+                            </div>
+                            <span className="estat-chart-type">Barras</span>
+                          </div>
+                          <div className="estat-chart-body estat-chart-body--large">
+                            {dadosGraficoCategorias.length > 0 ? (
+                              <ResponsiveContainer width="100%" height="100%">
+                                <BarChart data={dadosGraficoCategorias} margin={{ top: 10, right: 12, left: -18, bottom: 52 }}>
+                                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
+                                  <XAxis dataKey="nome" angle={-28} textAnchor="end" interval={0} tick={{ fill: "#b8ccbf", fontSize: 11 }} />
+                                  <YAxis allowDecimals={false} tick={{ fill: "#7a9484", fontSize: 11 }} />
+                                  <Tooltip formatter={(valor) => [`${valor} denúncia(s)`, "Quantidade"]} />
+                                  <Bar dataKey="quantidade" name="Denúncias" fill={CORES_GRAFICOS.barras} radius={[8, 8, 0, 0]} />
+                                </BarChart>
+                              </ResponsiveContainer>
+                            ) : (
+                              <p className="estat-chart-empty">Sem dados para montar o gráfico.</p>
+                            )}
+                          </div>
+                        </article>
+
+                        <article className="estat-chart-card estat-chart-card--wide">
+                          <div className="estat-chart-head">
+                            <div>
+                              <h4>Evolução das denúncias</h4>
+                              <p>Quantidade diária registrada nos últimos 14 dias com ocorrências.</p>
+                            </div>
+                            <span className="estat-chart-type">Linha</span>
+                          </div>
+                          <div className="estat-chart-body estat-chart-body--large">
+                            {dadosGraficoEvolucao.length > 0 ? (
+                              <ResponsiveContainer width="100%" height="100%">
+                                <LineChart data={dadosGraficoEvolucao} margin={{ top: 10, right: 18, left: -18, bottom: 8 }}>
+                                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
+                                  <XAxis dataKey="data" tick={{ fill: "#b8ccbf", fontSize: 11 }} />
+                                  <YAxis allowDecimals={false} tick={{ fill: "#7a9484", fontSize: 11 }} />
+                                  <Tooltip formatter={(valor) => [`${valor} denúncia(s)`, "Quantidade"]} />
+                                  <Line type="monotone" dataKey="quantidade" name="Denúncias" stroke={CORES_GRAFICOS.linha} strokeWidth={3} dot={{ r: 4 }} activeDot={{ r: 6 }} />
+                                </LineChart>
+                              </ResponsiveContainer>
+                            ) : (
+                              <p className="estat-chart-empty">Cadastre denúncias com data para visualizar a evolução.</p>
+                            )}
+                          </div>
+                        </article>
+                      </div>
+                    </section>
 
                     {/* ── Interpretação ── */}
                     <div className="estat-analysis">

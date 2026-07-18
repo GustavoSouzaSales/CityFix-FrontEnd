@@ -1319,58 +1319,125 @@
 .admin-imagem-overlay-close:hover { background: rgba(229,57,53,0.4); }
 
 /* ══════════════════════════════════════
-   PAINEL ESTATÍSTICO — REDESENHADO
+   PAINEL ESTATÍSTICO — NEON EDITION
+   (mesmo conteúdo/estrutura, visual reforçado
+   com brilho neon, glow e profundidade)
 ══════════════════════════════════════ */
+
+/* Fundo sutil do conteúdo do painel estatístico, com textura de grid neon */
+.admin-modal-content:has(.estat-summary) {
+  position: relative;
+}
+.admin-modal-content:has(.estat-summary)::before {
+  content: '';
+  position: absolute;
+  inset: -8px -8px auto -8px;
+  height: 220px;
+  background:
+    radial-gradient(circle at 15% 0%, rgba(49,191,73,0.10), transparent 55%),
+    radial-gradient(circle at 85% 10%, rgba(167,139,250,0.08), transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
 
 /* Loading */
 .estat-loading {
-  min-height: 200px;
-  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
+  min-height: 220px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
+  position: relative;
 }
 .estat-loading-spinner {
-  width: 36px; height: 36px;
+  width: 40px; height: 40px;
   border: 3px solid rgba(49,191,73,0.15);
   border-top-color: var(--green);
   border-radius: 50%;
+  box-shadow: 0 0 22px rgba(49,191,73,0.35), inset 0 0 8px rgba(49,191,73,0.15);
   animation: estat-spin 0.8s linear infinite;
 }
 @keyframes estat-spin { to { transform: rotate(360deg); } }
-.estat-loading p { font-family: var(--font-display); font-size: 13px; color: var(--text-muted); }
+.estat-loading p {
+  font-family: var(--font-display); font-size: 13px; font-weight: 600;
+  color: var(--text-dim);
+  letter-spacing: 0.3px;
+}
 
-/* Eyebrow reutilizável */
+/* Eyebrow reutilizável — agora com pontinho neon pulsante */
 .estat-eyebrow {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 7px;
   font-family: var(--font-display); font-size: 10px; font-weight: 700;
   letter-spacing: 1.8px; text-transform: uppercase; color: var(--green);
   margin-bottom: 3px;
+  text-shadow: 0 0 12px rgba(49,191,73,0.45);
+}
+.estat-eyebrow::before {
+  content: '';
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 8px 2px rgba(49,191,73,0.7);
+  animation: estat-dot-pulse 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes estat-dot-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.4; transform: scale(0.7); }
 }
 
 /* ── Cards de contagem ── */
 .estat-summary {
-  display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
+  position: relative; z-index: 1;
 }
 
 .estat-card {
-  padding: 16px 18px;
+  padding: 17px 18px;
   border: 1px solid var(--border); border-radius: var(--radius-md);
-  background: var(--bg-item);
+  background: linear-gradient(160deg, rgba(255,255,255,0.035), rgba(255,255,255,0.01));
   display: flex; align-items: center; gap: 14px;
   position: relative; overflow: hidden;
-  transition: border-color 0.2s, transform 0.2s;
+  backdrop-filter: blur(6px);
+  transition: border-color 0.25s, transform 0.25s, box-shadow 0.25s;
 }
-.estat-card:hover { transform: translateY(-2px); }
+.estat-card:hover { transform: translateY(-3px); }
 .estat-card::before {
   content: ''; position: absolute; top: 0; left: 0; bottom: 0; width: 3px;
+  box-shadow: 0 0 12px 1px currentColor;
 }
+.estat-card::after {
+  content: '';
+  position: absolute; top: -30%; right: -20%;
+  width: 90px; height: 90px; border-radius: 50%;
+  background: radial-gradient(circle, currentColor, transparent 70%);
+  opacity: 0.06;
+  pointer-events: none;
+}
+.estat-card--total    { color: var(--purple); }
+.estat-card--aberta   { color: var(--green);  }
+.estat-card--andamento{ color: var(--yellow); }
+.estat-card--resolvida{ color: var(--blue);   }
+
 .estat-card--total::before    { background: var(--purple); }
 .estat-card--aberta::before   { background: var(--green);  }
 .estat-card--andamento::before{ background: var(--yellow); }
 .estat-card--resolvida::before{ background: var(--blue);   }
 
-.estat-card-icon { font-size: 22px; flex-shrink: 0; }
+.estat-card--total:hover    { border-color: rgba(167,139,250,0.4); box-shadow: 0 8px 28px rgba(167,139,250,0.12); }
+.estat-card--aberta:hover   { border-color: rgba(49,191,73,0.4);   box-shadow: 0 8px 28px rgba(49,191,73,0.14);  }
+.estat-card--andamento:hover{ border-color: rgba(244,208,111,0.4); box-shadow: 0 8px 28px rgba(244,208,111,0.12);}
+.estat-card--resolvida:hover{ border-color: rgba(96,165,250,0.4);  box-shadow: 0 8px 28px rgba(96,165,250,0.12); }
+
+.estat-card-icon {
+  font-size: 20px; flex-shrink: 0;
+  width: 38px; height: 38px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  background: currentColor;
+}
+.estat-card-icon { position: relative; }
+.estat-card-icon::before { content: ''; position: absolute; inset: 0; border-radius: 10px; background: inherit; opacity: 0.12; }
 .estat-card p    { font-size: 11px; color: var(--text-muted); margin-bottom: 3px; }
 .estat-card strong {
-  font-family: var(--font-display); font-size: 26px; font-weight: 800;
+  font-family: var(--font-display); font-size: 27px; font-weight: 800;
   letter-spacing: -1px; line-height: 1;
   color: var(--text);
 }
@@ -1378,39 +1445,63 @@
 /* ── Barra de moda ── */
 .estat-moda-bar {
   display: flex; align-items: center; gap: 16px;
-  padding: 16px 20px;
+  padding: 17px 20px;
   border: 1px solid var(--border-green);
   border-radius: var(--radius-md);
-  background: linear-gradient(135deg, rgba(49,191,73,0.07), rgba(49,191,73,0.02));
+  background: linear-gradient(135deg, rgba(49,191,73,0.1), rgba(49,191,73,0.02));
   position: relative; overflow: hidden;
+  box-shadow: 0 0 0 1px rgba(49,191,73,0.05), 0 8px 30px rgba(49,191,73,0.08);
+  z-index: 1;
 }
 .estat-moda-bar::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1.5px;
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
   background: linear-gradient(90deg, transparent, var(--green) 40%, #a7f3b0 60%, transparent);
-  opacity: 0.6;
+  opacity: 0.85;
+  filter: drop-shadow(0 0 6px rgba(49,191,73,0.6));
+}
+.estat-moda-bar::after {
+  content: '';
+  position: absolute; top: -50%; left: 60%;
+  width: 160px; height: 160px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(49,191,73,0.18), transparent 70%);
+  pointer-events: none;
 }
 .estat-moda-icon {
-  width: 48px; height: 48px; flex-shrink: 0; border-radius: 13px;
+  width: 50px; height: 50px; flex-shrink: 0; border-radius: 14px;
   background: var(--green-dim); border: 1px solid var(--border-green);
   display: flex; align-items: center; justify-content: center; font-size: 22px;
+  box-shadow: 0 0 18px rgba(49,191,73,0.25), inset 0 0 10px rgba(49,191,73,0.1);
 }
-.estat-moda-body { display: flex; flex-direction: column; gap: 2px; }
+.estat-moda-body { display: flex; flex-direction: column; gap: 2px; position: relative; z-index: 1; }
 .estat-moda-body strong {
-  font-family: var(--font-display); font-size: 18px; font-weight: 700;
+  font-family: var(--font-display); font-size: 19px; font-weight: 800;
   color: var(--green); letter-spacing: -0.3px;
+  text-shadow: 0 0 16px rgba(49,191,73,0.4);
 }
 .estat-moda-sub { font-size: 11px; color: var(--text-muted); font-weight: 300; }
 
 /* ── Duas colunas ── */
-.estat-two-col { display: grid; grid-template-columns: 1fr; gap: 14px; }
+.estat-two-col { display: grid; grid-template-columns: 1fr; gap: 14px; position: relative; z-index: 1; }
 @media (min-width: 700px) { .estat-two-col { grid-template-columns: 1fr 1fr; } }
 
 /* ── Seção genérica ── */
 .estat-section {
-  padding: 18px;
+  padding: 19px;
   border: 1px solid var(--border); border-radius: var(--radius-lg);
-  background: rgba(255,255,255,0.02);
+  background: linear-gradient(160deg, rgba(255,255,255,0.025), rgba(255,255,255,0.005));
   display: flex; flex-direction: column; gap: 14px;
+  position: relative; overflow: hidden;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+.estat-section::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1.5px;
+  background: linear-gradient(90deg, transparent, rgba(244,208,111,0.55), transparent);
+  opacity: 0.7;
+}
+.estat-section:hover {
+  border-color: rgba(244,208,111,0.22);
+  box-shadow: 0 10px 34px rgba(244,208,111,0.06);
 }
 
 .estat-section-head {
@@ -1418,7 +1509,7 @@
 }
 
 .estat-unit-badge {
-  padding: 4px 10px; border-radius: 999px;
+  padding: 4px 11px; border-radius: 999px;
   border: 1px solid var(--border); background: var(--bg-item);
   color: var(--text-muted); font-family: var(--font-display); font-size: 10px; font-weight: 600;
   white-space: nowrap;
@@ -1432,20 +1523,26 @@
   border: 1px solid var(--border); border-radius: var(--radius-md);
   background: var(--bg-card);
   display: flex; align-items: flex-start; gap: 12px;
-  transition: border-color 0.2s;
+  transition: border-color 0.25s, transform 0.2s, box-shadow 0.25s;
 }
-.estat-indicator:hover { border-color: rgba(244,208,111,0.25); }
+.estat-indicator:hover {
+  border-color: rgba(244,208,111,0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(244,208,111,0.1);
+}
 
 .estat-indicator-sym {
   width: 38px; height: 38px; flex-shrink: 0; border-radius: 10px;
-  background: var(--yellow-dim); border: 1px solid rgba(244,208,111,0.22);
+  background: var(--yellow-dim); border: 1px solid rgba(244,208,111,0.3);
   display: flex; align-items: center; justify-content: center;
   color: var(--yellow); font-family: serif; font-size: 16px; font-weight: 700;
+  box-shadow: 0 0 14px rgba(244,208,111,0.2), inset 0 0 8px rgba(244,208,111,0.08);
+  text-shadow: 0 0 10px rgba(244,208,111,0.6);
 }
 
 .estat-indicator p     { font-size: 11px; color: var(--text-muted); margin-bottom: 2px; }
 .estat-indicator strong{
-  display: block; font-family: var(--font-display); font-size: 21px; font-weight: 800;
+  display: block; font-family: var(--font-display); font-size: 22px; font-weight: 800;
   color: var(--text); margin-bottom: 3px;
 }
 .estat-indicator small { font-size: 10px; color: var(--text-muted); line-height: 1.4; }
@@ -1458,19 +1555,25 @@
   border: 1px solid var(--border); border-radius: var(--radius-md);
   background: var(--bg-card);
   display: flex; align-items: center; gap: 14px;
-  transition: border-color 0.2s;
+  transition: border-color 0.25s, transform 0.2s, box-shadow 0.25s;
 }
-.estat-quartil:hover { border-color: rgba(167,139,250,0.25); }
+.estat-quartil:hover {
+  border-color: rgba(167,139,250,0.4);
+  transform: translateX(3px);
+  box-shadow: 0 8px 24px rgba(167,139,250,0.1);
+}
 
 .estat-quartil-badge {
-  width: 34px; height: 34px; flex-shrink: 0; border-radius: 9px;
-  background: var(--purple-dim); border: 1px solid rgba(167,139,250,0.25);
+  width: 36px; height: 36px; flex-shrink: 0; border-radius: 10px;
+  background: var(--purple-dim); border: 1px solid rgba(167,139,250,0.32);
   display: flex; align-items: center; justify-content: center;
   color: var(--purple); font-family: var(--font-display); font-size: 11px; font-weight: 800;
+  box-shadow: 0 0 14px rgba(167,139,250,0.22), inset 0 0 8px rgba(167,139,250,0.08);
+  text-shadow: 0 0 10px rgba(167,139,250,0.6);
 }
 
 .estat-quartil strong {
-  font-family: var(--font-display); font-size: 22px; font-weight: 800;
+  font-family: var(--font-display); font-size: 23px; font-weight: 800;
   color: var(--text); flex-shrink: 0; min-width: 52px;
 }
 .estat-quartil p  { font-size: 11px; color: var(--text-muted); line-height: 1.45; }
@@ -1479,49 +1582,98 @@
 /* ── Interpretação ── */
 .estat-analysis {
   display: flex; align-items: flex-start; gap: 14px;
-  padding: 18px 20px;
-  border: 1px solid rgba(96,165,250,0.18); border-radius: var(--radius-md);
-  background: rgba(96,165,250,0.04);
+  padding: 19px 21px;
+  border: 1px solid rgba(96,165,250,0.22); border-radius: var(--radius-md);
+  background: linear-gradient(135deg, rgba(96,165,250,0.06), rgba(96,165,250,0.015));
+  position: relative; overflow: hidden;
+  z-index: 1;
+  box-shadow: 0 8px 28px rgba(96,165,250,0.06);
+}
+.estat-analysis::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1.5px;
+  background: linear-gradient(90deg, transparent, var(--blue) 45%, #bcd8ff 55%, transparent);
+  opacity: 0.7;
 }
 .estat-analysis-icon {
-  width: 38px; height: 38px; flex-shrink: 0; border-radius: 10px;
-  background: var(--blue-dim); display: flex; align-items: center; justify-content: center; font-size: 18px;
+  width: 40px; height: 40px; flex-shrink: 0; border-radius: 11px;
+  background: var(--blue-dim); border: 1px solid rgba(96,165,250,0.25);
+  display: flex; align-items: center; justify-content: center; font-size: 18px;
+  box-shadow: 0 0 16px rgba(96,165,250,0.25);
 }
 .estat-analysis h3 {
   font-family: var(--font-display); font-size: 13px; font-weight: 700;
   color: var(--blue); margin-bottom: 8px;
+  text-shadow: 0 0 12px rgba(96,165,250,0.4);
 }
 .estat-analysis p { font-size: 12px; color: var(--text-muted); line-height: 1.6; }
 .estat-analysis p + p { margin-top: 6px; }
 .estat-analysis strong { color: var(--text-dim); }
 
 /* ── Grid de distribuições ── */
-.estat-distrib-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
+.estat-distrib-grid { display: grid; grid-template-columns: 1fr; gap: 14px; position: relative; z-index: 1; }
 @media (min-width: 800px) { .estat-distrib-grid { grid-template-columns: repeat(3, 1fr); } }
 
 .estat-distrib-card {
-  padding: 18px;
+  padding: 19px;
   border: 1px solid var(--border); border-radius: var(--radius-lg);
-  background: rgba(255,255,255,0.02);
+  background: linear-gradient(160deg, rgba(255,255,255,0.03), rgba(255,255,255,0.005));
   display: flex; flex-direction: column; gap: 14px;
   position: relative; overflow: hidden;
-  transition: border-color 0.2s;
+  transition: border-color 0.3s, transform 0.25s, box-shadow 0.3s;
 }
-.estat-distrib-card:hover { border-color: rgba(49,191,73,0.18); }
+.estat-distrib-card:hover { transform: translateY(-3px); }
 .estat-distrib-card::before {
-  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1.5px;
-  background: linear-gradient(90deg, transparent, var(--green), transparent);
-  opacity: 0.25;
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--purple), transparent);
+  opacity: 0.4;
+}
+/* Poisson = roxo, Binomial = verde, Normal = azul */
+.estat-distrib-grid > .estat-distrib-card:nth-child(1) .estat-distrib-sym {
+  background: var(--purple-dim); border-color: rgba(167,139,250,0.3); color: var(--purple);
+  box-shadow: 0 0 16px rgba(167,139,250,0.25);
+  text-shadow: 0 0 10px rgba(167,139,250,0.6);
+}
+.estat-distrib-grid > .estat-distrib-card:nth-child(1):hover {
+  border-color: rgba(167,139,250,0.4); box-shadow: 0 10px 32px rgba(167,139,250,0.12);
+}
+.estat-distrib-grid > .estat-distrib-card:nth-child(1)::before {
+  background: linear-gradient(90deg, transparent, var(--purple), transparent); opacity: 0.55;
+}
+
+.estat-distrib-grid > .estat-distrib-card:nth-child(2) .estat-distrib-sym {
+  background: var(--green-dim); border-color: rgba(49,191,73,0.3); color: var(--green);
+  box-shadow: 0 0 16px rgba(49,191,73,0.25);
+  text-shadow: 0 0 10px rgba(49,191,73,0.6);
+}
+.estat-distrib-grid > .estat-distrib-card:nth-child(2):hover {
+  border-color: rgba(49,191,73,0.4); box-shadow: 0 10px 32px rgba(49,191,73,0.12);
+}
+.estat-distrib-grid > .estat-distrib-card:nth-child(2)::before {
+  background: linear-gradient(90deg, transparent, var(--green), transparent); opacity: 0.55;
+}
+
+.estat-distrib-grid > .estat-distrib-card:nth-child(3) .estat-distrib-sym {
+  background: var(--blue-dim); border-color: rgba(96,165,250,0.3); color: var(--blue);
+  box-shadow: 0 0 16px rgba(96,165,250,0.25);
+  text-shadow: 0 0 10px rgba(96,165,250,0.6);
+}
+.estat-distrib-grid > .estat-distrib-card:nth-child(3):hover {
+  border-color: rgba(96,165,250,0.4); box-shadow: 0 10px 32px rgba(96,165,250,0.12);
+}
+.estat-distrib-grid > .estat-distrib-card:nth-child(3)::before {
+  background: linear-gradient(90deg, transparent, var(--blue), transparent); opacity: 0.55;
 }
 
 .estat-distrib-head {
   display: flex; align-items: flex-start; gap: 12px;
 }
 .estat-distrib-sym {
-  width: 42px; height: 42px; flex-shrink: 0; border-radius: 12px;
+  width: 44px; height: 44px; flex-shrink: 0; border-radius: 13px;
   background: var(--purple-dim); border: 1px solid rgba(167,139,250,0.25);
   display: flex; align-items: center; justify-content: center;
-  color: var(--purple); font-family: var(--font-display); font-size: 18px; font-weight: 800;
+  color: var(--purple); font-family: var(--font-display); font-size: 19px; font-weight: 800;
+  transition: box-shadow 0.3s;
 }
 .estat-distrib-head h3 {
   font-family: var(--font-display); font-size: 15px; font-weight: 700;
@@ -1536,36 +1688,235 @@
   border: none; border-radius: var(--radius-sm);
   background: var(--green-grad); color: #fff;
   font-family: var(--font-display); font-size: 12px; font-weight: 700;
-  cursor: pointer; transition: opacity 0.2s, transform 0.15s;
+  cursor: pointer; transition: opacity 0.2s, transform 0.15s, box-shadow 0.25s;
   width: 100%;
+  box-shadow: 0 4px 16px rgba(30,145,48,0.28);
+  letter-spacing: 0.2px;
 }
-.estat-calc-btn:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
+.estat-calc-btn:hover:not(:disabled) {
+  opacity: 0.95; transform: translateY(-1px);
+  box-shadow: 0 6px 22px rgba(49,191,73,0.4), 0 0 18px rgba(49,191,73,0.25);
+}
 .estat-calc-btn:disabled { opacity: 0.5; cursor: wait; }
 
 .estat-distrib-result {
   display: flex; flex-direction: column; gap: 8px;
-  padding: 14px;
+  padding: 15px;
   border: 1px solid var(--border-green); border-radius: var(--radius-sm);
-  background: var(--green-dim);
-  animation: estat-result-in 0.25s cubic-bezier(0.22,1,0.36,1) both;
+  background: linear-gradient(135deg, rgba(49,191,73,0.14), rgba(49,191,73,0.06));
+  animation: estat-result-in 0.3s cubic-bezier(0.22,1,0.36,1) both;
+  box-shadow: 0 0 0 1px rgba(49,191,73,0.06), 0 8px 24px rgba(49,191,73,0.1);
+  position: relative;
 }
 @keyframes estat-result-in {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: translateY(0);   }
+  from { opacity: 0; transform: translateY(6px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1);   }
 }
 
 .estat-distrib-result > div {
   display: flex; align-items: center; justify-content: space-between; gap: 8px;
   padding-bottom: 7px;
-  border-bottom: 1px solid rgba(49,191,73,0.12);
+  border-bottom: 1px solid rgba(49,191,73,0.14);
 }
 .estat-distrib-result > div:last-of-type { border-bottom: none; padding-bottom: 0; }
 
 .estat-distrib-result span  { font-size: 11px; color: var(--text-muted); }
 .estat-distrib-result strong{ font-family: var(--font-display); font-size: 14px; color: var(--text-dim); }
-.estat-result-pct { color: var(--green) !important; font-size: 18px !important; }
+.estat-result-pct {
+  color: var(--green) !important; font-size: 19px !important;
+  text-shadow: 0 0 16px rgba(49,191,73,0.6);
+}
 
 .estat-distrib-result p {
   font-size: 11px; color: var(--text-muted); line-height: 1.55;
-  padding-top: 6px; border-top: 1px solid rgba(49,191,73,0.12);
+  padding-top: 6px; border-top: 1px solid rgba(49,191,73,0.14);
+}
+
+/* ══════════════════════════════════════
+   GRÁFICOS DO PAINEL ESTATÍSTICO — NEON
+══════════════════════════════════════ */
+.estat-charts-section {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  position: relative;
+  z-index: 1;
+}
+
+.estat-charts-title {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.estat-charts-title h3 {
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  background: linear-gradient(90deg, var(--text) 40%, var(--green));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.estat-charts-title > p {
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.estat-charts-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+.estat-chart-card {
+  min-width: 0;
+  padding: 19px;
+  background: linear-gradient(165deg, rgba(255,255,255,0.032), rgba(255,255,255,0.006));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  position: relative;
+  transition: border-color 0.3s, box-shadow 0.3s, transform 0.25s;
+}
+.estat-chart-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--green) 45%, #a7f3b0 55%, transparent);
+  opacity: 0.35;
+  transition: opacity 0.3s;
+}
+.estat-chart-card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(49,191,73,0.28);
+  box-shadow: 0 14px 40px rgba(0,0,0,0.35), 0 0 0 1px rgba(49,191,73,0.06);
+}
+.estat-chart-card:hover::before { opacity: 0.8; }
+
+.estat-chart-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.estat-chart-head h4 {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 4px;
+  color: var(--text);
+}
+
+.estat-chart-head p {
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.estat-chart-type {
+  flex-shrink: 0;
+  padding: 4px 10px;
+  border: 1px solid var(--border-green);
+  border-radius: 999px;
+  background: var(--green-dim);
+  color: var(--green);
+  font-family: var(--font-display);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  box-shadow: 0 0 10px rgba(49,191,73,0.2);
+  text-shadow: 0 0 8px rgba(49,191,73,0.5);
+}
+
+.estat-chart-body {
+  width: 100%;
+  height: 285px;
+}
+
+.estat-chart-body--large {
+  height: 330px;
+}
+
+.estat-chart-empty {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-size: 12px;
+  text-align: center;
+}
+
+/* Recharts: textos e caixas adaptados ao tema escuro, com brilho */
+.estat-chart-card .recharts-default-tooltip {
+  background: #0d1612 !important;
+  border: 1px solid rgba(49,191,73,0.25) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 20px rgba(49,191,73,0.12) !important;
+}
+
+.estat-chart-card .recharts-tooltip-label,
+.estat-chart-card .recharts-tooltip-item {
+  color: var(--text-dim) !important;
+  font-size: 11px !important;
+}
+
+.estat-chart-card .recharts-legend-item-text {
+  color: var(--text-dim) !important;
+  font-size: 11px !important;
+}
+
+.estat-chart-card .recharts-pie-label-text {
+  fill: var(--text-dim);
+  font-size: 10px;
+  font-family: var(--font-body);
+}
+
+/* Leve brilho nas fatias de pizza, barras e linha */
+.estat-chart-card .recharts-pie-sector path,
+.estat-chart-card .recharts-bar-rectangle path,
+.estat-chart-card .recharts-line-curve {
+  filter: drop-shadow(0 0 6px rgba(49,191,73,0.25));
+}
+
+@media (min-width: 768px) {
+  .estat-charts-title {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+  }
+
+  .estat-charts-title > p {
+    max-width: 390px;
+    text-align: right;
+  }
+
+  .estat-charts-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .estat-chart-card--wide {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 1024px) {
+  .estat-chart-card {
+    padding: 20px;
+  }
+
+  .estat-chart-body {
+    height: 310px;
+  }
+
+  .estat-chart-body--large {
+    height: 360px;
+  }
 }
