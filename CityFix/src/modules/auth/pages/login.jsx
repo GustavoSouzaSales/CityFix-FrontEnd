@@ -80,28 +80,72 @@ function Login() {
   const senhaClass = senhaTouched ? (senhaValida ? "valid" : "invalid") : "";
 
   const loginGoogle = useGoogleLogin({
-    onSuccess: async (tokenResponse) => {
+  scope: "openid email profile",
+
+  onSuccess: async (tokenResponse) => {
+    try {
+      const response = await fetch(
+        "http://localhost:8080/usuarios/login-google",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            accessToken: tokenResponse.access_token,
+          }),
+        }
+      );
+
+      const texto = await response.text();
+
+      let data = {};
+
       try {
-        const response = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
-          headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
-        });
-        const usuarioGoogle = await response.json();
-        localStorage.setItem("usuario", JSON.stringify({
-          nome: usuarioGoogle.name,
-          email: usuarioGoogle.email,
-          telefone: "",
-          cidade: "",
-          tipoUsuario: "USUARIO",
-        }));
-        navigate("/home");
-      } catch (error) {
-        addToast("Não foi possível concluir o login com Google. Tente novamente.", "error");
+        data = texto ? JSON.parse(texto) : {};
+      } catch {
+        data = {
+          mensagem: texto,
+        };
       }
-    },
-    onError: () => {
-      addToast("Falha ao conectar com o Google. Verifique sua conexão.", "error");
-    },
-  });
+
+      if (!response.ok) {
+        throw new Error(
+          data.mensagem ||
+            data.message ||
+            "Não foi possível entrar com o Google."
+        );
+      }
+
+      localStorage.setItem(
+        "usuario",
+        JSON.stringify(data)
+      );
+
+      addToast(
+        "Login com Google realizado com sucesso!",
+        "success"
+      );
+
+      setTimeout(() => {
+        navigate("/home");
+      }, 1000);
+    } catch (error) {
+      addToast(
+        error.message ||
+          "Não foi possível concluir o login com Google.",
+        "error"
+      );
+    }
+  },
+
+  onError: () => {
+    addToast(
+      "Falha ao conectar com o Google.",
+      "error"
+    );
+  },
+});
 
   async function handleSubmit(e) {
     e.preventDefault();

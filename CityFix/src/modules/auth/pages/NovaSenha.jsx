@@ -1,6 +1,10 @@
 import "../styles/NovaSenha.css";
 import { useState, useCallback } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 
 /* ══ TOAST (reutiliza estilos do login.css via NovaSenha.css que importa login.css) ══ */
 function Toast({ toasts, removeToast }) {
@@ -92,6 +96,9 @@ function avaliarSenha(senha) {
 /* ══ COMPONENTE ══ */
 function NovaSenha() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const token = location.state?.token;
+  const [salvando, setSalvando] = useState(false);
   const { toasts, addToast, removeToast } = useToast();
 
   const [novaSenha, setNovaSenha]           = useState("");
@@ -109,12 +116,96 @@ function NovaSenha() {
   const senhaClass     = senhaTouched     ? (senhaValida     ? "valid" : "invalid") : "";
   const confirmarClass = confirmarTouched ? (confirmarValida ? "valid" : "invalid") : "";
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!senhaValida || !confirmarValida) return;
-    addToast("Senha atualizada com sucesso! Redirecionando...", "success");
-    setTimeout(() => navigate("/login"), 1400);
-  };
+  const lerResposta = async (response) => {
+  const texto = await response.text();
+
+  if (!texto) {
+    return {};
+  }
+
+  try {
+    return JSON.parse(texto);
+  } catch {
+    return { mensagem: texto };
+  }
+};
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  setSenhaTouched(true);
+  setConfirmarTouched(true);
+
+  if (!formularioValido) {
+    addToast(
+      "Verifique as senhas informadas.",
+      "error"
+    );
+    return;
+  }
+
+  if (!token) {
+    addToast(
+      "A recuperação expirou. Solicite um novo código.",
+      "error"
+    );
+
+    setTimeout(() => {
+      navigate("/esqueci-senha");
+    }, 1800);
+
+    return;
+  }
+
+  try {
+    setSalvando(true);
+
+    const response = await fetch(
+      "http://localhost:8080/recuperacao-senha/redefinir",
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          token,
+          novaSenha,
+          confirmarSenha,
+        }),
+      }
+    );
+
+    const data = await lerResposta(response);
+
+    if (!response.ok) {
+      throw new Error(
+        data.mensagem ||
+          data.message ||
+          "Não foi possível atualizar a senha."
+      );
+    }
+
+    addToast(
+      data.mensagem ||
+        "Senha atualizada com sucesso! Redirecionando...",
+      "success"
+    );
+
+    setTimeout(() => {
+      navigate("/login", {
+        replace: true,
+      });
+    }, 1500);
+  } catch (error) {
+    addToast(
+      error.message ||
+        "Não foi possível conectar ao servidor.",
+      "error"
+    );
+  } finally {
+    setSalvando(false);
+  }
+};
 
   return (
     <>
@@ -203,9 +294,13 @@ function NovaSenha() {
                 )}
               </div>
 
-              <button className="btn-primary" type="submit" disabled={!formularioValido}>
-                Atualizar senha
-              </button>
+              <button
+  className="btn-primary"
+  type="submit"
+  disabled={!formularioValido || salvando}
+>
+  {salvando ? "Atualizando..." : "Atualizar senha"}
+</button>
             </form>
 
             <p className="register-text">
