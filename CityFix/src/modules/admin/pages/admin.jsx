@@ -48,30 +48,30 @@ function useToast() {
 function IconComment() {
   return (
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
     </svg>
   );
 }
 function IconHeart({ filled }) {
   return filled ? (
     <svg width="13" height="13" viewBox="0 0 24 24" fill="#ff6b6b" stroke="#ff6b6b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
     </svg>
   ) : (
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
     </svg>
   );
 }
 
 /* ══ CONFIGS ══ */
 const statusConfig = {
-  Aberta:         { cor: "status--aberta",    dot: "#31bf49" },
+  Aberta: { cor: "status--aberta", dot: "#31bf49" },
   "Em andamento": { cor: "status--andamento", dot: "#f4d06f" },
-  Resolvida:      { cor: "status--resolvida", dot: "#60a5fa" },
+  Resolvida: { cor: "status--resolvida", dot: "#60a5fa" },
 };
 const prioridadeConfig = {
-  Alta:  { cor: "prio--alta"  },
+  Alta: { cor: "prio--alta" },
   Média: { cor: "prio--media" },
   Baixa: { cor: "prio--baixa" },
 };
@@ -102,8 +102,8 @@ function ConfirmModal({ aberto, onConfirmar, onCancelar, titulo = "Apagar coment
       <div className="admin-confirm-box" onClick={e => e.stopPropagation()}>
         <div className="admin-confirm-icon">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-            <path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
+            <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+            <path d="M10 11v6" /><path d="M14 11v6" /><path d="M9 6V4h6v2" />
           </svg>
         </div>
         <h3 className="admin-confirm-title">{titulo}</h3>
@@ -131,29 +131,34 @@ function Admin() {
   const [carregandoEstatisticas, setCarregandoEstatisticas] = useState(false);
 
   // ── Poisson ──
-const [poissonQuantidade, setPoissonQuantidade] = useState(2);
-const [poissonOperacao, setPoissonOperacao] = useState("EXATAMENTE");
-const [resultadoPoisson, setResultadoPoisson] = useState(null);
-const [carregandoPoisson, setCarregandoPoisson] = useState(false);
+  const [poissonQuantidade, setPoissonQuantidade] = useState(2);
+  const [poissonOperacao, setPoissonOperacao] = useState("EXATAMENTE");
+  const [resultadoPoisson, setResultadoPoisson] = useState(null);
+  const [carregandoPoisson, setCarregandoPoisson] = useState(false);
 
-// ── Binomial ──
-const [binomialTentativas, setBinomialTentativas] = useState(10);
-const [binomialSucessos, setBinomialSucessos] = useState(7);
-const [binomialOperacao, setBinomialOperacao] = useState("PELO_MENOS");
-const [resultadoBinomial, setResultadoBinomial] = useState(null);
-const [carregandoBinomial, setCarregandoBinomial] = useState(false);
+  // ── Binomial ──
+  const [binomialTentativas, setBinomialTentativas] = useState(10);
+  const [binomialSucessos, setBinomialSucessos] = useState(7);
+  const [binomialOperacao, setBinomialOperacao] = useState("PELO_MENOS");
+  const [resultadoBinomial, setResultadoBinomial] = useState(null);
+  const [carregandoBinomial, setCarregandoBinomial] = useState(false);
 
-// ── Normal ──
-const [normalDias, setNormalDias] = useState(30);
-const [normalOperacao, setNormalOperacao] = useState("MAIS_DE");
-const [resultadoNormal, setResultadoNormal] = useState(null);
-const [carregandoNormal, setCarregandoNormal] = useState(false);
+  // ── Normal ──
+  const [normalDias, setNormalDias] = useState(30);
+  const [normalOperacao, setNormalOperacao] = useState("MAIS_DE");
+  const [resultadoNormal, setResultadoNormal] = useState(null);
+  const [carregandoNormal, setCarregandoNormal] = useState(false);
 
   const [totaisComentarios, setTotaisComentarios] = useState({});
   const [totaisCurtidas, setTotaisCurtidas] = useState({});
   const [curtidasUsuario, setCurtidasUsuario] = useState({});
   const [comentariosDetalhes, setComentariosDetalhes] = useState([]);
   const [mostrarComentariosDetalhes, setMostrarComentariosDetalhes] = useState(false);
+
+  const [historicoDenuncia, setHistoricoDenuncia] = useState([]);
+  const [carregandoHistorico, setCarregandoHistorico] = useState(false);
+  const [mostrarHistorico, setMostrarHistorico] = useState(false);
+
   const [comentarioEditandoId, setComentarioEditandoId] = useState(null);
   const [textoEditando, setTextoEditando] = useState("");
   const [confirm, setConfirm] = useState({ aberto: false, comentarioId: null });
@@ -177,12 +182,13 @@ const [carregandoNormal, setCarregandoNormal] = useState(false);
 
   const { toasts, addToast, removeToast } = useToast();
 
-  const API_CATEGORIAS  = "http://localhost:8080/categorias";
-  const API_DENUNCIAS   = "http://localhost:8080/denuncias";
-  const API_USUARIOS    = "http://localhost:8080/usuarios";
+  const API_CATEGORIAS = "http://localhost:8080/categorias";
+  const API_DENUNCIAS = "http://localhost:8080/denuncias";
+  const API_USUARIOS = "http://localhost:8080/usuarios";
   const API_COMENTARIOS = "http://localhost:8080/comentarios";
-  const API_CURTIDAS    = "http://localhost:8080/curtidas";
+  const API_CURTIDAS = "http://localhost:8080/curtidas";
   const API_ESTATISTICAS = "http://localhost:8080/estatisticas";
+  const API_HISTORICO = "http://localhost:8080/historico-denuncias";
 
   function usuarioLogado() { return JSON.parse(localStorage.getItem("usuario")); }
   function usuarioIdLogado() { const u = usuarioLogado(); return u?.id || u?.usuarioId; }
@@ -211,8 +217,8 @@ const [carregandoNormal, setCarregandoNormal] = useState(false);
         fetch(API_CATEGORIAS), fetch(API_DENUNCIAS), fetch(API_USUARIOS),
       ]);
       const categoriasData = await resCat.json();
-      const denunciasData  = await resDen.json();
-      const usuariosData   = await resUsu.json();
+      const denunciasData = await resDen.json();
+      const usuariosData = await resUsu.json();
       setCategorias(categoriasData);
       setDenuncias(denunciasData);
       setUsuarios(usuariosData.map((u) => ({
@@ -226,143 +232,191 @@ const [carregandoNormal, setCarregandoNormal] = useState(false);
   }
 
   async function carregarEstatisticas() {
-  setCarregandoEstatisticas(true);
+    setCarregandoEstatisticas(true);
 
-  try {
-    const response = await fetch(`${API_ESTATISTICAS}/resumo`);
+    try {
+      const response = await fetch(`${API_ESTATISTICAS}/resumo`);
 
-    if (!response.ok) {
-      throw new Error("Erro ao carregar estatísticas.");
+      if (!response.ok) {
+        throw new Error("Erro ao carregar estatísticas.");
+      }
+
+      const data = await response.json();
+      setEstatisticas(data);
+    } catch (error) {
+      console.error("Erro ao carregar estatísticas:", error);
+      addToast("Não foi possível carregar o painel estatístico.", "error");
+    } finally {
+      setCarregandoEstatisticas(false);
+    }
+  }
+
+  async function calcularPoisson(e) {
+    e.preventDefault();
+
+    const quantidade = Number(poissonQuantidade);
+
+    if (!Number.isInteger(quantidade) || quantidade < 0) {
+      addToast("Informe uma quantidade inteira válida.", "error");
+      return;
     }
 
-    const data = await response.json();
-    setEstatisticas(data);
-  } catch (error) {
-    console.error("Erro ao carregar estatísticas:", error);
-    addToast("Não foi possível carregar o painel estatístico.", "error");
-  } finally {
-    setCarregandoEstatisticas(false);
+    setCarregandoPoisson(true);
+
+    try {
+      const response = await fetch(
+        `${API_ESTATISTICAS}/poisson?quantidade=${quantidade}&operacao=${poissonOperacao}`
+      );
+
+      if (!response.ok) {
+        throw new Error("Erro ao calcular Poisson.");
+      }
+
+      const data = await response.json();
+      setResultadoPoisson(data);
+    } catch (error) {
+      console.error("Erro no cálculo de Poisson:", error);
+      addToast("Não foi possível calcular a distribuição de Poisson.", "error");
+    } finally {
+      setCarregandoPoisson(false);
+    }
   }
-}
 
-async function calcularPoisson(e) {
-  e.preventDefault();
+  async function calcularBinomial(e) {
+    e.preventDefault();
 
-  const quantidade = Number(poissonQuantidade);
+    const numeroTentativas = Number(binomialTentativas);
+    const quantidadeSucessos = Number(binomialSucessos);
 
-  if (!Number.isInteger(quantidade) || quantidade < 0) {
-    addToast("Informe uma quantidade inteira válida.", "error");
-    return;
-  }
-
-  setCarregandoPoisson(true);
-
-  try {
-    const response = await fetch(
-      `${API_ESTATISTICAS}/poisson?quantidade=${quantidade}&operacao=${poissonOperacao}`
-    );
-
-    if (!response.ok) {
-      throw new Error("Erro ao calcular Poisson.");
+    if (
+      !Number.isInteger(numeroTentativas) ||
+      numeroTentativas <= 0 ||
+      !Number.isInteger(quantidadeSucessos) ||
+      quantidadeSucessos < 0 ||
+      quantidadeSucessos > numeroTentativas
+    ) {
+      addToast(
+        "Os sucessos devem estar entre 0 e o número total de denúncias.",
+        "error"
+      );
+      return;
     }
 
-    const data = await response.json();
-    setResultadoPoisson(data);
-  } catch (error) {
-    console.error("Erro no cálculo de Poisson:", error);
-    addToast("Não foi possível calcular a distribuição de Poisson.", "error");
-  } finally {
-    setCarregandoPoisson(false);
-  }
-}
+    setCarregandoBinomial(true);
 
-async function calcularBinomial(e) {
-  e.preventDefault();
+    try {
+      const response = await fetch(
+        `${API_ESTATISTICAS}/binomial?numeroTentativas=${numeroTentativas}&quantidadeSucessos=${quantidadeSucessos}&operacao=${binomialOperacao}`
+      );
 
-  const numeroTentativas = Number(binomialTentativas);
-  const quantidadeSucessos = Number(binomialSucessos);
+      if (!response.ok) {
+        throw new Error("Erro ao calcular Binomial.");
+      }
 
-  if (
-    !Number.isInteger(numeroTentativas) ||
-    numeroTentativas <= 0 ||
-    !Number.isInteger(quantidadeSucessos) ||
-    quantidadeSucessos < 0 ||
-    quantidadeSucessos > numeroTentativas
-  ) {
-    addToast(
-      "Os sucessos devem estar entre 0 e o número total de denúncias.",
-      "error"
-    );
-    return;
+      const data = await response.json();
+      setResultadoBinomial(data);
+    } catch (error) {
+      console.error("Erro no cálculo Binomial:", error);
+      addToast("Não foi possível calcular a distribuição Binomial.", "error");
+    } finally {
+      setCarregandoBinomial(false);
+    }
   }
 
-  setCarregandoBinomial(true);
+  async function calcularNormal(e) {
+    e.preventDefault();
 
-  try {
-    const response = await fetch(
-      `${API_ESTATISTICAS}/binomial?numeroTentativas=${numeroTentativas}&quantidadeSucessos=${quantidadeSucessos}&operacao=${binomialOperacao}`
-    );
+    const valorDias = Number(normalDias);
 
-    if (!response.ok) {
-      throw new Error("Erro ao calcular Binomial.");
+    if (Number.isNaN(valorDias) || valorDias < 0) {
+      addToast("Informe uma quantidade de dias válida.", "error");
+      return;
     }
 
-    const data = await response.json();
-    setResultadoBinomial(data);
-  } catch (error) {
-    console.error("Erro no cálculo Binomial:", error);
-    addToast("Não foi possível calcular a distribuição Binomial.", "error");
-  } finally {
-    setCarregandoBinomial(false);
-  }
-}
+    setCarregandoNormal(true);
 
-async function calcularNormal(e) {
-  e.preventDefault();
+    try {
+      const response = await fetch(
+        `${API_ESTATISTICAS}/normal?valorDias=${valorDias}&operacao=${normalOperacao}`
+      );
 
-  const valorDias = Number(normalDias);
+      if (!response.ok) {
+        throw new Error("Erro ao calcular Normal.");
+      }
 
-  if (Number.isNaN(valorDias) || valorDias < 0) {
-    addToast("Informe uma quantidade de dias válida.", "error");
-    return;
-  }
-
-  setCarregandoNormal(true);
-
-  try {
-    const response = await fetch(
-      `${API_ESTATISTICAS}/normal?valorDias=${valorDias}&operacao=${normalOperacao}`
-    );
-
-    if (!response.ok) {
-      throw new Error("Erro ao calcular Normal.");
+      const data = await response.json();
+      setResultadoNormal(data);
+    } catch (error) {
+      console.error("Erro no cálculo Normal:", error);
+      addToast("Não foi possível calcular a distribuição Normal.", "error");
+    } finally {
+      setCarregandoNormal(false);
     }
-
-    const data = await response.json();
-    setResultadoNormal(data);
-  } catch (error) {
-    console.error("Erro no cálculo Normal:", error);
-    addToast("Não foi possível calcular a distribuição Normal.", "error");
-  } finally {
-    setCarregandoNormal(false);
   }
-}
 
 
   useEffect(() => { carregarDados(); }, []);
 
   function formatarStatus(status) {
-    if (status === "ABERTA")       return "Aberta";
+    if (status === "ABERTA") return "Aberta";
     if (status === "EM_ANDAMENTO") return "Em andamento";
-    if (status === "RESOLVIDA")    return "Resolvida";
+    if (status === "RESOLVIDA") return "Resolvida";
     return status || "Aberta";
   }
   function formatarPrioridade(prioridade) {
-    if (prioridade === "ALTA")  return "Alta";
+    if (prioridade === "ALTA") return "Alta";
     if (prioridade === "MEDIA") return "Média";
     if (prioridade === "BAIXA") return "Baixa";
     return prioridade || "Média";
   }
+
+  function formatarDataHistorico(dataHora) {
+    if (!dataHora) return "Data não informada";
+
+    const data = new Date(dataHora);
+
+    if (Number.isNaN(data.getTime())) {
+      return "Data não informada";
+    }
+
+    return data.toLocaleString("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }
+
+  function formatarTipoEventoHistorico(tipoEvento) {
+    if (tipoEvento === "DENUNCIA_CRIADA") {
+      return "Denúncia criada";
+    }
+
+    if (tipoEvento === "STATUS_ALTERADO") {
+      return "Status alterado";
+    }
+
+    if (tipoEvento === "PRIORIDADE_ALTERADA") {
+      return "Prioridade alterada";
+    }
+
+    if (tipoEvento === "DADOS_ATUALIZADOS") {
+      return "Dados atualizados";
+    }
+
+    return "Atualização da denúncia";
+  }
+
+  function getIconeHistorico(tipoEvento) {
+    if (tipoEvento === "DENUNCIA_CRIADA") return "✓";
+    if (tipoEvento === "STATUS_ALTERADO") return "↻";
+    if (tipoEvento === "PRIORIDADE_ALTERADA") return "!";
+    if (tipoEvento === "DADOS_ATUALIZADOS") return "✎";
+
+    return "•";
+  }
+
   function formatarTipoUsuario(usuarioOuTipo) {
     const tipo = typeof usuarioOuTipo === "object"
       ? usuarioOuTipo.tipo || usuarioOuTipo.role || usuarioOuTipo.perfil || usuarioOuTipo.tipoUsuario
@@ -395,21 +449,25 @@ async function calcularNormal(e) {
     const tipo = formatarTipoUsuario(u);
     return (
       (u.nome?.toLowerCase().includes(busca) || u.email?.toLowerCase().includes(busca) ||
-       (u.cidade||"").toLowerCase().includes(busca) || (u.telefone||"").toLowerCase().includes(busca)) &&
+        (u.cidade || "").toLowerCase().includes(busca) || (u.telefone || "").toLowerCase().includes(busca)) &&
       (tipoUsuarioFiltro === "Todos" || tipo === tipoUsuarioFiltro)
     );
   });
 
   const categoriasFiltradas = categorias.filter((c) => {
     const busca = buscaCategoria.toLowerCase();
-    return c.nome?.toLowerCase().includes(busca) || (c.descricao||"").toLowerCase().includes(busca);
+    return c.nome?.toLowerCase().includes(busca) || (c.descricao || "").toLowerCase().includes(busca);
   });
 
   async function abrirDetalhesDenuncia(denuncia) {
     setDenunciaSelecionada(denuncia);
     setModalDetalhes(true);
+
     setMostrarComentariosDetalhes(false);
     setComentariosDetalhes([]);
+
+    setMostrarHistorico(false);
+    setHistoricoDenuncia([]);
   }
 
   async function carregarComentariosDaDenuncia(denunciaId) {
@@ -421,6 +479,35 @@ async function calcularNormal(e) {
       setMostrarComentariosDetalhes(true);
     } catch (error) {
       addToast("Falha ao carregar comentários.", "error");
+    }
+  }
+
+  async function carregarHistoricoDaDenuncia(denunciaId) {
+    if (mostrarHistorico) {
+      setMostrarHistorico(false);
+      return;
+    }
+
+    setCarregandoHistorico(true);
+
+    try {
+      const response = await fetch(
+        `${API_HISTORICO}/denuncia/${denunciaId}`
+      );
+
+      if (!response.ok) {
+        throw new Error("Erro ao carregar histórico.");
+      }
+
+      const data = await response.json();
+
+      setHistoricoDenuncia(Array.isArray(data) ? data : []);
+      setMostrarHistorico(true);
+    } catch (error) {
+      console.error("Erro ao carregar histórico:", error);
+      addToast("Não foi possível carregar o histórico da denúncia.", "error");
+    } finally {
+      setCarregandoHistorico(false);
     }
   }
 
@@ -469,7 +556,7 @@ async function calcularNormal(e) {
       });
       if (!r.ok) { addToast("Erro ao atualizar curtida.", "error"); return; }
       setCurtidasUsuario((p) => ({ ...p, [denunciaId]: !jaCurtiu }));
-      setTotaisCurtidas((p) => ({ ...p, [denunciaId]: jaCurtiu ? Math.max((p[denunciaId]||1)-1,0) : (p[denunciaId]||0)+1 }));
+      setTotaisCurtidas((p) => ({ ...p, [denunciaId]: jaCurtiu ? Math.max((p[denunciaId] || 1) - 1, 0) : (p[denunciaId] || 0) + 1 }));
     } catch (e) { addToast("Falha ao atualizar curtida.", "error"); }
   }
 
@@ -481,7 +568,7 @@ async function calcularNormal(e) {
         body: JSON.stringify({ ...novoUsuario }),
       });
       if (!r.ok) { addToast("Erro ao cadastrar usuário. Verifique os dados.", "error"); return; }
-      setNovoUsuario({ nome:"", email:"", telefone:"", cidade:"", senha:"", tipoUsuario:"USUARIO" });
+      setNovoUsuario({ nome: "", email: "", telefone: "", cidade: "", senha: "", tipoUsuario: "USUARIO" });
       setModalNovoUsuario(false);
       carregarDados();
       addToast("Usuário cadastrado com sucesso!", "success");
@@ -496,7 +583,7 @@ async function calcularNormal(e) {
         body: JSON.stringify(novaCategoria),
       });
       if (!r.ok) { addToast("Erro ao cadastrar categoria.", "error"); return; }
-      setNovaCategoria({ nome:"", descricao:"" });
+      setNovaCategoria({ nome: "", descricao: "" });
       carregarDados();
       addToast("Categoria cadastrada com sucesso!", "success");
     } catch (e) { addToast("Falha na conexão com o servidor.", "error"); }
@@ -547,7 +634,7 @@ async function calcularNormal(e) {
     });
   }
   function getCorMarcadorPrioridade(p) {
-    if (p === "ALTA")  return "#ef4444";
+    if (p === "ALTA") return "#ef4444";
     if (p === "MEDIA") return "#f59e0b";
     if (p === "BAIXA") return "#3b82f6";
     return "#f59e0b";
@@ -562,54 +649,54 @@ async function calcularNormal(e) {
         <div class="map-pin-ring" style="border-color:${cor}"></div>
         <div class="map-pin-tail" style="background:${cor}"></div>
       </div>`,
-      iconSize: [24,32], iconAnchor: [12,32], popupAnchor: [0,-34],
+      iconSize: [24, 32], iconAnchor: [12, 32], popupAnchor: [0, -34],
     });
   }
 
   const statsData = [
-    { emoji:"📋", label:"Denúncias abertas", valor: denuncias.filter((d)=>d.status==="ABERTA").length,       cor:"stat--green"  },
-    { emoji:"⏳", label:"Em andamento",       valor: denuncias.filter((d)=>d.status==="EM_ANDAMENTO").length, cor:"stat--yellow" },
-    { emoji:"✅", label:"Resolvidas",          valor: denuncias.filter((d)=>d.status==="RESOLVIDA").length,   cor:"stat--blue"   },
-    { emoji:"👥", label:"Usuários",            valor: usuarios.length,                                        cor:"stat--purple" },
+    { emoji: "📋", label: "Denúncias abertas", valor: denuncias.filter((d) => d.status === "ABERTA").length, cor: "stat--green" },
+    { emoji: "⏳", label: "Em andamento", valor: denuncias.filter((d) => d.status === "EM_ANDAMENTO").length, cor: "stat--yellow" },
+    { emoji: "✅", label: "Resolvidas", valor: denuncias.filter((d) => d.status === "RESOLVIDA").length, cor: "stat--blue" },
+    { emoji: "👥", label: "Usuários", valor: usuarios.length, cor: "stat--purple" },
   ];
 
   const modulosData = [
-  {
-    id: "denuncias",
-    icon: "📋",
-    titulo: "Gerenciar denúncias",
-    descricao: "Visualize, filtre e atualize as denúncias registradas.",
-    meta: `${denuncias.length} registros`,
-  },
-  {
-    id: "usuarios",
-    icon: "👥",
-    titulo: "Gerenciar usuários",
-    descricao: "Consulte usuários cadastrados e suas atividades.",
-    meta: `${usuarios.length} cadastros`,
-  },
-  {
-    id: "categorias",
-    icon: "🏷️",
-    titulo: "Gerenciar categorias",
-    descricao: "Cadastre e organize os tipos de denúncias.",
-    meta: `${categorias.length} categorias`,
-  },
-  {
-    id: "mapa",
-    icon: "🗺️",
-    titulo: "Mapa da cidade",
-    descricao: "Acompanhe pontos de denúncias espalhados pela cidade.",
-    meta: "Irecê – BA",
-  },
-  {
-    id: "estatisticas",
-    icon: "📊",
-    titulo: "Painel estatístico",
-    descricao: "Analise médias, dispersões e padrões das denúncias.",
-    meta: "Análise de dados",
-  },
-];
+    {
+      id: "denuncias",
+      icon: "📋",
+      titulo: "Gerenciar denúncias",
+      descricao: "Visualize, filtre e atualize as denúncias registradas.",
+      meta: `${denuncias.length} registros`,
+    },
+    {
+      id: "usuarios",
+      icon: "👥",
+      titulo: "Gerenciar usuários",
+      descricao: "Consulte usuários cadastrados e suas atividades.",
+      meta: `${usuarios.length} cadastros`,
+    },
+    {
+      id: "categorias",
+      icon: "🏷️",
+      titulo: "Gerenciar categorias",
+      descricao: "Cadastre e organize os tipos de denúncias.",
+      meta: `${categorias.length} categorias`,
+    },
+    {
+      id: "mapa",
+      icon: "🗺️",
+      titulo: "Mapa da cidade",
+      descricao: "Acompanhe pontos de denúncias espalhados pela cidade.",
+      meta: "Irecê – BA",
+    },
+    {
+      id: "estatisticas",
+      icon: "📊",
+      titulo: "Painel estatístico",
+      descricao: "Analise médias, dispersões e padrões das denúncias.",
+      meta: "Análise de dados",
+    },
+  ];
 
   const dadosGraficoStatus = [
     { nome: "Abertas", valor: denuncias.filter((d) => d.status === "ABERTA").length, fill: CORES_GRAFICOS.aberta },
@@ -652,12 +739,12 @@ async function calcularNormal(e) {
     .slice(-14);
 
   function abrirModulo(id) {
-  setModalAberto(id);
+    setModalAberto(id);
 
-  if (id === "estatisticas") {
-    carregarEstatisticas();
+    if (id === "estatisticas") {
+      carregarEstatisticas();
+    }
   }
-}
 
   return (
     <div className="admin-page">
@@ -727,8 +814,8 @@ async function calcularNormal(e) {
             <button onClick={() => setModalAberto("categorias")}>🏷️ Ver categorias</button>
             <button onClick={() => setModalAberto("mapa")}>🗺️ Ver mapa</button>
             <button onClick={() => abrirModulo("estatisticas")}>
-  📊 Ver estatísticas
-</button>
+              📊 Ver estatísticas
+            </button>
           </div>
         </section>
       </main>
@@ -740,26 +827,26 @@ async function calcularNormal(e) {
             <div className="admin-modal-header">
               <div>
                 <p className="modal-eyebrow">
-                  {modalAberto === "denuncias"  && "Gestão · Denúncias"}
-                  {modalAberto === "usuarios"   && "Gestão · Usuários"}
+                  {modalAberto === "denuncias" && "Gestão · Denúncias"}
+                  {modalAberto === "usuarios" && "Gestão · Usuários"}
                   {modalAberto === "categorias" && "Gestão · Categorias"}
-                  {modalAberto === "mapa"       && "Gestão · Mapa"}
+                  {modalAberto === "mapa" && "Gestão · Mapa"}
                   {modalAberto === "estatisticas" && "Análise · Estatística"}
                 </p>
                 <h2>
-                  {modalAberto === "denuncias"  && "Gerenciar denúncias"}
-                  {modalAberto === "usuarios"   && "Gerenciar usuários"}
+                  {modalAberto === "denuncias" && "Gerenciar denúncias"}
+                  {modalAberto === "usuarios" && "Gerenciar usuários"}
                   {modalAberto === "categorias" && "Gerenciar categorias"}
-                  {modalAberto === "mapa"       && "Mapa da cidade"}
+                  {modalAberto === "mapa" && "Mapa da cidade"}
                   {modalAberto === "estatisticas" && "Painel estatístico"}
                 </h2>
                 <p className="modal-sub">
-                  {modalAberto === "denuncias"  && "Acompanhe e atualize as denúncias da plataforma."}
-                  {modalAberto === "usuarios"   && "Consulte os usuários cadastrados no sistema."}
+                  {modalAberto === "denuncias" && "Acompanhe e atualize as denúncias da plataforma."}
+                  {modalAberto === "usuarios" && "Consulte os usuários cadastrados no sistema."}
                   {modalAberto === "categorias" && "Cadastre, visualize e organize categorias de denúncias."}
-                  {modalAberto === "mapa"       && "Visualize a distribuição das denúncias na cidade."}
+                  {modalAberto === "mapa" && "Visualize a distribuição das denúncias na cidade."}
                   {modalAberto === "estatisticas" &&
-  "Visualize indicadores calculados a partir das denúncias cadastradas."}
+                    "Visualize indicadores calculados a partir das denúncias cadastradas."}
                 </p>
               </div>
               <button className="admin-close" onClick={() => setModalAberto(null)}>✕</button>
@@ -822,8 +909,8 @@ async function calcularNormal(e) {
                         <button className="btn-solid" onClick={() => { setDenunciaSelecionada(denuncia); setModalAtualizar(true); }}>Atualizar</button>
                         <button className="admin-apagar-denuncia-btn" onClick={() => apagarDenuncia(denuncia)}>
                           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                            <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-                            <path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
+                            <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                            <path d="M10 11v6" /><path d="M14 11v6" /><path d="M9 6V4h6v2" />
                           </svg>
                           Apagar
                         </button>
@@ -856,7 +943,7 @@ async function calcularNormal(e) {
                       <div className="list-item-info">
                         <div className="usuario-avatar-row">
                           <div className="usuario-avatar">
-                            {(usuario.nome || "U").split(" ").map((n) => n[0]).join("").slice(0,2).toUpperCase()}
+                            {(usuario.nome || "U").split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()}
                           </div>
                           <div>
                             <h3>{usuario.nome}</h3>
@@ -925,7 +1012,7 @@ async function calcularNormal(e) {
             {modalAberto === "mapa" && (
               <div className="admin-modal-content">
                 <div className="admin-map-real">
-                  <MapContainer center={[-11.3042, -41.8565]} zoom={13} style={{ width:"100%", height:"420px", borderRadius:"18px" }}>
+                  <MapContainer center={[-11.3042, -41.8565]} zoom={13} style={{ width: "100%", height: "420px", borderRadius: "18px" }}>
                     <TileLayer attribution="&copy; OpenStreetMap contributors" url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
                     {getDenunciasComCoordenadas().map((denuncia) => (
                       <Marker key={denuncia.id} position={[Number(denuncia.latitude), Number(denuncia.longitude)]} icon={criarIconeMarcador(denuncia.prioridade)}>
@@ -947,7 +1034,7 @@ async function calcularNormal(e) {
               </div>
             )}
 
-          {/* ── ESTATÍSTICAS ── */}
+            {/* ── ESTATÍSTICAS ── */}
             {modalAberto === "estatisticas" && (
               <div className="admin-modal-content">
 
@@ -967,10 +1054,10 @@ async function calcularNormal(e) {
                     {/* ── Cards de contagem ── */}
                     <div className="estat-summary">
                       {[
-                        { icon: "📋", label: "Total",       valor: estatisticas.totalDenuncias,         mod: "total"     },
-                        { icon: "🟢", label: "Abertas",     valor: estatisticas.denunciasAbertas,       mod: "aberta"    },
-                        { icon: "⏳", label: "Em andamento", valor: estatisticas.denunciasEmAndamento,  mod: "andamento" },
-                        { icon: "✅", label: "Resolvidas",   valor: estatisticas.denunciasResolvidas,   mod: "resolvida" },
+                        { icon: "📋", label: "Total", valor: estatisticas.totalDenuncias, mod: "total" },
+                        { icon: "🟢", label: "Abertas", valor: estatisticas.denunciasAbertas, mod: "aberta" },
+                        { icon: "⏳", label: "Em andamento", valor: estatisticas.denunciasEmAndamento, mod: "andamento" },
+                        { icon: "✅", label: "Resolvidas", valor: estatisticas.denunciasResolvidas, mod: "resolvida" },
                       ].map(({ icon, label, valor, mod }) => (
                         <article key={mod} className={`estat-card estat-card--${mod}`}>
                           <span className="estat-card-icon">{icon}</span>
@@ -1003,10 +1090,10 @@ async function calcularNormal(e) {
                         </div>
                         <div className="estat-indicators">
                           {[
-                            { sym: "x̄",  label: "Média",         val: estatisticas.mediaTempoResolucaoDias,      sub: "Tempo médio para resolver" },
-                            { sym: "Md", label: "Mediana",        val: estatisticas.medianaTempoResolucaoDias,    sub: "Valor central dos tempos"  },
-                            { sym: "σ²", label: "Variância",      val: estatisticas.varianciaTempoResolucaoDias,  sub: "Dispersão quadrática"       },
-                            { sym: "σ",  label: "Desvio padrão",  val: estatisticas.desvioPadraoTempoResolucaoDias, sub: "Variação em relação à média" },
+                            { sym: "x̄", label: "Média", val: estatisticas.mediaTempoResolucaoDias, sub: "Tempo médio para resolver" },
+                            { sym: "Md", label: "Mediana", val: estatisticas.medianaTempoResolucaoDias, sub: "Valor central dos tempos" },
+                            { sym: "σ²", label: "Variância", val: estatisticas.varianciaTempoResolucaoDias, sub: "Dispersão quadrática" },
+                            { sym: "σ", label: "Desvio padrão", val: estatisticas.desvioPadraoTempoResolucaoDias, sub: "Variação em relação à média" },
                           ].map(({ sym, label, val, sub }) => (
                             <article key={label} className="estat-indicator">
                               <div className="estat-indicator-sym">{sym}</div>
@@ -1028,9 +1115,9 @@ async function calcularNormal(e) {
                         </div>
                         <div className="estat-quartis">
                           {[
-                            { q: "Q1", val: estatisticas.primeiroQuartilTempoResolucaoDias,  pct: "25%" },
-                            { q: "Q2", val: estatisticas.segundoQuartilTempoResolucaoDias,   pct: "50%" },
-                            { q: "Q3", val: estatisticas.terceiroQuartilTempoResolucaoDias,  pct: "75%" },
+                            { q: "Q1", val: estatisticas.primeiroQuartilTempoResolucaoDias, pct: "25%" },
+                            { q: "Q2", val: estatisticas.segundoQuartilTempoResolucaoDias, pct: "50%" },
+                            { q: "Q3", val: estatisticas.terceiroQuartilTempoResolucaoDias, pct: "75%" },
                           ].map(({ q, val, pct }) => (
                             <article key={q} className="estat-quartil">
                               <div className="estat-quartil-badge">{q}</div>
@@ -1315,7 +1402,7 @@ async function calcularNormal(e) {
                 )}
               </div>
             )}
-            
+
           </div>
         </div>
       )}
@@ -1350,10 +1437,10 @@ async function calcularNormal(e) {
             {/* Grid de campos */}
             <div className="details-grid">
               {[
-                ["👤 Autor",     denunciaSelecionada.usuario?.nome || "Usuário não informado"],
-                ["📍 Local",     denunciaSelecionada.localizacao],
+                ["👤 Autor", denunciaSelecionada.usuario?.nome || "Usuário não informado"],
+                ["📍 Local", denunciaSelecionada.localizacao],
                 ["🏷️ Categoria", denunciaSelecionada.categoria?.nome || "Sem categoria"],
-                ["📅 Data",      denunciaSelecionada.dataCriacao ? new Date(denunciaSelecionada.dataCriacao).toLocaleDateString("pt-BR") : "Não informada"],
+                ["📅 Data", denunciaSelecionada.dataCriacao ? new Date(denunciaSelecionada.dataCriacao).toLocaleDateString("pt-BR") : "Não informada"],
               ].map(([label, val]) => (
                 <div key={label} className="detail-field">
                   <span className="detail-label">{label}</span>
@@ -1367,7 +1454,7 @@ async function calcularNormal(e) {
               {denunciaSelecionada.imagens?.length > 0 ? (
                 <button type="button" className="admin-visualizar-imagem-btn" onClick={() => setImagemVisualizando(denunciaSelecionada.imagens[0].imagemUrl)}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+                    <rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" />
                   </svg>
                   Visualizar imagem
                   <span className="admin-imagem-count">{denunciaSelecionada.imagens.length}</span>
@@ -1375,8 +1462,8 @@ async function calcularNormal(e) {
               ) : (
                 <div className="admin-sem-imagem">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
-                    <line x1="3" y1="3" x2="21" y2="21"/>
+                    <rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" />
+                    <line x1="3" y1="3" x2="21" y2="21" />
                   </svg>
                   <span>Esta denúncia não possui imagens registradas.</span>
                 </div>
@@ -1432,7 +1519,7 @@ async function calcularNormal(e) {
                     onClick={() => setMostrarComentariosDetalhes(false)}
                   >
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                      <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                      <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
                     </svg>
                     Fechar
                   </button>
@@ -1443,7 +1530,7 @@ async function calcularNormal(e) {
                     comentariosDetalhes.map((c, i) => (
                       <div key={c.id} className="admin-comentario-item" style={{ animationDelay: `${i * 0.05}s` }}>
                         <div className="admin-comentario-avatar">
-                          {(c.nomeUsuario || "?").split(" ").map(n => n[0]).join("").slice(0,2).toUpperCase()}
+                          {(c.nomeUsuario || "?").split(" ").map(n => n[0]).join("").slice(0, 2).toUpperCase()}
                         </div>
                         <div className="admin-comentario-body">
                           <div className="admin-comentario-header">
@@ -1451,15 +1538,15 @@ async function calcularNormal(e) {
                             <div className="admin-comentario-actions">
                               <button type="button" className="admin-action-btn admin-action-btn--edit" onClick={() => iniciarEdicaoAdmin(c)}>
                                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                                 </svg>
                                 Editar
                               </button>
                               <button type="button" className="admin-action-btn admin-action-btn--delete" onClick={() => apagarComentarioAdmin(c.id)}>
                                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                  <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-                                  <path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
+                                  <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                                  <path d="M10 11v6" /><path d="M14 11v6" /><path d="M9 6V4h6v2" />
                                 </svg>
                                 Apagar
                               </button>
@@ -1483,7 +1570,7 @@ async function calcularNormal(e) {
                   ) : (
                     <div className="admin-comentarios-empty">
                       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                       </svg>
                       <p>Nenhum comentário ainda.</p>
                     </div>
@@ -1497,7 +1584,7 @@ async function calcularNormal(e) {
               <div className="detail-map-block-header">
                 <div className="detail-map-block-icon">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
                   </svg>
                 </div>
                 <div>
@@ -1506,7 +1593,7 @@ async function calcularNormal(e) {
                 </div>
                 <button className="detail-map-open-btn" onClick={(e) => { e.stopPropagation(); setModalMapaDenuncia(true); }}>
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                    <polyline points="15 3 21 3 21 9" /><line x1="10" y1="14" x2="21" y2="3" /><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
                   </svg>
                   Abrir mapa
                 </button>
@@ -1514,17 +1601,138 @@ async function calcularNormal(e) {
               <div className="detail-map-preview-wrap" onClick={() => setModalMapaDenuncia(true)}>
                 <div className="detail-map-neon-tl" />
                 <div className="detail-map-neon-br" />
-                <iframe title="Prévia da localização" src={getMapaDenunciaUrl(denunciaSelecionada)} width="100%" height="200" style={{ border:0, display:"block", borderRadius:"12px" }} loading="lazy" />
+                <iframe title="Prévia da localização" src={getMapaDenunciaUrl(denunciaSelecionada)} width="100%" height="200" style={{ border: 0, display: "block", borderRadius: "12px" }} loading="lazy" />
                 <div className="detail-map-overlay">
                   <div className="detail-map-overlay-hint">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-                      <line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/>
+                      <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+                      <line x1="11" y1="8" x2="11" y2="14" /><line x1="8" y1="11" x2="14" y2="11" />
                     </svg>
                     Clique para ampliar
                   </div>
                 </div>
               </div>
+            </div>
+
+            {/* ── Histórico da denúncia ── */}
+            <div className="historico-denuncia-block">
+              <button
+                type="button"
+                className="historico-denuncia-toggle"
+                onClick={() =>
+                  carregarHistoricoDaDenuncia(denunciaSelecionada.id)
+                }
+                disabled={carregandoHistorico}
+              >
+                <div className="historico-toggle-left">
+                  <span className="historico-toggle-icon">↻</span>
+
+                  <div>
+                    <strong>Histórico da denúncia</strong>
+                    <p>
+                      Acompanhe as alterações realizadas nesta ocorrência.
+                    </p>
+                  </div>
+                </div>
+
+                <span className="historico-toggle-action">
+                  {carregandoHistorico
+                    ? "Carregando..."
+                    : mostrarHistorico
+                      ? "Ocultar"
+                      : "Visualizar"}
+                </span>
+              </button>
+
+              {mostrarHistorico && (
+                <div className="historico-denuncia-content">
+                  {historicoDenuncia.length > 0 ? (
+                    <div className="historico-timeline">
+                      {historicoDenuncia.map((evento, index) => (
+                        <div
+                          key={evento.id}
+                          className="historico-item"
+                        >
+                          <div className="historico-marker-column">
+                            <div
+                              className={`historico-marker historico-marker--${evento.tipoEvento?.toLowerCase()}`}
+                            >
+                              {getIconeHistorico(evento.tipoEvento)}
+                            </div>
+
+                            {index < historicoDenuncia.length - 1 && (
+                              <div className="historico-line" />
+                            )}
+                          </div>
+
+                          <div className="historico-item-content">
+                            <div className="historico-item-header">
+                              <strong>
+                                {formatarTipoEventoHistorico(
+                                  evento.tipoEvento
+                                )}
+                              </strong>
+
+                              <span>
+                                {formatarDataHistorico(evento.dataHora)}
+                              </span>
+                            </div>
+
+                            {evento.descricao && (
+                              <p className="historico-descricao">
+                                {evento.descricao}
+                              </p>
+                            )}
+
+                            {evento.tipoEvento ===
+                              "STATUS_ALTERADO" && (
+                                <div className="historico-alteracao">
+                                  <span>
+                                    {formatarStatus(
+                                      evento.statusAnterior
+                                    )}
+                                  </span>
+
+                                  <span className="historico-seta">→</span>
+
+                                  <span>
+                                    {formatarStatus(evento.statusNovo)}
+                                  </span>
+                                </div>
+                              )}
+
+                            {evento.tipoEvento ===
+                              "PRIORIDADE_ALTERADA" && (
+                                <div className="historico-alteracao">
+                                  <span>
+                                    {formatarPrioridade(
+                                      evento.prioridadeAnterior
+                                    )}
+                                  </span>
+
+                                  <span className="historico-seta">→</span>
+
+                                  <span>
+                                    {formatarPrioridade(
+                                      evento.prioridadeNova
+                                    )}
+                                  </span>
+                                </div>
+                              )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="historico-vazio">
+                      <span>🕘</span>
+                      <p>
+                        Nenhum acontecimento foi registrado no histórico.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             <button className="save-btn" onClick={() => setModalDetalhes(false)}>Fechar</button>
@@ -1545,13 +1753,13 @@ async function calcularNormal(e) {
               <button type="button" className="admin-close" onClick={() => setModalMapaDenuncia(false)}>✕</button>
             </div>
             <div className="admin-map-real">
-              <iframe title="Mapa da denúncia" src={getMapaDenunciaUrl(denunciaSelecionada)} width="100%" height="450" style={{ border:0 }} loading="lazy" />
+              <iframe title="Mapa da denúncia" src={getMapaDenunciaUrl(denunciaSelecionada)} width="100%" height="450" style={{ border: 0 }} loading="lazy" />
             </div>
           </div>
         </div>
       )}
 
-      
+
 
       {/* ══ MODAL ATUALIZAR ══ */}
       {modalAtualizar && denunciaSelecionada && (
@@ -1597,11 +1805,11 @@ async function calcularNormal(e) {
             </div>
             <form onSubmit={salvarNovoUsuario} className="new-user-form">
               {[
-                { label:"Nome",     key:"nome",     type:"text"     },
-                { label:"E-mail",   key:"email",    type:"email"    },
-                { label:"Telefone", key:"telefone", type:"text"     },
-                { label:"Cidade",   key:"cidade",   type:"text"     },
-                { label:"Senha",    key:"senha",    type:"password" },
+                { label: "Nome", key: "nome", type: "text" },
+                { label: "E-mail", key: "email", type: "email" },
+                { label: "Telefone", key: "telefone", type: "text" },
+                { label: "Cidade", key: "cidade", type: "text" },
+                { label: "Senha", key: "senha", type: "password" },
               ].map(({ label, key, type }) => (
                 <div className="modal-form-group" key={key}>
                   <label>{label}</label>
@@ -1634,7 +1842,7 @@ async function calcularNormal(e) {
             </div>
             <div className="perfil-usuario-topo">
               <div className="usuario-avatar large">
-                {(usuarioSelecionado.nome || "U").split(" ").map((n) => n[0]).join("").slice(0,2).toUpperCase()}
+                {(usuarioSelecionado.nome || "U").split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()}
               </div>
               <div>
                 <h3>{usuarioSelecionado.nome}</h3>
@@ -1645,9 +1853,9 @@ async function calcularNormal(e) {
             </div>
             <div className="details-grid">
               {[
-                ["E-mail",    usuarioSelecionado.email],
-                ["Telefone",  usuarioSelecionado.telefone || "Não informado"],
-                ["Cidade",    usuarioSelecionado.cidade   || "Não informada"],
+                ["E-mail", usuarioSelecionado.email],
+                ["Telefone", usuarioSelecionado.telefone || "Não informado"],
+                ["Cidade", usuarioSelecionado.cidade || "Não informada"],
                 ["Denúncias", usuarioSelecionado.denuncias || 0],
               ].map(([label, val]) => (
                 <div key={label} className="detail-field">

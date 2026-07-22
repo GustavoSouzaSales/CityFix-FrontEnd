@@ -34,14 +34,14 @@ function useToast() {
 function EyeIcon({ visible }) {
   if (!visible) return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" />
     </svg>
   );
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
-      <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
-      <line x1="1" y1="1" x2="23" y2="23"/>
+      <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
+      <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
+      <line x1="1" y1="1" x2="23" y2="23" />
     </svg>
   );
 }
@@ -49,7 +49,7 @@ function EyeIcon({ visible }) {
 function calcularForca(senha) {
   if (!senha) return { nivel: 0, label: "", cor: "" };
   let score = 0;
-  if (senha.length >= 8)  score++;
+  if (senha.length >= 8) score++;
   if (senha.length >= 12) score++;
   if (/[A-Z]/.test(senha)) score++;
   if (/[0-9]/.test(senha)) score++;
@@ -75,41 +75,41 @@ function BarraForca({ senha }) {
 function IconComment() {
   return (
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
     </svg>
   );
 }
 function IconHeart({ filled }) {
   return filled ? (
     <svg width="13" height="13" viewBox="0 0 24 24" fill="#ff6b6b" stroke="#ff6b6b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
     </svg>
   ) : (
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
     </svg>
   );
 }
 function IconSend() {
   return (
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+      <line x1="22" y1="2" x2="11" y2="13" /><polygon points="22 2 15 22 11 13 2 9 22 2" />
     </svg>
   );
 }
 function IconEdit() {
   return (
     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
     </svg>
   );
 }
 function IconTrash() {
   return (
     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-      <path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
+      <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+      <path d="M10 11v6" /><path d="M14 11v6" /><path d="M9 6V4h6v2" />
     </svg>
   );
 }
@@ -117,9 +117,9 @@ function IconTrash() {
 function mascararTelefone(valor) {
   const digits = valor.replace(/\D/g, "").slice(0, 11);
   if (digits.length <= 2) return digits.length ? `(${digits}` : "";
-  if (digits.length <= 6) return `(${digits.slice(0,2)}) ${digits.slice(2)}`;
-  if (digits.length <= 10) return `(${digits.slice(0,2)}) ${digits.slice(2,6)}-${digits.slice(6)}`;
-  return `(${digits.slice(0,2)}) ${digits.slice(2,7)}-${digits.slice(7)}`;
+  if (digits.length <= 6) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+  if (digits.length <= 10) return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
 }
 function formatarStatus(s) {
   if (s === "ABERTA") return "Aberta";
@@ -127,6 +127,53 @@ function formatarStatus(s) {
   if (s === "RESOLVIDA") return "Resolvida";
   return s;
 }
+
+function formatarPrioridade(prioridade) {
+  if (prioridade === "BAIXA") return "Baixa";
+  if (prioridade === "MEDIA") return "Média";
+  if (prioridade === "ALTA") return "Alta";
+
+  return prioridade || "";
+}
+
+function formatarDataHistorico(dataHora) {
+  if (!dataHora) return "Data não informada";
+
+  return new Date(dataHora).toLocaleString("pt-BR", {
+    dateStyle: "short",
+    timeStyle: "short",
+  });
+}
+
+function formatarTipoEventoHistorico(tipoEvento) {
+  if (tipoEvento === "DENUNCIA_CRIADA") {
+    return "Denúncia criada";
+  }
+
+  if (tipoEvento === "STATUS_ALTERADO") {
+    return "Status alterado";
+  }
+
+  if (tipoEvento === "PRIORIDADE_ALTERADA") {
+    return "Prioridade alterada";
+  }
+
+  if (tipoEvento === "DADOS_ATUALIZADOS") {
+    return "Dados atualizados";
+  }
+
+  return "Atualização";
+}
+
+function getIconeHistorico(tipoEvento) {
+  if (tipoEvento === "DENUNCIA_CRIADA") return "✓";
+  if (tipoEvento === "STATUS_ALTERADO") return "↻";
+  if (tipoEvento === "PRIORIDADE_ALTERADA") return "!";
+  if (tipoEvento === "DADOS_ATUALIZADOS") return "✎";
+
+  return "•";
+}
+
 function classeStatus(s) {
   if (s === "ABERTA") return "aberta";
   if (s === "EM_ANDAMENTO") return "andamento";
@@ -194,6 +241,11 @@ function Perfil() {
 
   const [denunciaDetalhe, setDenunciaDetalhe] = useState(null);
   const [comentarios, setComentarios] = useState([]);
+
+  const [historicoDenuncia, setHistoricoDenuncia] = useState([]);
+  const [carregandoHistorico, setCarregandoHistorico] = useState(false);
+  const [mostrarHistorico, setMostrarHistorico] = useState(false);
+
   const [novoComentario, setNovoComentario] = useState("");
   const [comentarioEditandoId, setComentarioEditandoId] = useState(null);
   const [textoEditando, setTextoEditando] = useState("");
@@ -208,9 +260,11 @@ function Perfil() {
   const [imagemAberta, setImagemAberta] = useState(null);
 
   const API_COMENTARIOS = "http://localhost:8080/comentarios";
-  const API_CURTIDAS    = "http://localhost:8080/curtidas";
-  const API_DENUNCIAS   = "http://localhost:8080/denuncias";
-  const API_CATEGORIAS  = "http://localhost:8080/categorias";
+  const API_CURTIDAS = "http://localhost:8080/curtidas";
+  const API_DENUNCIAS = "http://localhost:8080/denuncias";
+  const API_CATEGORIAS = "http://localhost:8080/categorias";
+  const API_HISTORICO =
+    "http://localhost:8080/historico-denuncias";
 
   function usuarioLogadoLocal() { return JSON.parse(localStorage.getItem("usuario")); }
   function usuarioIdLogado() { const u = usuarioLogadoLocal(); return u?.id || u?.usuarioId; }
@@ -257,18 +311,66 @@ function Perfil() {
 
   useEffect(() => { carregarDados(); }, []);
 
+  async function carregarHistoricoDaDenuncia(denunciaId) {
+    setCarregandoHistorico(true);
+
+    try {
+      const resposta = await fetch(
+        `${API_HISTORICO}/denuncia/${denunciaId}`
+      );
+
+      if (!resposta.ok) {
+        throw new Error("Erro ao carregar histórico.");
+      }
+
+      const dados = await resposta.json();
+
+      setHistoricoDenuncia(
+        Array.isArray(dados) ? dados : []
+      );
+    } catch {
+      setHistoricoDenuncia([]);
+      addToast(
+        "Não foi possível carregar o histórico da denúncia.",
+        "error"
+      );
+    } finally {
+      setCarregandoHistorico(false);
+    }
+  }
+
   function abrirDetalhesDenuncia(denuncia) {
     setDenunciaDetalhe(denuncia);
-    setNovoComentario(""); setComentarioEditandoId(null); setTextoEditando("");
+
+    setNovoComentario("");
+    setComentarioEditandoId(null);
+    setTextoEditando("");
+
+    setHistoricoDenuncia([]);
+    setMostrarHistorico(false);
+
+    carregarHistoricoDaDenuncia(denuncia.id);
+
     fetch(`${API_COMENTARIOS}/denuncia/${denuncia.id}`)
       .then((r) => r.json())
-      .then((data) => setComentarios(Array.isArray(data) ? data : []))
-      .catch(() => addToast("Erro ao carregar comentários.", "error"));
+      .then((data) =>
+        setComentarios(Array.isArray(data) ? data : [])
+      )
+      .catch(() =>
+        addToast("Erro ao carregar comentários.", "error")
+      );
   }
 
   function fecharDetalhesDenuncia() {
-    setDenunciaDetalhe(null); setComentarios([]);
-    setNovoComentario(""); setComentarioEditandoId(null); setTextoEditando("");
+    setDenunciaDetalhe(null);
+    setComentarios([]);
+
+    setHistoricoDenuncia([]);
+    setMostrarHistorico(false);
+
+    setNovoComentario("");
+    setComentarioEditandoId(null);
+    setTextoEditando("");
   }
 
   async function enviarComentario() {
@@ -337,7 +439,7 @@ function Perfil() {
       });
       if (!r.ok) { addToast("Erro ao atualizar curtida.", "error"); return; }
       setCurtidasUsuario((p) => ({ ...p, [denunciaId]: !jaCurtiu }));
-      setTotaisCurtidas((p) => ({ ...p, [denunciaId]: jaCurtiu ? Math.max((p[denunciaId]||1)-1,0) : (p[denunciaId]||0)+1 }));
+      setTotaisCurtidas((p) => ({ ...p, [denunciaId]: jaCurtiu ? Math.max((p[denunciaId] || 1) - 1, 0) : (p[denunciaId] || 0) + 1 }));
     } catch { addToast("Erro ao atualizar curtida.", "error"); }
   }
 
@@ -496,22 +598,22 @@ function Perfil() {
 
   const denunciasFiltradas = abaDenuncia === "Todas" ? minhasDenuncias
     : minhasDenuncias.filter((d) => {
-        if (abaDenuncia === "Aberta") return d.status === "ABERTA";
-        if (abaDenuncia === "Em andamento") return d.status === "EM_ANDAMENTO";
-        if (abaDenuncia === "Resolvida") return d.status === "RESOLVIDA";
-        return true;
-      });
+      if (abaDenuncia === "Aberta") return d.status === "ABERTA";
+      if (abaDenuncia === "Em andamento") return d.status === "EM_ANDAMENTO";
+      if (abaDenuncia === "Resolvida") return d.status === "RESOLVIDA";
+      return true;
+    });
 
-  const totalDenuncias  = minhasDenuncias.length;
-  const totalAbertas    = minhasDenuncias.filter((d) => d.status === "ABERTA").length;
-  const totalAndamento  = minhasDenuncias.filter((d) => d.status === "EM_ANDAMENTO").length;
+  const totalDenuncias = minhasDenuncias.length;
+  const totalAbertas = minhasDenuncias.filter((d) => d.status === "ABERTA").length;
+  const totalAndamento = minhasDenuncias.filter((d) => d.status === "EM_ANDAMENTO").length;
   const totalResolvidas = minhasDenuncias.filter((d) => d.status === "RESOLVIDA").length;
 
   const stats = [
-    { emoji: "📋", valor: totalDenuncias,  label: "Denúncias feitas", cor: "stat--blue"   },
-    { emoji: "🟡", valor: totalAndamento,  label: "Em andamento",     cor: "stat--yellow" },
-    { emoji: "✅", valor: totalResolvidas, label: "Resolvidas",        cor: "stat--green"  },
-    { emoji: "🔴", valor: totalAbertas,    label: "Abertas",           cor: "stat--red"    },
+    { emoji: "📋", valor: totalDenuncias, label: "Denúncias feitas", cor: "stat--blue" },
+    { emoji: "🟡", valor: totalAndamento, label: "Em andamento", cor: "stat--yellow" },
+    { emoji: "✅", valor: totalResolvidas, label: "Resolvidas", cor: "stat--green" },
+    { emoji: "🔴", valor: totalAbertas, label: "Abertas", cor: "stat--red" },
   ];
   const senhasIguais = novaSenha && confirmarSenha && novaSenha === confirmarSenha;
 
@@ -522,20 +624,20 @@ function Perfil() {
 
       <main className="perfil-main">
         <header className="perfil-header">
-  <div className="perfil-header-eyebrow">
-    {usuario.tipoUsuario === "ADMINISTRADOR"
-      ? "Painel do administrador"
-      : "Painel do cidadão"}
-  </div>
+          <div className="perfil-header-eyebrow">
+            {usuario.tipoUsuario === "ADMINISTRADOR"
+              ? "Painel do administrador"
+              : "Painel do cidadão"}
+          </div>
 
-  <h1>Meu Perfil</h1>
+          <h1>Meu Perfil</h1>
 
-  <p>
-    {usuario.tipoUsuario === "ADMINISTRADOR"
-      ? "Gerencie sua conta e acompanhe as denúncias do sistema."
-      : "Gerencie seus dados e acompanhe suas denúncias."}
-  </p>
-</header>
+          <p>
+            {usuario.tipoUsuario === "ADMINISTRADOR"
+              ? "Gerencie sua conta e acompanhe as denúncias do sistema."
+              : "Gerencie seus dados e acompanhe suas denúncias."}
+          </p>
+        </header>
 
         <section className="perfil-layout">
           <aside className="perfil-user-card">
@@ -725,7 +827,8 @@ function Perfil() {
 
             <div className="denuncias-modal-list">
               {denunciasFiltradas.map((d) => (
-                <article className="denuncia-item perfil-denuncia-click" key={d.id}>
+  <div key={d.id} className="perfil-denuncia-conjunto">
+    <article className="denuncia-item perfil-denuncia-click">
                   <div className="denuncia-left">
                     <h3>{d.titulo}</h3>
                     <p>{d.localizacao}</p>
@@ -735,9 +838,13 @@ function Perfil() {
                       <button type="button" className={`perfil-like-btn ${curtidasUsuario[d.id] ? "perfil-like-btn--active" : ""}`} onClick={(e) => { e.stopPropagation(); alternarCurtida(d.id); }}>
                         <IconHeart filled={!!curtidasUsuario[d.id]} /> {totaisCurtidas[d.id] || 0}
                       </button>
-                      <button type="button" className="perfil-ver-comentarios-btn" onClick={() => abrirDetalhesDenuncia(d)}>
-                        <IconComment /> Ver comentários
-                      </button>
+                      <button
+  type="button"
+  className="perfil-ver-comentarios-btn"
+  onClick={() => abrirDetalhesDenuncia(d)}
+>
+  📄 Ver detalhes
+</button>
                       {podeEditarDenuncia(d) && (
                         <button type="button" className="perfil-editar-denuncia-btn" onClick={() => abrirEditarDenuncia(d)}>
                           <IconEdit /> Editar
@@ -759,23 +866,139 @@ function Perfil() {
                   </div>
                   <span className={`perfil-status ${classeStatus(d.status)}`}>{formatarStatus(d.status)}</span>
                 </article>
-              ))}
-              {denunciasFiltradas.length === 0 && <p>Nenhuma denúncia encontrada nessa aba.</p>}
-            </div>
 
-            {/* ── Painel de comentários ── */}
-            {denunciaDetalhe && (
+                {/* ── Painel de comentários ── */}
+            {denunciaDetalhe?.id === d.id && (
               <div className="perfil-detalhe-panel">
                 <div className="perfil-detalhe-neon" />
                 <div className="perfil-detalhe-header">
                   <div className="perfil-detalhe-header-info">
-                    <p className="perfil-detalhe-eyebrow">Comentários da denúncia</p>
+                    <p className="perfil-detalhe-eyebrow">
+  Detalhes da denúncia
+</p>
                     <h3>{denunciaDetalhe.titulo}</h3>
                     <p className="perfil-detalhe-local">📍 {denunciaDetalhe.localizacao}</p>
                   </div>
                   <button type="button" className="perfil-detalhe-close" onClick={fecharDetalhesDenuncia}>✕ Fechar</button>
                 </div>
                 <p className="perfil-denuncia-desc">{denunciaDetalhe.descricao}</p>
+
+                <div className="perfil-historico-block">
+                  <button
+                    type="button"
+                    className="perfil-historico-toggle"
+                    onClick={() => setMostrarHistorico((anterior) => !anterior)}
+                  >
+                    <div className="perfil-historico-toggle-info">
+                      <span className="perfil-historico-toggle-icon">◷</span>
+
+                      <div>
+                        <strong>Histórico da denúncia</strong>
+                        <small>
+                          Acompanhe todas as atualizações realizadas.
+                        </small>
+                      </div>
+                    </div>
+
+                    <span className="perfil-historico-toggle-text">
+                      {mostrarHistorico ? "Ocultar ↑" : "Visualizar ↓"}
+                    </span>
+                  </button>
+
+                  {mostrarHistorico && (
+                    <div className="perfil-historico-content">
+                      {carregandoHistorico ? (
+                        <p className="perfil-historico-loading">
+                          Carregando histórico...
+                        </p>
+                      ) : historicoDenuncia.length > 0 ? (
+                        <div className="perfil-historico-timeline">
+                          {historicoDenuncia.map((evento, indice) => (
+                            <div
+                              key={evento.id}
+                              className="perfil-historico-item"
+                            >
+                              <div className="perfil-historico-marker-area">
+                                <span
+                                  className={`perfil-historico-marker perfil-historico-marker--${evento.tipoEvento.toLowerCase()}`}
+                                >
+                                  {getIconeHistorico(evento.tipoEvento)}
+                                </span>
+
+                                {indice < historicoDenuncia.length - 1 && (
+                                  <span className="perfil-historico-line" />
+                                )}
+                              </div>
+
+                              <div className="perfil-historico-card">
+                                <div className="perfil-historico-card-top">
+                                  <strong>
+                                    {formatarTipoEventoHistorico(
+                                      evento.tipoEvento
+                                    )}
+                                  </strong>
+
+                                  <time>
+                                    {formatarDataHistorico(evento.dataHora)}
+                                  </time>
+                                </div>
+
+                                <p>{evento.descricao}</p>
+
+                                {evento.tipoEvento === "STATUS_ALTERADO" &&
+                                  evento.statusAnterior &&
+                                  evento.statusNovo && (
+                                    <div className="perfil-historico-alteracao">
+                                      <span>
+                                        {formatarStatus(evento.statusAnterior)}
+                                      </span>
+
+                                      <span className="perfil-historico-seta">
+                                        →
+                                      </span>
+
+                                      <span>
+                                        {formatarStatus(evento.statusNovo)}
+                                      </span>
+                                    </div>
+                                  )}
+
+                                {evento.tipoEvento ===
+                                  "PRIORIDADE_ALTERADA" &&
+                                  evento.prioridadeAnterior &&
+                                  evento.prioridadeNova && (
+                                    <div className="perfil-historico-alteracao">
+                                      <span>
+                                        {formatarPrioridade(
+                                          evento.prioridadeAnterior
+                                        )}
+                                      </span>
+
+                                      <span className="perfil-historico-seta">
+                                        →
+                                      </span>
+
+                                      <span>
+                                        {formatarPrioridade(
+                                          evento.prioridadeNova
+                                        )}
+                                      </span>
+                                    </div>
+                                  )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="perfil-historico-empty">
+                          <span>◷</span>
+                          <p>Nenhum histórico encontrado.</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
                 <div className="perfil-comentario-form">
                   <div className="perfil-form-avatar">{iniciais}</div>
                   <div className="perfil-form-inner">
@@ -837,6 +1060,12 @@ function Perfil() {
                 </div>
               </div>
             )}
+                
+</div>
+              ))}
+              {denunciasFiltradas.length === 0 && <p>Nenhuma denúncia encontrada nessa aba.</p>}
+            </div>
+
           </div>
         </div>
       )}
@@ -890,7 +1119,7 @@ function Perfil() {
                 <div className="ped-location-wrap">
                   <span className="ped-location-icon">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" /><circle cx="12" cy="10" r="3" />
                     </svg>
                   </span>
                   <input
@@ -901,15 +1130,15 @@ function Perfil() {
                   />
                   <button type="button" className="ped-map-btn" title="Selecionar no mapa" onClick={() => setMostrarMapaEdicao(true)}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/>
+                      <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" /><line x1="9" y1="3" x2="9" y2="18" /><line x1="15" y1="6" x2="15" y2="21" />
                     </svg>
                   </button>
                 </div>
                 {latitudeEdicao && longitudeEdicao && (
                   <div className="ped-coords-badge">
                     <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
-                      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                      <circle cx="12" cy="12" r="10" /><line x1="2" y1="12" x2="22" y2="12" />
+                      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
                     </svg>
                     GPS: {latitudeEdicao}, {longitudeEdicao}
                     <button type="button" className="ped-coords-clear" onClick={() => { setLatitudeEdicao(""); setLongitudeEdicao(""); setCoordenadasEdicao(null); }}>✕</button>
@@ -970,18 +1199,18 @@ function Perfil() {
                 onDragOver={(e) => e.preventDefault()}
                 onDrop={(e) => {
                   e.preventDefault();
-                  const files = Array.from(e.dataTransfer.files).filter(f => ["image/jpeg","image/png"].includes(f.type));
+                  const files = Array.from(e.dataTransfer.files).filter(f => ["image/jpeg", "image/png"].includes(f.type));
                   setNovasImagens(p => [...p, ...files].slice(0, 5));
                 }}
               >
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{opacity:0.5}}>
-                  <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.5 }}>
+                  <rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" />
                 </svg>
                 <p>{novasImagens.length > 0 ? `${novasImagens.length} nova(s) imagem(ns) selecionada(s)` : "Clique ou arraste para adicionar novas imagens"}</p>
                 <small>JPG, PNG · máx. 5 por envio</small>
                 <input ref={fileInputEdicaoRef} type="file" accept="image/jpeg,image/png" multiple style={{ display: "none" }}
                   onChange={(e) => {
-                    const files = Array.from(e.target.files).filter(f => ["image/jpeg","image/png"].includes(f.type));
+                    const files = Array.from(e.target.files).filter(f => ["image/jpeg", "image/png"].includes(f.type));
                     setNovasImagens(p => [...p, ...files].slice(0, 5));
                   }}
                 />
@@ -991,7 +1220,7 @@ function Perfil() {
                   {novasImagens.map((f, i) => (
                     <div key={i} className="ped-nova-imagem-item">
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+                        <rect x="3" y="3" width="18" height="18" rx="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" />
                       </svg>
                       <span>{f.name}</span>
                       <button type="button" onClick={() => setNovasImagens(p => p.filter((_, j) => j !== i))}>✕</button>
@@ -1005,7 +1234,7 @@ function Perfil() {
               <button type="button" className="cancel-btn" onClick={fecharEditarDenuncia}>Cancelar</button>
               <button type="button" className="save-btn" onClick={salvarDenunciaEditada}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="20 6 9 17 4 12"/>
+                  <polyline points="20 6 9 17 4 12" />
                 </svg>
                 Salvar alterações
               </button>
