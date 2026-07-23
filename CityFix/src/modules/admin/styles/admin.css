@@ -2166,3 +2166,222 @@
     height: 360px;
   }
 }
+
+/* ══════════════════════════════════════
+   MÓDULO AUDITORIA — NEON EDITION
+══════════════════════════════════════ */
+
+/* Glow de fundo sutil no conteúdo do modal, só quando é o painel de auditoria */
+.admin-modal-content:has(.auditoria-item) {
+  position: relative;
+}
+.admin-modal-content:has(.auditoria-item)::before {
+  content: '';
+  position: absolute;
+  inset: -8px -8px auto -8px;
+  height: 200px;
+  background:
+    radial-gradient(circle at 10% 0%, rgba(96,165,250,0.10), transparent 55%),
+    radial-gradient(circle at 90% 10%, rgba(167,139,250,0.08), transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Card de cada registro ── */
+.auditoria-item {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  background: linear-gradient(160deg, rgba(255,255,255,0.035), rgba(255,255,255,0.008));
+  transition: border-color 0.25s, transform 0.22s, box-shadow 0.3s;
+  animation: auditoria-item-in 0.32s cubic-bezier(0.22,1,0.36,1) both;
+}
+
+@keyframes auditoria-item-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Barra neon lateral */
+.auditoria-item::before {
+  content: '';
+  position: absolute; top: 0; left: 0; bottom: 0; width: 3px;
+  background: linear-gradient(180deg, var(--blue), var(--purple));
+  opacity: 0.7;
+  box-shadow: 0 0 12px 1px rgba(96,165,250,0.5);
+}
+
+/* Linha neon fininha no topo, aparece no hover */
+.auditoria-item::after {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1.5px;
+  background: linear-gradient(90deg, transparent, var(--blue) 45%, #bcd8ff 55%, transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.auditoria-item:hover {
+  transform: translateY(-3px);
+  border-color: rgba(96,165,250,0.35);
+  box-shadow: 0 14px 36px rgba(0,0,0,0.4), 0 0 0 1px rgba(96,165,250,0.08);
+}
+.auditoria-item:hover::after { opacity: 0.85; }
+
+/* Variação de cor a cada 3 itens, pra dar vida ao painel */
+.auditoria-item:nth-child(3n+2)::before {
+  background: linear-gradient(180deg, var(--green), #a7f3b0);
+  box-shadow: 0 0 12px 1px rgba(49,191,73,0.5);
+}
+.auditoria-item:nth-child(3n+2):hover {
+  border-color: rgba(49,191,73,0.35);
+  box-shadow: 0 14px 36px rgba(0,0,0,0.4), 0 0 0 1px rgba(49,191,73,0.08);
+}
+.auditoria-item:nth-child(3n+2):hover::after {
+  background: linear-gradient(90deg, transparent, var(--green) 45%, #a7f3b0 55%, transparent);
+}
+.auditoria-item:nth-child(3n+2) .auditoria-icon {
+  background: var(--green-dim);
+  border-color: rgba(49,191,73,0.28);
+  color: var(--green);
+  box-shadow: 0 0 14px rgba(49,191,73,0.25), inset 0 0 8px rgba(49,191,73,0.08);
+}
+
+.auditoria-item:nth-child(3n)::before {
+  background: linear-gradient(180deg, var(--yellow), #ffe6a8);
+  box-shadow: 0 0 12px 1px rgba(244,208,111,0.45);
+}
+.auditoria-item:nth-child(3n):hover {
+  border-color: rgba(244,208,111,0.35);
+  box-shadow: 0 14px 36px rgba(0,0,0,0.4), 0 0 0 1px rgba(244,208,111,0.08);
+}
+.auditoria-item:nth-child(3n):hover::after {
+  background: linear-gradient(90deg, transparent, var(--yellow) 45%, #ffe6a8 55%, transparent);
+}
+.auditoria-item:nth-child(3n) .auditoria-icon {
+  background: var(--yellow-dim);
+  border-color: rgba(244,208,111,0.3);
+  color: var(--yellow);
+  box-shadow: 0 0 14px rgba(244,208,111,0.22), inset 0 0 8px rgba(244,208,111,0.08);
+}
+
+/* ── Cabeçalho: ícone + título + descrição ── */
+.auditoria-title-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.auditoria-icon {
+  width: 38px; height: 38px; flex-shrink: 0;
+  border-radius: 11px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  background: var(--blue-dim);
+  border: 1px solid rgba(96,165,250,0.28);
+  color: var(--blue);
+  box-shadow: 0 0 14px rgba(96,165,250,0.25), inset 0 0 8px rgba(96,165,250,0.08);
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+.auditoria-item:hover .auditoria-icon {
+  transform: scale(1.08) rotate(-4deg);
+}
+
+.auditoria-title-row h3 {
+  font-family: var(--font-display);
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 3px;
+  letter-spacing: -0.1px;
+}
+
+.auditoria-title-row .list-item-meta {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  font-weight: 300;
+}
+
+/* ── Pills com entidade / ID / data ── */
+.auditoria-dados {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 13px;
+}
+
+.auditoria-dados span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  font-size: 10.5px;
+  color: var(--text-dim);
+  transition: border-color 0.2s, background 0.2s, transform 0.15s;
+}
+.auditoria-dados span:hover {
+  border-color: rgba(96,165,250,0.32);
+  background: rgba(96,165,250,0.07);
+  transform: translateY(-1px);
+}
+.auditoria-dados span strong {
+  color: var(--text-muted);
+  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: 9.5px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+/* ── Bloco do responsável (usuário/admin) ── */
+.auditoria-usuario {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 7px;
+}
+
+.auditoria-usuario strong {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-dim);
+}
+
+.auditoria-item .tipo-badge {
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+.auditoria-item .tipo--admin {
+  box-shadow: 0 0 12px rgba(167,139,250,0.28);
+  text-shadow: 0 0 8px rgba(167,139,250,0.5);
+}
+.auditoria-item .tipo--user {
+  box-shadow: 0 0 12px rgba(49,191,73,0.2);
+  text-shadow: 0 0 8px rgba(49,191,73,0.45);
+}
+
+/* ── Responsivo tablet/desktop ── */
+@media (min-width: 700px) {
+  .auditoria-item {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 18px;
+  }
+  .auditoria-usuario {
+    align-items: flex-end;
+    justify-content: center;
+    min-width: 140px;
+    flex-shrink: 0;
+  }
+  .auditoria-dados {
+    margin-top: 14px;
+  }
+}
+
+@media (min-width: 1025px) {
+  .auditoria-item { padding: 18px 20px; }
+  .auditoria-icon { width: 42px; height: 42px; font-size: 17px; }
+}

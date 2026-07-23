@@ -172,6 +172,12 @@ function Admin() {
   const [modalPerfilUsuario, setModalPerfilUsuario] = useState(false);
   const [usuarioSelecionado, setUsuarioSelecionado] = useState(null);
 
+  const [logsAuditoria, setLogsAuditoria] = useState([]);
+  const [carregandoAuditoria, setCarregandoAuditoria] = useState(false);
+  const [buscaAuditoria, setBuscaAuditoria] = useState("");
+  const [acaoAuditoriaFiltro, setAcaoAuditoriaFiltro] = useState("Todas");
+  const [tipoAuditoriaFiltro, setTipoAuditoriaFiltro] = useState("Todos");
+
   const [categorias, setCategorias] = useState([]);
   const [buscaCategoria, setBuscaCategoria] = useState("");
   const [novaCategoria, setNovaCategoria] = useState({ nome: "", descricao: "" });
@@ -189,6 +195,7 @@ function Admin() {
   const API_CURTIDAS = "http://localhost:8080/curtidas";
   const API_ESTATISTICAS = "http://localhost:8080/estatisticas";
   const API_HISTORICO = "http://localhost:8080/historico-denuncias";
+  const API_AUDITORIA = "http://localhost:8080/auditoria";
 
   function usuarioLogado() { return JSON.parse(localStorage.getItem("usuario")); }
   function usuarioIdLogado() { const u = usuarioLogado(); return u?.id || u?.usuarioId; }
@@ -354,6 +361,30 @@ function Admin() {
     }
   }
 
+  async function carregarAuditoria() {
+  setCarregandoAuditoria(true);
+
+  try {
+    const response = await fetch(API_AUDITORIA);
+
+    if (!response.ok) {
+      throw new Error("Erro ao carregar auditoria.");
+    }
+
+    const data = await response.json();
+
+    setLogsAuditoria(Array.isArray(data) ? data : []);
+  } catch (error) {
+    console.error("Erro ao carregar auditoria:", error);
+    addToast(
+      "Não foi possível carregar os registros de auditoria.",
+      "error"
+    );
+  } finally {
+    setCarregandoAuditoria(false);
+  }
+}
+
 
   useEffect(() => { carregarDados(); }, []);
 
@@ -408,6 +439,47 @@ function Admin() {
     return "Atualização da denúncia";
   }
 
+  function formatarAcaoAuditoria(acao) {
+  const acoes = {
+    CRIAR_USUARIO: "Usuário cadastrado",
+    EDITAR_USUARIO: "Usuário atualizado",
+    ALTERAR_SENHA_USUARIO: "Senha alterada",
+
+    CRIAR_CATEGORIA: "Categoria criada",
+    EDITAR_CATEGORIA: "Categoria atualizada",
+    EXCLUIR_CATEGORIA: "Categoria excluída",
+
+    CRIAR_DENUNCIA: "Denúncia criada",
+    EDITAR_DENUNCIA: "Denúncia atualizada",
+    EXCLUIR_DENUNCIA: "Denúncia excluída",
+
+    ALTERAR_STATUS_DENUNCIA: "Status alterado",
+    ALTERAR_PRIORIDADE_DENUNCIA: "Prioridade alterada",
+  };
+
+  return acoes[acao] || acao || "Ação não informada";
+}
+
+function formatarDataAuditoria(dataHora) {
+  if (!dataHora) {
+    return "Data não informada";
+  }
+
+  const data = new Date(dataHora);
+
+  if (Number.isNaN(data.getTime())) {
+    return "Data não informada";
+  }
+
+  return data.toLocaleString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
   function getIconeHistorico(tipoEvento) {
     if (tipoEvento === "DENUNCIA_CRIADA") return "✓";
     if (tipoEvento === "STATUS_ALTERADO") return "↻";
@@ -458,6 +530,33 @@ function Admin() {
     const busca = buscaCategoria.toLowerCase();
     return c.nome?.toLowerCase().includes(busca) || (c.descricao || "").toLowerCase().includes(busca);
   });
+
+  const logsAuditoriaFiltrados = logsAuditoria.filter((log) => {
+  const busca = buscaAuditoria.trim().toLowerCase();
+
+  const correspondeBusca =
+    !busca ||
+    log.descricao?.toLowerCase().includes(busca) ||
+    log.usuario?.toLowerCase().includes(busca) ||
+    log.entidade?.toLowerCase().includes(busca) ||
+    formatarAcaoAuditoria(log.acao)
+      .toLowerCase()
+      .includes(busca);
+
+  const correspondeAcao =
+    acaoAuditoriaFiltro === "Todas" ||
+    log.acao === acaoAuditoriaFiltro;
+
+  const correspondeTipo =
+    tipoAuditoriaFiltro === "Todos" ||
+    log.tipoUsuario === tipoAuditoriaFiltro;
+
+  return (
+    correspondeBusca &&
+    correspondeAcao &&
+    correspondeTipo
+  );
+});
 
   async function abrirDetalhesDenuncia(denuncia) {
     setDenunciaSelecionada(denuncia);
@@ -696,6 +795,15 @@ function Admin() {
       descricao: "Analise médias, dispersões e padrões das denúncias.",
       meta: "Análise de dados",
     },
+
+    {
+  id: "auditoria",
+  icon: "🧾",
+  titulo: "Auditoria do sistema",
+  descricao:
+    "Consulte as ações realizadas por usuários e administradores.",
+  
+},
   ];
 
   const dadosGraficoStatus = [
@@ -739,12 +847,16 @@ function Admin() {
     .slice(-14);
 
   function abrirModulo(id) {
-    setModalAberto(id);
+  setModalAberto(id);
 
-    if (id === "estatisticas") {
-      carregarEstatisticas();
-    }
+  if (id === "estatisticas") {
+    carregarEstatisticas();
   }
+
+  if (id === "auditoria") {
+    carregarAuditoria();
+  }
+}
 
   return (
     <div className="admin-page">
@@ -816,6 +928,9 @@ function Admin() {
             <button onClick={() => abrirModulo("estatisticas")}>
               📊 Ver estatísticas
             </button>
+            <button onClick={() => abrirModulo("auditoria")}>
+  🧾 Ver auditoria
+</button>
           </div>
         </section>
       </main>
@@ -832,6 +947,7 @@ function Admin() {
                   {modalAberto === "categorias" && "Gestão · Categorias"}
                   {modalAberto === "mapa" && "Gestão · Mapa"}
                   {modalAberto === "estatisticas" && "Análise · Estatística"}
+                  {modalAberto === "auditoria" && "Segurança · Auditoria"}
                 </p>
                 <h2>
                   {modalAberto === "denuncias" && "Gerenciar denúncias"}
@@ -839,6 +955,7 @@ function Admin() {
                   {modalAberto === "categorias" && "Gerenciar categorias"}
                   {modalAberto === "mapa" && "Mapa da cidade"}
                   {modalAberto === "estatisticas" && "Painel estatístico"}
+                  {modalAberto === "auditoria" && "Auditoria do sistema"}
                 </h2>
                 <p className="modal-sub">
                   {modalAberto === "denuncias" && "Acompanhe e atualize as denúncias da plataforma."}
@@ -847,6 +964,8 @@ function Admin() {
                   {modalAberto === "mapa" && "Visualize a distribuição das denúncias na cidade."}
                   {modalAberto === "estatisticas" &&
                     "Visualize indicadores calculados a partir das denúncias cadastradas."}
+                  {modalAberto === "auditoria" &&
+  "Acompanhe as ações realizadas no sistema, seus responsáveis e horários."}
                 </p>
               </div>
               <button className="admin-close" onClick={() => setModalAberto(null)}>✕</button>
@@ -1402,6 +1521,183 @@ function Admin() {
                 )}
               </div>
             )}
+
+            {/* ── AUDITORIA ── */}
+{modalAberto === "auditoria" && (
+  <div className="admin-modal-content">
+
+    <div className="admin-filter-row">
+      <div className="filter-input-wrap">
+        <span className="filter-icon">🔍</span>
+
+        <input
+          type="text"
+          placeholder="Buscar por ação, descrição, entidade ou usuário..."
+          value={buscaAuditoria}
+          onChange={(e) => setBuscaAuditoria(e.target.value)}
+        />
+      </div>
+
+      <select
+        value={acaoAuditoriaFiltro}
+        onChange={(e) => setAcaoAuditoriaFiltro(e.target.value)}
+      >
+        <option value="Todas">Todas as ações</option>
+
+        <option value="CRIAR_USUARIO">
+          Usuário cadastrado
+        </option>
+
+        <option value="EDITAR_USUARIO">
+          Usuário atualizado
+        </option>
+
+        <option value="ALTERAR_SENHA_USUARIO">
+          Senha alterada
+        </option>
+
+        <option value="CRIAR_CATEGORIA">
+          Categoria criada
+        </option>
+
+        <option value="EDITAR_CATEGORIA">
+          Categoria atualizada
+        </option>
+
+        <option value="EXCLUIR_CATEGORIA">
+          Categoria excluída
+        </option>
+
+        <option value="CRIAR_DENUNCIA">
+          Denúncia criada
+        </option>
+
+        <option value="EDITAR_DENUNCIA">
+          Denúncia atualizada
+        </option>
+
+        <option value="EXCLUIR_DENUNCIA">
+          Denúncia excluída
+        </option>
+
+        <option value="ALTERAR_STATUS_DENUNCIA">
+          Status alterado
+        </option>
+
+        <option value="ALTERAR_PRIORIDADE_DENUNCIA">
+          Prioridade alterada
+        </option>
+      </select>
+
+      <select
+        value={tipoAuditoriaFiltro}
+        onChange={(e) => setTipoAuditoriaFiltro(e.target.value)}
+      >
+        <option value="Todos">
+          Todos os tipos
+        </option>
+
+        <option value="USUARIO">
+          Usuário comum
+        </option>
+
+        <option value="ADMINISTRADOR">
+          Administrador
+        </option>
+      </select>
+    </div>
+
+    {carregandoAuditoria && (
+      <div className="empty-state">
+        <span>⏳</span>
+        <p>Carregando registros de auditoria...</p>
+      </div>
+    )}
+
+    {!carregandoAuditoria && (
+      <div className="admin-list">
+
+        {logsAuditoriaFiltrados.map((log) => (
+          <article
+            className="admin-list-item auditoria-item"
+            key={log.id}
+          >
+            <div className="list-item-info">
+
+              <div className="auditoria-title-row">
+                <span className="auditoria-icon">
+                  🧾
+                </span>
+
+                <div>
+                  <h3>
+                    {formatarAcaoAuditoria(log.acao)}
+                  </h3>
+
+                  <p className="list-item-meta">
+                    {log.descricao ||
+                      "Descrição não informada"}
+                  </p>
+                </div>
+              </div>
+
+              <div className="auditoria-dados">
+                <span>
+                  <strong>Entidade:</strong>{" "}
+                  {log.entidade || "Não informada"}
+                </span>
+
+                <span>
+                  <strong>ID:</strong>{" "}
+                  {log.entidadeId ?? "—"}
+                </span>
+
+                <span>
+                  <strong>Data:</strong>{" "}
+                  {formatarDataAuditoria(log.dataHora)}
+                </span>
+              </div>
+            </div>
+
+            <div className="admin-item-actions">
+              <div className="auditoria-usuario">
+
+                <strong>
+                  {log.usuario || "Sistema"}
+                </strong>
+
+                <span
+                  className={`tipo-badge ${
+                    log.tipoUsuario === "ADMINISTRADOR"
+                      ? "tipo--admin"
+                      : "tipo--user"
+                  }`}
+                >
+                  {log.tipoUsuario
+                    ? formatarTipoUsuario(log.tipoUsuario)
+                    : "Sistema"}
+                </span>
+
+              </div>
+            </div>
+          </article>
+        ))}
+
+        {logsAuditoriaFiltrados.length === 0 && (
+          <div className="empty-state">
+            <span>🔎</span>
+
+            <p>
+              Nenhum registro de auditoria encontrado.
+            </p>
+          </div>
+        )}
+
+      </div>
+    )}
+
+  </div>
+)}
 
           </div>
         </div>
